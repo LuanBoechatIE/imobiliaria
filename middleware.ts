@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { COOKIE_SESSAO, lerSessao } from "@/lib/sessao";
 
 const PUBLICAS = ["/entrar"];
+const TROCAR_SENHA = "/trocar-senha";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -20,6 +21,14 @@ export async function middleware(req: NextRequest) {
     const destino = new URL("/entrar", req.url);
     if (pathname !== "/") destino.searchParams.set("de", pathname);
     return NextResponse.redirect(destino);
+  }
+
+  // Conta com senha gerada pelo sistema não navega até trocar a senha.
+  if (sessao.deveTrocarSenha && pathname !== TROCAR_SENHA) {
+    return NextResponse.redirect(new URL(TROCAR_SENHA, req.url));
+  }
+  if (!sessao.deveTrocarSenha && pathname === TROCAR_SENHA) {
+    return NextResponse.redirect(new URL("/painel", req.url));
   }
 
   return NextResponse.next();

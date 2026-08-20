@@ -4,7 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ClipboardCheck, GraduationCap, LayoutDashboard, LineChart, Users } from "lucide-react";
+import {
+  ClipboardCheck,
+  GraduationCap,
+  LayoutDashboard,
+  LineChart,
+  User,
+  Users,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Item = {
@@ -21,6 +28,8 @@ const ITENS: Item[] = [
   { href: "/treino", rotulo: "Treino", Icone: GraduationCap, emBreve: true },
   { href: "/numeros", rotulo: "Números", Icone: LineChart, emBreve: true },
 ];
+
+const ITEM_PERFIL: Item = { href: "/perfil", rotulo: "Perfil", Icone: User };
 
 type Realce = { top: number; height: number } | null;
 
@@ -117,7 +126,37 @@ export function MenuLateral({ aoNavegar }: { aoNavegar?: () => void }) {
         })}
       </div>
 
-      <p className="px-5 pb-4 text-[0.72rem] leading-relaxed text-suave">
+      <div className="border-t border-linha px-3 pt-2">
+        {(() => {
+          const estaAtivo = ativo(ITEM_PERFIL.href);
+          return (
+            <Link
+              href={ITEM_PERFIL.href}
+              onClick={aoNavegar}
+              className={cn(
+                "relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-[0.9rem] no-underline transition-colors hover:bg-fundo-2",
+                estaAtivo ? "font-semibold text-laranja-escuro" : "text-tinta-suave"
+              )}
+            >
+              {estaAtivo && (
+                <motion.span
+                  layoutId="menu-ativo"
+                  className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-laranja"
+                  transition={{ type: "spring", stiffness: 600, damping: 38 }}
+                />
+              )}
+              <User
+                size={17}
+                strokeWidth={estaAtivo ? 2.4 : 2}
+                className={cn("shrink-0", estaAtivo ? "text-laranja" : "text-suave")}
+              />
+              <span>Perfil</span>
+            </Link>
+          );
+        })()}
+      </div>
+
+      <p className="px-5 pb-4 pt-2 text-[0.72rem] leading-relaxed text-suave">
         Ambiente de demonstração.
         <br />
         Dados fictícios.

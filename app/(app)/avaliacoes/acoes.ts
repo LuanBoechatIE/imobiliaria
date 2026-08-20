@@ -45,6 +45,12 @@ export async function gravarAvaliacao(_estado: unknown, formData: FormData) {
   revalidatePath("/avaliacoes");
   revalidatePath(`/avaliacoes/${corretorId}`);
 
-  if (concluir) redirect("/avaliacoes?ok=1");
+  if (concluir) {
+    // A avaliação fechada acabou de virar a nota do corretor.
+    revalidatePath("/painel");
+    revalidatePath(`/painel/corretor/${corretorId}`);
+    revalidatePath("/equipe");
+    redirect("/avaliacoes?ok=1");
+  }
   return { salvo: true };
 }

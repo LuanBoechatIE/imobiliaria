@@ -1,5 +1,16 @@
-import { COMPETENCIAS, type ChaveCompetencia, type TipoEvidencia } from "./dados";
-import { listarPessoas, type Pessoa } from "./equipe";
+import {
+  COMPETENCIAS,
+  aplicarAvaliacaoAoCorretor,
+  type ChaveCompetencia,
+  type Notas,
+  type TipoEvidencia,
+} from "./dados";
+import { acharPessoa, listarPessoas, type Pessoa } from "./equipe";
+
+/** Rótulo curto do ciclo, para o histórico de evolução do corretor. */
+function rotuloCurto(ciclo: string): string {
+  return ciclo.split(" ")[0].slice(0, 3);
+}
 
 /** Ciclo que está sendo coletado agora. O painel mostra o ciclo já fechado. */
 export const CICLO_ATUAL = "Abril 2026";
@@ -127,6 +138,30 @@ export function salvarAvaliacao(
       avaliadaPor,
     });
   }
+
+  // Avaliação fechada vira a nota que o painel e o perfil do corretor
+  // mostram. É o elo que faltava entre coletar e exibir.
+  if (concluir) {
+    const pessoa = acharPessoa(corretorId);
+    const notas = {} as Notas;
+    const evidencias: Partial<Record<ChaveCompetencia, { tipo: TipoEvidencia; texto: string; quando: string }>> = {};
+
+    for (const c of COMPETENCIAS) {
+      const item = itens[c.chave]!; // salvarAvaliacao já garantiu que todas as 6 existem
+      notas[c.chave] = item.nota;
+      evidencias[c.chave] = { tipo: item.tipo, texto: item.evidencia, quando: CICLO_ATUAL };
+    }
+
+    aplicarAvaliacaoAoCorretor({
+      id: corretorId,
+      nome: pessoa?.nome ?? corretorId,
+      desde: pessoa?.entrada?.slice(0, 4) ?? new Date().getFullYear().toString(),
+      cicloRotulo: rotuloCurto(CICLO_ATUAL),
+      notas,
+      evidencias,
+    });
+  }
+
   return { ok: true };
 }
 

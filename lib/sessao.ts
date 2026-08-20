@@ -12,6 +12,8 @@ export type Sessao = {
   nome: string;
   papel: Papel;
   imobiliariaId: string | null;
+  /** true = conta nasceu com senha gerada pelo sistema, ainda não trocada. */
+  deveTrocarSenha: boolean;
   exp: number;
 };
 

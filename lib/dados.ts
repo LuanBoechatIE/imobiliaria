@@ -224,6 +224,60 @@ export function acharCorretor(id: string): Corretor | undefined {
   return IMOBILIARIA.corretores.find((c) => c.id === id);
 }
 
+/**
+ * Aplica o resultado de uma avaliação concluída (ver lib/avaliacoes.ts)
+ * ao registro do corretor: a nota atual vira "anterior", a nova nota
+ * entra, o ciclo é anotado no histórico e a evidência de cada
+ * competência passa a vir do que foi observado na avaliação.
+ *
+ * Se o corretor ainda não existir aqui (pessoa nova, cadastrada só em
+ * lib/equipe.ts), o registro nasce agora — é o gancho que traz gente
+ * nova pra dentro do painel assim que a primeira avaliação fecha.
+ */
+export function aplicarAvaliacaoAoCorretor(params: {
+  id: string;
+  nome: string;
+  desde: string;
+  cicloRotulo: string;
+  notas: Notas;
+  evidencias: Partial<Record<ChaveCompetencia, Evidencia>>;
+}): void {
+  const { id, nome, desde, cicloRotulo, notas, evidencias } = params;
+  const existente = IMOBILIARIA.corretores.find((c) => c.id === id);
+
+  const evidenciasPorCompetencia: Partial<Record<ChaveCompetencia, Evidencia[]>> = {};
+  for (const c of COMPETENCIAS) {
+    const ev = evidencias[c.chave];
+    if (ev) evidenciasPorCompetencia[c.chave] = [ev];
+  }
+
+  if (!existente) {
+    IMOBILIARIA.corretores.push({
+      id,
+      nome,
+      desde,
+      notas,
+      anterior: null,
+      historico: [{ ciclo: cicloRotulo, nota: media(notas) }],
+      evidencias: evidenciasPorCompetencia,
+    });
+    return;
+  }
+
+  existente.anterior = existente.notas;
+  existente.notas = notas;
+  existente.evidencias = evidenciasPorCompetencia;
+
+  const jaTemCiclo = existente.historico.some((h) => h.ciclo === cicloRotulo);
+  if (jaTemCiclo) {
+    existente.historico = existente.historico.map((h) =>
+      h.ciclo === cicloRotulo ? { ...h, nota: media(notas) } : h
+    );
+  } else {
+    existente.historico = [...existente.historico, { ciclo: cicloRotulo, nota: media(notas) }];
+  }
+}
+
 /** Texto usado quando não há evidência específica registrada. */
 export function evidenciaPadrao(chave: ChaveCompetencia, nota: number): Evidencia {
   const base: Record<ChaveCompetencia, [string, string]> = {

@@ -30,6 +30,7 @@ export async function entrar(formData: FormData) {
     nome: usuario!.nome,
     papel: usuario!.papel,
     imobiliariaId: usuario!.imobiliariaId,
+    deveTrocarSenha: usuario!.deveTrocarSenha,
   });
 
   const jar = await cookies();
@@ -41,6 +42,7 @@ export async function entrar(formData: FormData) {
     expires: expiraEm,
   });
 
+  if (usuario!.deveTrocarSenha) redirect("/trocar-senha");
   redirect(de && de.startsWith("/") ? de : "/painel");
 }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { MenuLateral } from "@/components/menu-lateral";
@@ -10,11 +11,13 @@ import type { Papel } from "@/lib/sessao";
 export function Casca({
   nome,
   papel,
+  foto,
   sair,
   children,
 }: {
   nome: string;
   papel: Papel;
+  foto: string | null;
   sair: () => Promise<void>;
   children: React.ReactNode;
 }) {
@@ -72,10 +75,20 @@ export function Casca({
             </button>
 
             <div className="ml-auto flex items-center gap-3">
-              <div className="hidden flex-col items-end leading-tight sm:flex">
-                <span className="text-[0.87rem] font-semibold text-tinta">{nome}</span>
-                <span className="text-[0.74rem] text-suave">{NOME_PAPEL[papel]}</span>
-              </div>
+              <Link href="/perfil" className="flex items-center gap-2.5 no-underline">
+                <div className="hidden flex-col items-end leading-tight sm:flex">
+                  <span className="text-[0.87rem] font-semibold text-tinta">{nome}</span>
+                  <span className="text-[0.74rem] text-suave">{NOME_PAPEL[papel]}</span>
+                </div>
+                <span className="grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-laranja-suave text-[0.9rem] font-bold text-laranja-escuro ring-2 ring-white">
+                  {foto ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={foto} alt="" className="size-full object-cover" />
+                  ) : (
+                    nome.charAt(0)
+                  )}
+                </span>
+              </Link>
               <form action={sair}>
                 <button
                   type="submit"
