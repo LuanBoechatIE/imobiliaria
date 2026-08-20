@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { LayoutDashboard, Users, GraduationCap, LineChart } from "lucide-react";
+import { ClipboardCheck, GraduationCap, LayoutDashboard, LineChart, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Item = {
@@ -15,7 +15,8 @@ type Item = {
 };
 
 const ITENS: Item[] = [
-  { href: "/painel", rotulo: "Avaliação", Icone: LayoutDashboard },
+  { href: "/painel", rotulo: "Painel", Icone: LayoutDashboard },
+  { href: "/avaliacoes", rotulo: "Avaliações", Icone: ClipboardCheck },
   { href: "/equipe", rotulo: "Equipe", Icone: Users },
   { href: "/treino", rotulo: "Treino", Icone: GraduationCap, emBreve: true },
   { href: "/numeros", rotulo: "Números", Icone: LineChart, emBreve: true },
