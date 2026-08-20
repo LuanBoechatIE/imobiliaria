@@ -2,7 +2,6 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import s from "./painel.module.css";
-import { Barra } from "./barra";
 import { COOKIE_SESSAO, lerSessao } from "@/lib/sessao";
 import {
   COMPETENCIAS,
@@ -53,8 +52,6 @@ export default async function PáginaPainel() {
 
   return (
     <>
-      <Barra nome={sessao.nome} papel={sessao.papel} />
-
       <main className={s.shell}>
         <div className={s.topo}>
           <div className={s.identidade}>

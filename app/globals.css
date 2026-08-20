@@ -2,7 +2,37 @@
  * Identidade: branco e laranja.
  * Design assumidamente claro. Todas as cores são pintadas de forma
  * explícita, então a página se mantém igual em qualquer tema do sistema.
+ *
+ * Tailwind entra sem o preflight de propósito: as telas antigas usam CSS
+ * Modules e o reset global mudaria o visual delas. Os dois convivem, e a
+ * migração é feita tela a tela.
  */
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme {
+  --color-laranja: #f05a22;
+  --color-laranja-escuro: #d2450f;
+  --color-laranja-claro: #ff7a45;
+  --color-laranja-suave: #fdeee7;
+
+  --color-tinta: #1a1512;
+  --color-tinta-suave: #4a423d;
+  --color-suave: #857b75;
+
+  --color-linha: #eae4e0;
+  --color-linha-forte: #d8d0cb;
+
+  --color-fundo: #faf8f7;
+  --color-fundo-2: #f2ede9;
+
+  --color-alerta: #a4262c;
+  --color-alerta-suave: #f8e9e9;
+
+  --color-ok: #1f7a4d;
+  --color-ok-suave: #e3f2e9;
+}
 
 :root {
   color-scheme: light;

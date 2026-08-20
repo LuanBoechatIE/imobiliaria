@@ -3,7 +3,6 @@ import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import painel from "../../painel.module.css";
 import s from "./corretor.module.css";
-import { Barra } from "../../barra";
 import { COOKIE_SESSAO, lerSessao } from "@/lib/sessao";
 import {
   COMPETENCIAS,
@@ -79,8 +78,6 @@ export default async function PáginaCorretor({
 
   return (
     <>
-      <Barra nome={sessao.nome} papel={sessao.papel} />
-
       <main className={painel.shell}>
         <Link className={s.voltar} href="/painel">
           ← Voltar para o time
