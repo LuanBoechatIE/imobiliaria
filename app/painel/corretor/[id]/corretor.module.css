@@ -1,0 +1,354 @@
+.voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  width: fit-content;
+}
+
+.voltar:hover {
+  color: var(--laranja-escuro);
+}
+
+/* ---------- cabeçalho ---------- */
+
+.cabecalho {
+  background: var(--branco);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  padding: clamp(1.15rem, 3vw, 1.6rem);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  box-shadow: var(--sombra);
+}
+
+.quem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.inicial {
+  width: 52px;
+  height: 52px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--laranja-suave);
+  color: var(--laranja-escuro);
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.quemTexto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.nome {
+  font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.desde {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.numeros {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.notaBloco {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.rotulo {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.notaGrande {
+  font-size: 2.6rem;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+  color: var(--laranja);
+}
+
+.delta {
+  font-size: 0.85rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.deltaSobe {
+  color: var(--laranja-escuro);
+}
+
+.deltaCai {
+  color: var(--alerta);
+}
+
+/* ---------- histórico ---------- */
+
+.historico {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.grafico {
+  display: block;
+  width: 100%;
+  max-width: 15rem;
+  height: 52px;
+}
+
+.linhaGrafico {
+  fill: none;
+  stroke: var(--laranja);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.areaGrafico {
+  fill: var(--laranja-suave);
+  stroke: none;
+}
+
+.pontoGrafico {
+  fill: var(--laranja);
+}
+
+.eixo {
+  display: flex;
+  justify-content: space-between;
+  max-width: 15rem;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+/* ---------- plano do mês ---------- */
+
+.plano {
+  background: var(--laranja-suave);
+  border: 1px solid #f7d9c9;
+  border-radius: var(--raio);
+  padding: 1.05rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.planoTitulo {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--tinta);
+}
+
+.planoTexto {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--tinta-suave);
+  max-width: 62ch;
+}
+
+.etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding-top: 0.15rem;
+}
+
+.etiqueta {
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--branco);
+  background: var(--laranja);
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+}
+
+.planoOk {
+  background: var(--branco);
+  border-color: var(--linha);
+}
+
+/* ---------- competências ---------- */
+
+.bloco {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.blocoTitulo {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.blocoSub {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin: 0;
+  max-width: 62ch;
+}
+
+.competencias {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.competencia {
+  background: var(--branco);
+  border: 1px solid var(--linha);
+  border-left: 3px solid var(--laranja);
+  border-radius: var(--raio);
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.competencia.alerta {
+  border-left-color: var(--alerta);
+}
+
+.compTopo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.compNome {
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.compValor {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.compNota {
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.alerta .compNota {
+  color: var(--alerta);
+}
+
+.compAnterior {
+  font-size: 0.76rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.trilho {
+  height: 7px;
+  background: var(--fundo-2);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.preenche {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--laranja);
+  border-radius: 999px;
+}
+
+.alerta .preenche {
+  background: var(--alerta);
+}
+
+.provas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-top: 1px dashed var(--linha-forte);
+  padding-top: 0.75rem;
+}
+
+.prova {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6rem;
+  align-items: start;
+}
+
+.provaTipo {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+  background: var(--fundo-2);
+  border-radius: 999px;
+  padding: 0.18rem 0.55rem;
+  white-space: nowrap;
+}
+
+.provaTexto {
+  font-size: 0.9rem;
+  color: var(--tinta-suave);
+  margin: 0;
+}
+
+.provaQuando {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+@media (min-width: 50rem) {
+  .cabecalho {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+}
+
+@media (max-width: 30rem) {
+  .prova {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+
+  .provaTipo {
+    justify-self: start;
+  }
+}

@@ -1,8 +1,9 @@
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import s from "./painel.module.css";
-import { sair } from "../entrar/acoes";
-import { COOKIE_SESSAO, lerSessao, type Papel } from "@/lib/sessao";
+import { Barra } from "./barra";
+import { COOKIE_SESSAO, lerSessao } from "@/lib/sessao";
 import {
   COMPETENCIAS,
   IMOBILIARIA,
@@ -13,14 +14,7 @@ import {
   type Corretor,
 } from "@/lib/dados";
 
-const NOME_PAPEL: Record<Papel, string> = {
-  boechat: "Equipe Boechat",
-  dono: "Dono",
-  gestor: "Gestor comercial",
-  corretor: "Corretor",
-};
-
-function Barra({ nota }: { nota: number }) {
+function Medidor({ nota }: { nota: number }) {
   return (
     <div className={s.trilho}>
       <div className={s.preenche} style={{ width: `${(nota / 10) * 100}%` }} />
@@ -59,26 +53,7 @@ export default async function PáginaPainel() {
 
   return (
     <>
-      <header className={s.barra}>
-        <div className={s.barraDentro}>
-          <div className={s.logo}>
-            <span className={s.logoMarca}>B</span>
-            <span className={s.logoNome}>Boechat</span>
-          </div>
-
-          <div className={s.usuario}>
-            <div className={s.usuarioInfo}>
-              <span className={s.usuarioNome}>{sessao.nome}</span>
-              <span className={s.usuarioPapel}>{NOME_PAPEL[sessao.papel]}</span>
-            </div>
-            <form action={sair}>
-              <button className={s.sair} type="submit">
-                Sair
-              </button>
-            </form>
-          </div>
-        </div>
-      </header>
+      <Barra nome={sessao.nome} papel={sessao.papel} />
 
       <main className={s.shell}>
         <div className={s.topo}>
@@ -134,7 +109,7 @@ export default async function PáginaPainel() {
                   <span className={s.timeNome}>{c.nome}</span>
                   <span className={s.timeValor}>{fmt(c.valor)}</span>
                 </div>
-                <Barra nota={c.valor} />
+                <Medidor nota={c.valor} />
               </div>
             ))}
           </div>
@@ -147,7 +122,11 @@ export default async function PáginaPainel() {
           </p>
           <div className={s.lista}>
             {ranking.map((pessoa, i) => (
-              <article key={pessoa.id} className={s.pessoa}>
+              <Link
+                key={pessoa.id}
+                href={`/painel/corretor/${pessoa.id}`}
+                className={s.pessoa}
+              >
                 <span className={s.posicao}>{String(i + 1).padStart(2, "0")}</span>
 
                 <div className={s.pessoaNome}>
@@ -173,12 +152,12 @@ export default async function PáginaPainel() {
                           <span className={s.miniNome}>{c.curto}</span>
                           <span className={s.miniValor}>{fmt(nota)}</span>
                         </div>
-                        <Barra nota={nota} />
+                        <Medidor nota={nota} />
                       </div>
                     );
                   })}
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </section>
