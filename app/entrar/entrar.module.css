@@ -1,0 +1,265 @@
+.tela {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+  background: var(--branco);
+}
+
+/* ---------- painel de marca ---------- */
+
+.marca {
+  display: none;
+  position: relative;
+  overflow: hidden;
+  background: var(--laranja);
+  color: var(--branco);
+  padding: clamp(2rem, 4vw, 3.5rem);
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.marca::after {
+  content: "";
+  position: absolute;
+  right: -18%;
+  bottom: -28%;
+  width: 78%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 0.22),
+    rgba(255, 255, 255, 0) 62%
+  );
+  pointer-events: none;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  position: relative;
+  z-index: 1;
+}
+
+.logoMarca {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  background: var(--branco);
+  color: var(--laranja);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: -0.03em;
+}
+
+.logoNome {
+  font-weight: 650;
+  font-size: 1.02rem;
+  letter-spacing: -0.01em;
+}
+
+.discurso {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  max-width: 26rem;
+}
+
+.discursoTitulo {
+  font-size: clamp(1.7rem, 2.6vw, 2.3rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.discursoTexto {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.provas {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.28);
+  padding-top: 1.25rem;
+}
+
+.prova {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.provaMarca {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  flex: none;
+}
+
+/* ---------- formulário ---------- */
+
+.lado {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.5rem, 5vw, 3rem);
+  background: var(--branco);
+}
+
+.caixa {
+  width: 100%;
+  max-width: 23rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.logoMobile {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.logoMobile .logoMarca {
+  background: var(--laranja);
+  color: var(--branco);
+}
+
+.cabecalho {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 1.6rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.sub {
+  margin: 0;
+  font-size: 0.94rem;
+  color: var(--muted);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.rotulo {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--tinta-suave);
+}
+
+.entrada {
+  font-family: inherit;
+  font-size: 0.97rem;
+  color: var(--tinta);
+  background: var(--branco);
+  border: 1px solid var(--linha-forte);
+  border-radius: var(--raio-sm);
+  padding: 0.65rem 0.8rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.entrada::placeholder {
+  color: #b3aaa4;
+}
+
+.entrada:focus {
+  outline: none;
+  border-color: var(--laranja);
+  box-shadow: 0 0 0 3px var(--laranja-suave);
+}
+
+.botao {
+  margin-top: 0.25rem;
+  font-family: inherit;
+  font-size: 0.97rem;
+  font-weight: 650;
+  color: var(--branco);
+  background: var(--laranja);
+  border: none;
+  border-radius: var(--raio-sm);
+  padding: 0.72rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.botao:hover {
+  background: var(--laranja-escuro);
+}
+
+.erro {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  background: var(--alerta-suave);
+  border: 1px solid #e9c9c9;
+  border-radius: var(--raio-sm);
+  padding: 0.65rem 0.8rem;
+  font-size: 0.88rem;
+  color: var(--alerta);
+}
+
+.rodape {
+  font-size: 0.83rem;
+  color: var(--muted);
+  border-top: 1px solid var(--linha);
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.rodape code {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+
+@media (min-width: 60rem) {
+  .tela {
+    grid-template-columns: 1.05fr 1fr;
+  }
+
+  .marca {
+    display: flex;
+  }
+
+  .logoMobile {
+    display: none;
+  }
+}

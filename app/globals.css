@@ -1,55 +1,38 @@
+/*
+ * Identidade: branco e laranja.
+ * Design assumidamente claro. Todas as cores são pintadas de forma
+ * explícita, então a página se mantém igual em qualquer tema do sistema.
+ */
+
 :root {
-  --paper: #f2f4f2;
-  --surface: #ffffff;
-  --surface-2: #e7ebe8;
-  --ink: #16211f;
-  --ink-soft: #3d4b47;
-  --muted: #6c7a75;
-  --rule: #d6ddd9;
-  --rule-strong: #b9c4bf;
+  color-scheme: light;
 
-  --ok: #0f6b57;
-  --ok-soft: #d9e9e3;
-  --atencao: #a8412b;
-  --atencao-soft: #f4e3dd;
+  --laranja: #f05a22;
+  --laranja-escuro: #d2450f;
+  --laranja-claro: #ff7a45;
+  --laranja-suave: #fdeee7;
 
-  --font-display: Georgia, "Iowan Old Style", "Times New Roman", serif;
-  --font-ui: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  --branco: #ffffff;
+  --fundo: #faf8f7;
+  --fundo-2: #f2ede9;
+
+  --tinta: #1a1512;
+  --tinta-suave: #4a423d;
+  --muted: #857b75;
+
+  --linha: #eae4e0;
+  --linha-forte: #d8d0cb;
+
+  --alerta: #a4262c;
+  --alerta-suave: #f8e9e9;
+
+  --font-ui: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial,
+    sans-serif;
   --font-mono: "Cascadia Mono", Consolas, "SF Mono", ui-monospace, Menlo, monospace;
-}
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #0e1614;
-    --surface: #16201d;
-    --surface-2: #1e2926;
-    --ink: #e7edea;
-    --ink-soft: #b6c2bd;
-    --muted: #8a9791;
-    --rule: #2a3633;
-    --rule-strong: #3a4844;
-
-    --ok: #55c4a5;
-    --ok-soft: #16332b;
-    --atencao: #e0866b;
-    --atencao-soft: #33201a;
-  }
-}
-
-:root[data-theme="dark"] {
-  --paper: #0e1614;
-  --surface: #16201d;
-  --surface-2: #1e2926;
-  --ink: #e7edea;
-  --ink-soft: #b6c2bd;
-  --muted: #8a9791;
-  --rule: #2a3633;
-  --rule-strong: #3a4844;
-
-  --ok: #55c4a5;
-  --ok-soft: #16332b;
-  --atencao: #e0866b;
-  --atencao-soft: #33201a;
+  --raio: 8px;
+  --raio-sm: 5px;
+  --sombra: 0 1px 2px rgba(26, 21, 18, 0.05), 0 8px 24px rgba(26, 21, 18, 0.05);
 }
 
 * {
@@ -63,22 +46,29 @@ body {
 }
 
 body {
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--fundo);
+  color: var(--tinta);
   font-family: var(--font-ui);
   font-size: 16px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 
+a {
+  color: var(--laranja-escuro);
+}
+
 :focus-visible {
-  outline: 2px solid var(--ok);
+  outline: 2px solid var(--laranja);
   outline-offset: 2px;
+  border-radius: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * {
-    transition: none !important;
-    animation: none !important;
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }

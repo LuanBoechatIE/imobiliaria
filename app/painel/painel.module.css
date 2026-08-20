@@ -1,0 +1,422 @@
+/* ---------- barra superior ---------- */
+
+.barra {
+  background: var(--branco);
+  border-bottom: 1px solid var(--linha);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.barraDentro {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0.75rem clamp(1rem, 3vw, 2rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.logoMarca {
+  width: 27px;
+  height: 27px;
+  border-radius: 6px;
+  background: var(--laranja);
+  color: var(--branco);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 0.92rem;
+  letter-spacing: -0.03em;
+}
+
+.logoNome {
+  font-weight: 650;
+  font-size: 0.97rem;
+  letter-spacing: -0.01em;
+}
+
+.usuario {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.usuarioInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.25;
+}
+
+.usuarioNome {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.usuarioPapel {
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+.sair {
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--tinta-suave);
+  background: var(--branco);
+  border: 1px solid var(--linha-forte);
+  border-radius: var(--raio-sm);
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.sair:hover {
+  border-color: var(--laranja);
+  color: var(--laranja-escuro);
+}
+
+/* ---------- estrutura ---------- */
+
+.shell {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: clamp(1.25rem, 3vw, 2.25rem) clamp(1rem, 3vw, 2rem) 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.identidade {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.titulo {
+  font-size: clamp(1.5rem, 4vw, 1.95rem);
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
+
+.local {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.cicloBox {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+
+.rotulo {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.ciclo {
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.selo {
+  align-self: flex-start;
+  font-size: 0.66rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--laranja-escuro);
+  background: var(--laranja-suave);
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+}
+
+/* ---------- cartões de resumo ---------- */
+
+.resumo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.9rem;
+}
+
+.tile {
+  background: var(--branco);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  box-shadow: var(--sombra);
+}
+
+.tileValor {
+  font-size: 2.15rem;
+  line-height: 1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  color: var(--laranja);
+}
+
+.tileValorMenor {
+  font-size: 1.3rem;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.tileNota {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+/* ---------- blocos ---------- */
+
+.bloco {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.blocoTitulo {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.blocoSub {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin: 0;
+  max-width: 62ch;
+}
+
+.timeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.9rem;
+}
+
+.timeItem {
+  background: var(--branco);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  padding: 0.9rem 1.05rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.timeLinha {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.timeNome {
+  font-size: 0.9rem;
+  color: var(--tinta-suave);
+  font-weight: 500;
+}
+
+.timeValor {
+  font-size: 0.92rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- barras ---------- */
+
+.trilho {
+  height: 6px;
+  background: var(--fundo-2);
+  position: relative;
+  overflow: hidden;
+  border-radius: 999px;
+}
+
+.preenche {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--laranja);
+  border-radius: 999px;
+}
+
+.alerta .preenche {
+  background: var(--alerta);
+}
+
+.alerta .timeValor,
+.alerta .miniValor {
+  color: var(--alerta);
+}
+
+/* ---------- lista de corretores ---------- */
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.pessoa {
+  background: var(--branco);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  padding: 1rem 1.2rem;
+  display: grid;
+  grid-template-columns: 1.75rem minmax(9rem, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem 1.25rem;
+}
+
+.posicao {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.pessoaNome {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+.nome {
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.desde {
+  font-size: 0.77rem;
+  color: var(--muted);
+}
+
+.geral {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.geralValor {
+  font-size: 1.65rem;
+  line-height: 1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+
+.delta {
+  font-size: 0.76rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.deltaSobe {
+  color: var(--laranja-escuro);
+}
+
+.deltaCai {
+  color: var(--alerta);
+}
+
+.minis {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.65rem;
+  padding-top: 0.3rem;
+}
+
+.mini {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.miniTopo {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.3rem;
+}
+
+.miniNome {
+  font-size: 0.7rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.miniValor {
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--tinta-suave);
+}
+
+/* ---------- rodapé ---------- */
+
+.rodape {
+  border-top: 1px solid var(--linha);
+  padding-top: 1rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+@media (min-width: 56rem) {
+  .pessoa {
+    grid-template-columns: 1.75rem minmax(10rem, 13rem) 7.5rem 1fr;
+  }
+
+  .minis {
+    grid-column: auto;
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 34rem) {
+  .minis {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.7rem 0.6rem;
+  }
+
+  .usuarioInfo {
+    display: none;
+  }
+}
