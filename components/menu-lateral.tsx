@@ -25,7 +25,7 @@ const ITENS: Item[] = [
   { href: "/painel", rotulo: "Painel", Icone: LayoutDashboard },
   { href: "/avaliacoes", rotulo: "Avaliações", Icone: ClipboardCheck },
   { href: "/equipe", rotulo: "Equipe", Icone: Users },
-  { href: "/treino", rotulo: "Treino", Icone: GraduationCap, emBreve: true },
+  { href: "/treinamentos", rotulo: "Treinamentos", Icone: GraduationCap },
   { href: "/numeros", rotulo: "Números", Icone: LineChart, emBreve: true },
 ];
 
