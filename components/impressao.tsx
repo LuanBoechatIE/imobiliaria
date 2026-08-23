@@ -1,4 +1,5 @@
-import { COMPETENCIAS, critica, type Notas } from "@/lib/dados";
+import { COMPETENCIAS, critica, fmt, type ChaveCompetencia, type Notas } from "@/lib/dados";
+import { cn } from "@/lib/utils";
 
 /**
  * A "impressão" do corretor: as seis competências desenhadas como um
@@ -6,117 +7,257 @@ import { COMPETENCIAS, critica, type Notas } from "@/lib/dados";
  * vira reconhecível, e comparar pessoas passa a ser comparar silhuetas
  * em vez de ler seis números.
  *
- * O anel tracejado marca o 5, que é a linha de corte. Quem cai abaixo
- * dela aparece afundado pra dentro do anel, sem precisar de legenda.
+ * A ordem dos vértices é a mesma em toda tela do sistema, senão comparar
+ * formato não significaria nada. O anel tracejado vermelho marca o 5,
+ * que é a linha de corte: o que afunda pra dentro dele precisa de
+ * atenção, sem precisar de legenda.
+ *
+ * O desenho vive num viewBox fixo, então o mesmo componente serve de
+ * miniatura de 36px numa lista e de protagonista de 300px numa tela.
  */
 
 const LADOS = COMPETENCIAS.length;
+const CENTRO = 100;
 
-function pontos(valores: number[], raio: number, centro: number): string {
+/** Posição de um vértice no anel de raio r. O 0 fica no topo. */
+function ponto(raio: number, i: number): [number, number] {
+  const angulo = (-90 + (360 / LADOS) * i) * (Math.PI / 180);
+  return [CENTRO + raio * Math.cos(angulo), CENTRO + raio * Math.sin(angulo)];
+}
+
+function poligono(valores: number[], raio: number): string {
   return valores
     .map((valor, i) => {
-      const angulo = (-90 + (360 / LADOS) * i) * (Math.PI / 180);
-      const r = (Math.max(valor, 0) / 10) * raio;
-      return `${centro + r * Math.cos(angulo)},${centro + r * Math.sin(angulo)}`;
+      const [x, y] = ponto((Math.max(valor, 0) / 10) * raio, i);
+      return `${x.toFixed(2)},${y.toFixed(2)}`;
     })
     .join(" ");
+}
+
+function anel(valor: number, raio: number): string {
+  return poligono(Array(LADOS).fill(valor), raio);
 }
 
 export function Impressao({
   notas,
   antes,
   tamanho = 44,
-  comEixos = false,
+  rotulos = false,
+  malha = false,
+  pontas = false,
+  fraco,
+  anima = false,
+  className,
 }: {
   notas: Notas;
   /** Quando existe, desenha o momento anterior por baixo, em fantasma. */
   antes?: Notas;
+  /** Largura do desenho em pixels. */
   tamanho?: number;
-  /** Mostra o nome de cada competência ao redor. Só cabe em tamanho grande. */
-  comEixos?: boolean;
+  /** Nome e nota de cada competência ao redor. Só cabe acima de ~180px. */
+  rotulos?: boolean;
+  /** Anéis de referência e eixos, para ler a distância até o 10. */
+  malha?: boolean;
+  /** Bolinha em cada vértice. */
+  pontas?: boolean;
+  /** Vértice que a tela quer que a pessoa olhe primeiro. */
+  fraco?: ChaveCompetencia;
+  anima?: boolean;
+  className?: string;
 }) {
-  const margem = comEixos ? 34 : 3;
-  const raio = tamanho / 2;
-  const centro = raio + margem;
-  const lado = (raio + margem) * 2;
+  // Com rótulos o viewBox abre espaço em volta, então o raio encolhe.
+  const raio = rotulos ? 63 : 82;
+  const vb = rotulos ? { x: -36, y: -8, l: 272, a: 216 } : { x: 0, y: 0, l: 200, a: 200 };
 
   const valores = COMPETENCIAS.map((c) => notas[c.chave]);
   const temCritica = valores.some(critica);
   const cor = temCritica ? "var(--alerta)" : "var(--laranja)";
-
-  const limite = pontos(Array(LADOS).fill(10), raio, centro);
-  const corte = pontos(Array(LADOS).fill(5), raio, centro);
-  const forma = pontos(valores, raio, centro);
+  const indiceFraco = fraco ? COMPETENCIAS.findIndex((c) => c.chave === fraco) : -1;
 
   return (
     <svg
-      width={lado}
-      height={lado}
-      viewBox={`0 0 ${lado} ${lado}`}
-      className="shrink-0 overflow-visible"
+      width={tamanho}
+      height={(tamanho * vb.a) / vb.l}
+      viewBox={`${vb.x} ${vb.y} ${vb.l} ${vb.a}`}
+      className={cn("shrink-0 overflow-visible", className)}
       aria-hidden="true"
     >
-      <polygon points={limite} fill="var(--fundo-2)" stroke="none" />
+      {malha && (
+        <>
+          <polygon points={anel(2.5, raio)} fill="none" stroke="var(--linha)" strokeWidth="1" />
+          <polygon points={anel(7.5, raio)} fill="none" stroke="var(--linha)" strokeWidth="1" />
+          {COMPETENCIAS.map((c, i) => {
+            const [x, y] = ponto(raio, i);
+            return (
+              <line
+                key={c.chave}
+                x1={CENTRO}
+                y1={CENTRO}
+                x2={x.toFixed(2)}
+                y2={y.toFixed(2)}
+                stroke="var(--linha)"
+                strokeWidth="1"
+              />
+            );
+          })}
+        </>
+      )}
+
+      {/* Linha de corte do 5. Vermelha porque é a régua do produto. */}
       <polygon
-        points={corte}
+        points={anel(5, raio)}
         fill="none"
-        stroke="var(--linha-forte)"
+        stroke="var(--alerta)"
         strokeWidth="1"
-        strokeDasharray="2 2.5"
+        strokeDasharray="2 4"
+        opacity="0.55"
       />
+
+      {/* Limite do 10. */}
+      <polygon points={anel(10, raio)} fill="none" stroke="var(--linha-forte)" strokeWidth="1" />
+
       {antes && (
         <polygon
-          points={pontos(
+          points={poligono(
             COMPETENCIAS.map((c) => antes[c.chave]),
-            raio,
-            centro
+            raio
           )}
-          fill="var(--suave)"
-          fillOpacity="0.14"
+          fill="none"
           stroke="var(--suave)"
-          strokeWidth="1.25"
-          strokeDasharray="3 3"
+          strokeWidth="1.5"
+          strokeDasharray="4 4"
+          strokeLinejoin="round"
         />
       )}
 
-      <polygon points={forma} fill={cor} fillOpacity="0.22" stroke={cor} strokeWidth="1.5" />
+      <g className={anima ? "hex-cresce" : undefined}>
+        <polygon
+          points={poligono(valores, raio)}
+          fill={cor}
+          fillOpacity="0.16"
+          stroke={cor}
+          strokeWidth={rotulos ? 2 : 2.5}
+          strokeLinejoin="round"
+        />
+      </g>
 
-      {COMPETENCIAS.map((c, i) => {
-        const angulo = (-90 + (360 / LADOS) * i) * (Math.PI / 180);
-        const r = (Math.max(valores[i], 0) / 10) * raio;
-        return (
-          <circle
-            key={c.chave}
-            cx={centro + r * Math.cos(angulo)}
-            cy={centro + r * Math.sin(angulo)}
-            r={comEixos ? 3 : 1.8}
-            fill={critica(valores[i]) ? "var(--alerta)" : cor}
-          />
-        );
-      })}
-
-      {comEixos &&
+      {(pontas || rotulos) &&
         COMPETENCIAS.map((c, i) => {
-          const angulo = (-90 + (360 / LADOS) * i) * (Math.PI / 180);
-          const rx = centro + (raio + 16) * Math.cos(angulo);
-          const ry = centro + (raio + 16) * Math.sin(angulo);
-          const alinhamento =
-            Math.abs(Math.cos(angulo)) < 0.2 ? "middle" : Math.cos(angulo) > 0 ? "start" : "end";
+          const [x, y] = ponto((Math.max(valores[i], 0) / 10) * raio, i);
+          const destaque = i === indiceFraco;
           return (
-            <text
-              key={c.chave}
-              x={rx}
-              y={ry}
-              textAnchor={alinhamento}
-              dominantBaseline="middle"
-              fontSize="10.5"
-              fontWeight={critica(valores[i]) ? 700 : 500}
-              fill={critica(valores[i]) ? "var(--alerta)" : "var(--suave)"}
-            >
-              {c.curto}
-            </text>
+            <g key={c.chave}>
+              <circle
+                cx={x.toFixed(2)}
+                cy={y.toFixed(2)}
+                r={destaque ? 3.6 : 2.6}
+                fill={critica(valores[i]) ? "var(--alerta)" : cor}
+              />
+              {destaque && (
+                <circle
+                  className="hex-pulso"
+                  cx={x.toFixed(2)}
+                  cy={y.toFixed(2)}
+                  r="3.6"
+                  fill="none"
+                  stroke={cor}
+                  strokeWidth="1.4"
+                />
+              )}
+            </g>
           );
         })}
+
+      {rotulos &&
+        COMPETENCIAS.map((c, i) => {
+          const [x, y] = ponto(raio + 21, i);
+          // O vértice de cima e o de baixo centralizam; os dos lados
+          // encostam para fora, senão o texto passa por cima do desenho.
+          const alinhamento = i === 0 || i === 3 ? "middle" : i === 1 || i === 2 ? "start" : "end";
+          const dy = i === 0 ? -3 : i === 3 ? 11 : 4;
+          const alerta = critica(valores[i]);
+
+          return (
+            <g key={c.chave}>
+              <text
+                x={x.toFixed(1)}
+                y={(y + dy).toFixed(1)}
+                textAnchor={alinhamento}
+                fontSize="9.5"
+                fontWeight="600"
+                letterSpacing="0.04em"
+                fill={alerta ? "var(--alerta)" : "var(--suave)"}
+              >
+                {c.curto.toUpperCase()}
+              </text>
+              <text
+                x={x.toFixed(1)}
+                y={(y + dy + 11).toFixed(1)}
+                textAnchor={alinhamento}
+                fontSize="10"
+                fontWeight="700"
+                className="tabular-nums"
+                fill={alerta ? "var(--alerta)" : "var(--tinta)"}
+              >
+                {fmt(valores[i])}
+              </text>
+            </g>
+          );
+        })}
+    </svg>
+  );
+}
+
+/**
+ * Um vértice só, isolado do hexágono. Serve para dizer "este assunto é
+ * este lado da silhueta" sem repetir o desenho inteiro — é o que marca
+ * cada competência nas listas e cada treinamento pelo alvo dele.
+ */
+export function Vertice({
+  competencia,
+  nota,
+  tamanho = 22,
+  meta,
+}: {
+  competencia: ChaveCompetencia;
+  /** Pinta de vermelho quando abaixo de 5. */
+  nota?: number;
+  tamanho?: number;
+  /** Segundo ponto, tracejado, para mostrar onde a nota deveria chegar. */
+  meta?: number;
+}) {
+  const i = COMPETENCIAS.findIndex((c) => c.chave === competencia);
+  if (i < 0) return null;
+
+  const raio = 82;
+  const cor = nota !== undefined && critica(nota) ? "var(--alerta)" : "var(--laranja)";
+  const [x, y] = ponto(nota === undefined ? raio : (Math.max(nota, 0) / 10) * raio, i);
+
+  return (
+    <svg
+      width={tamanho}
+      height={tamanho}
+      viewBox="0 0 200 200"
+      className="shrink-0"
+      aria-hidden="true"
+    >
+      <polygon points={anel(10, raio)} fill="none" stroke="var(--linha-forte)" strokeWidth="9" />
+      {meta !== undefined &&
+        (() => {
+          const [mx, my] = ponto((Math.max(meta, 0) / 10) * raio, i);
+          return (
+            <circle
+              cx={mx.toFixed(2)}
+              cy={my.toFixed(2)}
+              r="16"
+              fill="none"
+              stroke="var(--laranja)"
+              strokeWidth="6"
+              strokeDasharray="10 9"
+            />
+          );
+        })()}
+      <circle cx={x.toFixed(2)} cy={y.toFixed(2)} r="24" fill={cor} />
     </svg>
   );
 }

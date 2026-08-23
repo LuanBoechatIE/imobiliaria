@@ -7,31 +7,38 @@
 
 /* ---------- painel de marca ---------- */
 
+/*
+ * O painel de marca mostra o produto em vez de falar dele: a malha de
+ * hexágonos ao fundo e a silhueta de um corretor de verdade, na mesma
+ * ordem de vértices que o sistema inteiro usa.
+ */
 .marca {
   display: none;
   position: relative;
   overflow: hidden;
-  background: var(--laranja);
-  color: var(--branco);
+  background: var(--laranja-suave);
+  border-right: 1px solid var(--linha);
+  color: var(--tinta);
   padding: clamp(2rem, 4vw, 3.5rem);
   flex-direction: column;
   justify-content: space-between;
   gap: 2rem;
 }
 
-.marca::after {
-  content: "";
+.malha {
   position: absolute;
-  right: -18%;
-  bottom: -28%;
-  width: 78%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 30% 30%,
-    rgba(255, 255, 255, 0.22),
-    rgba(255, 255, 255, 0) 62%
-  );
+  inset: 0;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.silhueta {
+  position: absolute;
+  right: -5rem;
+  bottom: -4rem;
+  width: 26rem;
+  max-width: 60%;
+  opacity: 0.9;
   pointer-events: none;
 }
 
@@ -47,8 +54,8 @@
   width: 30px;
   height: 30px;
   border-radius: 7px;
-  background: var(--branco);
-  color: var(--laranja);
+  background: var(--laranja);
+  color: var(--branco);
   display: grid;
   place-items: center;
   font-weight: 800;
@@ -84,36 +91,36 @@
   margin: 0;
   font-size: 1rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--tinta-suave);
 }
 
-.provas {
+/* As seis competências, na mesma ordem dos vértices do hexágono. */
+.seis {
   position: relative;
   z-index: 1;
   display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.28);
-  padding-top: 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 1.6rem 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.prova {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.92);
+.seis li {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--laranja-escuro);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(240, 90, 34, 0.18);
+  padding: 0.25rem 0.65rem;
+  border-radius: 7px;
 }
 
-.provaMarca {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.22);
-  display: grid;
-  place-items: center;
-  font-size: 0.7rem;
-  flex: none;
+.rodapeMarca {
+  position: relative;
+  z-index: 1;
+  font-size: 0.85rem;
+  color: var(--muted);
 }
 
 /* ---------- formulário ---------- */

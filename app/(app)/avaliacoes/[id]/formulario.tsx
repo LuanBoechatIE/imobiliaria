@@ -3,8 +3,9 @@
 import { useActionState, useState } from "react";
 import { AlertCircle, Check, Save } from "lucide-react";
 import { RatingScaleGroup, RatingScaleItem } from "@/components/ui/rating-scale-group";
+import { Impressao, Vertice } from "@/components/impressao";
 import { gravarAvaliacao } from "../acoes";
-import { COMPETENCIAS, type ChaveCompetencia } from "@/lib/dados";
+import { COMPETENCIAS, fmt, type ChaveCompetencia, type Notas } from "@/lib/dados";
 import type { Avaliacao } from "@/lib/avaliacoes";
 
 const O_QUE_MEDE: Record<ChaveCompetencia, string> = {
@@ -39,142 +40,230 @@ export function Formulario({
     return inicial;
   });
 
-  const preenchidas = COMPETENCIAS.filter((c) => notas[c.chave] !== undefined).length;
+  const dadas = COMPETENCIAS.filter((c) => notas[c.chave] !== undefined);
+  const preenchidas = dadas.length;
   const completo = preenchidas === COMPETENCIAS.length;
 
+  // A silhueta parcial mostra o vazio: o que ainda não foi avaliado fica
+  // colado no centro, então dá para ver a forma se fechando nota a nota.
+  const parcial = {} as Notas;
+  for (const c of COMPETENCIAS) parcial[c.chave] = Number(notas[c.chave] ?? 0);
+
+  const mediaDadas = preenchidas
+    ? dadas.reduce((s, c) => s + Number(notas[c.chave]), 0) / preenchidas
+    : 0;
+
   return (
-    <form action={acao} className="flex flex-col gap-4">
+    <form action={acao} className="grid items-start gap-5 lg:grid-cols-[1fr_20rem]">
       <input type="hidden" name="corretorId" value={corretorId} />
 
-      {/* progresso */}
-      <div className="sticky top-14 z-20 flex items-center gap-3 rounded-xl border border-linha bg-white/95 px-4 py-3 backdrop-blur">
-        <span className="h-2 flex-1 overflow-hidden rounded-full bg-fundo-2">
-          <span
-            className={`block h-full rounded-full transition-all ${completo ? "bg-ok" : "bg-laranja"}`}
-            style={{ width: `${(preenchidas / COMPETENCIAS.length) * 100}%` }}
-          />
-        </span>
-        <span className="shrink-0 text-[0.83rem] font-semibold tabular-nums text-tinta-suave">
-          {preenchidas} de {COMPETENCIAS.length}
-        </span>
-      </div>
+      <div className="flex flex-col gap-4">
+        {estado?.erro && (
+          <p className="m-0 flex items-start gap-2 rounded-lg border border-alerta/30 bg-alerta-suave px-4 py-3 text-[0.9rem] text-alerta">
+            <AlertCircle size={17} className="mt-0.5 shrink-0" />
+            {estado.erro}
+          </p>
+        )}
 
-      {estado?.erro && (
-        <p className="flex items-start gap-2 rounded-lg border border-alerta/30 bg-alerta-suave px-4 py-3 text-[0.9rem] text-alerta">
-          <AlertCircle size={17} className="mt-0.5 shrink-0" />
-          {estado.erro}
-        </p>
-      )}
+        {estado?.salvo && (
+          <p className="m-0 flex items-center gap-2 rounded-lg border border-ok/30 bg-ok-suave px-4 py-3 text-[0.9rem] font-medium text-ok">
+            <Check size={17} />
+            Rascunho salvo. Dá para voltar e terminar depois.
+          </p>
+        )}
 
-      {estado?.salvo && (
-        <p className="flex items-center gap-2 rounded-lg border border-ok/30 bg-ok-suave px-4 py-3 text-[0.9rem] font-medium text-ok">
-          <Check size={17} />
-          Rascunho salvo. Dá para voltar e terminar depois.
-        </p>
-      )}
+        {COMPETENCIAS.map((c, i) => {
+          const item = avaliacao?.itens[c.chave];
+          const valor = notas[c.chave];
+          const baixa = valor !== undefined && Number(valor) < 5;
 
-      {COMPETENCIAS.map((c) => {
-        const item = avaliacao?.itens[c.chave];
-        const valor = notas[c.chave];
-        const baixa = valor !== undefined && Number(valor) < 5;
-
-        return (
-          <fieldset
-            key={c.chave}
-            className={`flex flex-col gap-3 rounded-xl border bg-white px-4 py-4 transition-colors ${
-              baixa ? "border-alerta/40" : "border-linha"
-            }`}
-          >
-            <legend className="flex flex-wrap items-baseline gap-x-2.5 px-1">
-              <span className="text-[1rem] font-bold tracking-tight text-tinta">{c.nome}</span>
-              <span className="text-[0.83rem] text-suave">{O_QUE_MEDE[c.chave]}</span>
-            </legend>
-
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[0.78rem] font-semibold uppercase tracking-wider text-suave">
-                Nota
-              </span>
-              <RatingScaleGroup
-                name={`nota-${c.chave}`}
-                value={valor ?? ""}
-                onValueChange={(v) => setNotas((n) => ({ ...n, [c.chave]: v }))}
-              >
-                {Array.from({ length: 11 }).map((_, i) => (
-                  <RatingScaleItem
-                    key={i}
-                    value={String(i)}
-                    label={String(i)}
-                    atencao={i < 5}
-                  />
-                ))}
-              </RatingScaleGroup>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-[10rem_1fr]">
-              <div className="flex flex-col gap-1.5">
-                <label
-                  className="text-[0.78rem] font-semibold uppercase tracking-wider text-suave"
-                  htmlFor={`tipo-${c.chave}`}
-                >
-                  Tipo de prova
-                </label>
-                <select
-                  id={`tipo-${c.chave}`}
-                  name={`tipo-${c.chave}`}
-                  className={caixa}
-                  defaultValue={item?.tipo ?? "áudio"}
-                >
-                  {TIPOS.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label
-                  className="text-[0.78rem] font-semibold uppercase tracking-wider text-suave"
-                  htmlFor={`evidencia-${c.chave}`}
-                >
-                  O que foi observado
-                </label>
-                <textarea
-                  id={`evidencia-${c.chave}`}
-                  name={`evidencia-${c.chave}`}
-                  rows={2}
-                  className={`${caixa} resize-y`}
-                  defaultValue={item?.evidencia}
-                  placeholder="O fato concreto que sustenta essa nota. Sem isso a nota não vale."
+          return (
+            <fieldset
+              key={c.chave}
+              className={`flex flex-col gap-3 rounded-xl border bg-white px-4 py-4 transition-colors sm:px-5 ${
+                baixa ? "border-alerta/40" : "border-linha"
+              }`}
+            >
+              <legend className="flex items-center gap-2.5 px-1">
+                <Vertice
+                  competencia={c.chave}
+                  nota={valor !== undefined ? Number(valor) : undefined}
+                  tamanho={21}
                 />
-              </div>
-            </div>
-          </fieldset>
-        );
-      })}
+                <span className="text-[1rem] font-bold tracking-[-0.015em] text-tinta">
+                  {i + 1}. {c.nome}
+                </span>
+                <span
+                  className={`text-[1.15rem] font-bold tabular-nums ${
+                    valor === undefined
+                      ? "text-linha-forte"
+                      : baixa
+                        ? "text-alerta"
+                        : "text-tinta"
+                  }`}
+                >
+                  {valor === undefined ? "·" : fmt(Number(valor))}
+                </span>
+              </legend>
 
-      <div className="sticky bottom-0 flex flex-wrap items-center justify-end gap-2 border-t border-linha bg-fundo/95 py-3 backdrop-blur">
-        <button
-          type="submit"
-          name="acao"
-          value="rascunho"
-          disabled={enviando}
-          className="inline-flex items-center gap-1.5 rounded-md border border-linha-forte bg-white px-3.5 py-2 text-[0.9rem] font-semibold text-tinta-suave transition-colors hover:bg-fundo-2 disabled:opacity-60"
-        >
-          <Save size={15} />
-          Salvar rascunho
-        </button>
-        <button
-          type="submit"
-          name="acao"
-          value="concluir"
-          disabled={enviando}
-          className="inline-flex items-center gap-1.5 rounded-md bg-laranja px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-laranja-escuro disabled:opacity-60"
-        >
-          <Check size={16} strokeWidth={2.6} />
-          Concluir avaliação
-        </button>
+              <p className="m-0 text-[0.86rem] text-suave">{O_QUE_MEDE[c.chave]}</p>
+
+              <div className="flex flex-col gap-1.5">
+                <RatingScaleGroup
+                  name={`nota-${c.chave}`}
+                  value={valor ?? ""}
+                  onValueChange={(v) => setNotas((n) => ({ ...n, [c.chave]: v }))}
+                >
+                  {Array.from({ length: 11 }).map((_, n) => (
+                    <RatingScaleItem
+                      key={n}
+                      value={String(n)}
+                      label={String(n)}
+                      atencao={n < 5}
+                    />
+                  ))}
+                </RatingScaleGroup>
+                <div className="flex flex-wrap justify-between gap-x-4 text-[0.73rem] text-suave">
+                  <span className="font-semibold text-alerta">0 a 4 · zona crítica</span>
+                  <span>5 a 7 · faz o básico</span>
+                  <span>8 a 10 · referência</span>
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-[10rem_1fr]">
+                <div className="flex flex-col gap-1.5">
+                  <label
+                    className="text-[0.78rem] font-semibold uppercase tracking-wider text-suave"
+                    htmlFor={`tipo-${c.chave}`}
+                  >
+                    Tipo de prova
+                  </label>
+                  <select
+                    id={`tipo-${c.chave}`}
+                    name={`tipo-${c.chave}`}
+                    className={caixa}
+                    defaultValue={item?.tipo ?? "áudio"}
+                  >
+                    {TIPOS.map((t) => (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label
+                    className="text-[0.78rem] font-semibold uppercase tracking-wider text-suave"
+                    htmlFor={`evidencia-${c.chave}`}
+                  >
+                    O que foi observado
+                  </label>
+                  <textarea
+                    id={`evidencia-${c.chave}`}
+                    name={`evidencia-${c.chave}`}
+                    rows={2}
+                    className={`${caixa} resize-y`}
+                    defaultValue={item?.evidencia}
+                    placeholder="O fato concreto que sustenta essa nota. Sem isso a nota não vale."
+                  />
+                  <p
+                    className={`m-0 text-[0.78rem] ${baixa ? "font-medium text-alerta" : "text-suave"}`}
+                  >
+                    {baixa
+                      ? "Nota abaixo de 5 entra no plano de treino do próximo ciclo."
+                      : "A nota só vale com a prova escrita ao lado."}
+                  </p>
+                </div>
+              </div>
+            </fieldset>
+          );
+        })}
       </div>
+
+      {/* A silhueta em construção substitui a barra de progresso: o que
+          mede o avanço aqui é o mesmo desenho que o produto entrega. */}
+      <aside className="flex flex-col gap-4 lg:sticky lg:top-[4.9rem]">
+        <div className="flex flex-col items-center rounded-xl border border-linha bg-white px-5 py-5 text-center">
+          <span className="text-[0.72rem] font-bold uppercase tracking-[0.12em] text-suave">
+            Silhueta em construção
+          </span>
+
+          <Impressao notas={parcial} tamanho={250} rotulos malha className="max-w-full" />
+
+          <div className="flex items-baseline gap-2">
+            <span className="text-[2.1rem] font-bold leading-none tabular-nums tracking-[-0.035em] text-tinta">
+              {fmt(mediaDadas)}
+            </span>
+            <span className="text-[0.85rem] text-suave">
+              de {preenchidas} {preenchidas === 1 ? "preenchida" : "preenchidas"}
+            </span>
+          </div>
+
+          <p className="m-0 mt-1.5 text-[0.82rem] text-suave">
+            A forma fecha quando as seis notas entram.
+          </p>
+        </div>
+
+        <div className="rounded-xl border border-linha bg-white px-4 py-4">
+          <span className="text-[0.72rem] font-bold uppercase tracking-[0.12em] text-suave">
+            Provas anexadas
+          </span>
+
+          <div className="mt-2 flex flex-col">
+            {COMPETENCIAS.map((c) => {
+              const valor = notas[c.chave];
+              const feito = valor !== undefined;
+              return (
+                <span
+                  key={c.chave}
+                  className={`flex items-center gap-2.5 py-1.5 text-[0.87rem] ${feito ? "text-tinta" : "text-suave"}`}
+                >
+                  <span
+                    style={{ width: 16, height: 18 }}
+                    className={`hex-recorte shrink-0 ${feito ? "bg-laranja" : "bg-fundo-2"}`}
+                    aria-hidden="true"
+                  />
+                  <span className="flex-1">{c.nome}</span>
+                  <span className="font-semibold tabular-nums">
+                    {feito ? fmt(Number(valor)) : "·"}
+                  </span>
+                </span>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              name="acao"
+              value="rascunho"
+              disabled={enviando}
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-linha-forte bg-white px-3.5 py-2 text-[0.9rem] font-semibold text-tinta-suave transition-colors hover:bg-fundo-2 disabled:opacity-60"
+            >
+              <Save size={15} />
+              Rascunho
+            </button>
+            <button
+              type="submit"
+              name="acao"
+              value="concluir"
+              disabled={enviando}
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-laranja px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-laranja-escuro disabled:opacity-60"
+            >
+              <Check size={16} strokeWidth={2.6} />
+              Concluir
+            </button>
+          </div>
+          <p className="m-0 text-center text-[0.79rem] text-suave">
+            {completo
+              ? "As seis notas estão dadas. Falta só a prova escrita de cada uma."
+              : `Só fecha com as ${COMPETENCIAS.length} notas e as ${COMPETENCIAS.length} provas escritas.`}
+          </p>
+        </div>
+      </aside>
     </form>
   );
 }

@@ -15,14 +15,16 @@ export function Pagina({
   largura?: "ampla" | "media" | "estreita";
   className?: string;
 }) {
+  // A largura máxima acompanha a da barra de navegação, para o conteúdo
+  // nascer alinhado com a marca e o menu em vez de flutuar dentro deles.
   const max = {
-    ampla: "max-w-6xl",
-    media: "max-w-4xl",
-    estreita: "max-w-3xl",
+    ampla: "max-w-[74rem]",
+    media: "max-w-[60rem]",
+    estreita: "max-w-[46rem]",
   }[largura];
 
   return (
-    <main className={cn("mx-auto flex w-full flex-col gap-7 px-4 py-6 lg:px-8 lg:py-9", max, className)}>
+    <main className={cn("mx-auto flex w-full flex-col gap-7 px-4 py-7 lg:px-7 lg:py-9", max, className)}>
       {children}
     </main>
   );

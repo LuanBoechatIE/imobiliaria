@@ -69,17 +69,17 @@ export function UploaderFoto({
 
   return (
     <div className="flex items-center gap-4">
-      <div className="relative">
-        <div className="grid size-20 place-items-center overflow-hidden rounded-full bg-laranja-suave text-[1.7rem] font-bold text-laranja-escuro ring-4 ring-white">
+      <div className="relative" style={{ width: 80, height: 89 }}>
+        <span className="hex-recorte grid size-full place-items-center overflow-hidden bg-laranja-suave text-[1.7rem] font-bold text-laranja-escuro">
           {foto ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={foto} alt="" className="size-full object-cover" />
           ) : (
             nome.charAt(0)
           )}
-        </div>
+        </span>
         {processando && (
-          <span className="absolute inset-0 grid place-items-center rounded-full bg-tinta/40">
+          <span className="hex-recorte absolute inset-0 grid place-items-center bg-tinta/40">
             <Loader2 size={18} className="animate-spin text-white" />
           </span>
         )}

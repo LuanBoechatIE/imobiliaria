@@ -22,7 +22,7 @@ export default async function PáginaPerfil() {
     <Pagina largura="estreita">
       <Cabecalho
         titulo="Perfil"
-        apoio="Sua foto aparece no menu e no topo de todas as telas."
+        apoio="Sua foto aparece na barra do topo, em todas as telas."
       />
 
       <section className="rounded-xl border border-linha bg-white p-5">

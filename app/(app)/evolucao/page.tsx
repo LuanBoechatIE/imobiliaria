@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Cabecalho, Pagina, Secao } from "@/components/pagina";
-import { Impressao } from "@/components/impressao";
-import { IMOBILIARIA, fmt, media } from "@/lib/dados";
+import { Cabecalho, Pagina } from "@/components/pagina";
+import { Impressao, Vertice } from "@/components/impressao";
+import { IMOBILIARIA, critica, fmt } from "@/lib/dados";
 import {
   comparaveis,
   competenciasComparadas,
@@ -18,9 +18,30 @@ import {
 
 export const metadata: Metadata = { title: "Antes e depois" };
 
-/** Marca a posição de um valor de 0 a 10 numa régua. */
-function pct(nota: number) {
-  return `${(nota / 10) * 100}%`;
+function Placar({
+  valor,
+  rotulo,
+  apoio,
+  tom,
+}: {
+  valor: string;
+  rotulo: string;
+  apoio?: string;
+  tom?: "ok" | "alerta";
+}) {
+  return (
+    <div className="flex flex-col">
+      <span
+        className={`text-[1.75rem] font-bold leading-tight tabular-nums tracking-[-0.028em] ${
+          tom === "ok" ? "text-ok" : tom === "alerta" ? "text-alerta" : "text-tinta"
+        }`}
+      >
+        {valor}
+      </span>
+      <span className="max-w-[18ch] text-[0.78rem] text-suave">{rotulo}</span>
+      {apoio && <span className="text-[0.78rem] tabular-nums text-suave">{apoio}</span>}
+    </div>
+  );
 }
 
 export default async function PáginaEvolucao() {
@@ -31,140 +52,290 @@ export default async function PáginaEvolucao() {
   const individual = evolucaoIndividual();
   const indicadores = indicadoresComerciais();
   const novatos = entraramDepois();
-  const quantos = comparaveis().length;
+  const pessoas = comparaveis();
+  const quantos = pessoas.length;
 
   const ganhoTime = time.depois - time.antes;
-  const maiorGanho = competencias[0];
+  const subiram = competencias.filter((c) => c.ganho > 0).length;
+  const vendas = indicadores.find((i) => i.chave === "vendas");
+  const aindaFraca = [...competencias].sort((a, b) => a.depois - b.depois)[0];
 
   return (
     <Pagina>
       <Cabecalho
-        etiqueta={`${cicloInicial} → ${ciclo}`}
+        etiqueta={`${IMOBILIARIA.nome} · Raio-X de ${cicloInicial.toLowerCase()} comparado ao ciclo de ${ciclo.toLowerCase()}`}
         titulo="Antes e depois"
-        apoio={`O que mudou nos ${quantos} corretores que já estavam aqui quando começamos.`}
       />
 
-      {/* Herói: a resposta da tela em uma linha, com a prova do lado. */}
-      <section className="grid gap-6 rounded-xl border border-linha bg-white px-5 py-6 sm:px-7 sm:py-7 md:grid-cols-[1fr_auto] md:items-center md:gap-10">
-        <div className="flex flex-col gap-3">
+      {/* A tela responde uma pergunta só, e ela cabe no primeiro olhar:
+          o que mudou desde que começamos. */}
+      <section className="grid overflow-hidden rounded-xl border border-linha bg-white lg:grid-cols-[1fr_24rem]">
+        <div className="flex flex-col px-6 py-7 sm:px-8">
           <span className="text-[0.72rem] font-bold uppercase tracking-[0.12em] text-suave">
-            Nota do time
+            O que mudou desde o diagnóstico
           </span>
 
-          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-            <span className="text-[2.6rem] font-extrabold leading-none tracking-[-0.04em] tabular-nums text-suave">
-              {fmt(time.antes)}
-            </span>
-            <span className="text-[2rem] font-medium leading-none text-linha-forte">→</span>
-            <span className="text-[4rem] font-extrabold leading-none tracking-[-0.045em] tabular-nums text-laranja">
-              {fmt(time.depois)}
-            </span>
-          </div>
+          <h1 className="m-0 mt-3 max-w-[15ch] text-[2.3rem] font-bold leading-[1.05] tracking-[-0.035em] text-tinta sm:text-[2.7rem]">
+            O time saiu de {fmt(time.antes)} para{" "}
+            <span className="text-laranja-escuro">{fmt(time.depois)}</span>.
+          </h1>
 
-          <p className="m-0 max-w-[46ch] text-[0.95rem] text-tinta-suave">
-            <strong className="font-bold text-ok">+{fmt(ganhoTime)} pontos</strong> desde o
-            diagnóstico. O maior salto foi em{" "}
-            <strong className="font-bold text-tinta">
-              {maiorGanho.nome.toLowerCase()}
-            </strong>
-            , que era a competência mais trabalhada nos treinamentos.
+          <p className="m-0 mt-4 max-w-[46ch] text-[1rem] text-tinta-suave">
+            {zonaCritica.saiaram.length > 0
+              ? `${zonaCritica.saiaram.length} ${zonaCritica.saiaram.length === 1 ? "corretor deixou" : "corretores deixaram"} a zona crítica e a silhueta do time fechou mais nos seis lados. `
+              : "A silhueta do time fechou mais nos seis lados. "}
+            O que ainda falta é {aindaFraca.nome.toLowerCase()}, que subiu mas continua
+            sendo o lado mais curto.
           </p>
+
+          <div className="mt-7 flex flex-wrap gap-x-9 gap-y-5 border-t border-linha pt-6">
+            <Placar
+              valor={`${ganhoTime >= 0 ? "+" : "−"}${fmt(Math.abs(ganhoTime))}`}
+              rotulo="Na nota do time"
+              tom={ganhoTime > 0 ? "ok" : undefined}
+            />
+            <Placar
+              valor={String(zonaCritica.saiaram.length)}
+              rotulo="Saíram da zona crítica"
+              tom={zonaCritica.saiaram.length > 0 ? "ok" : undefined}
+            />
+            <Placar
+              valor={`${subiram} de ${competencias.length}`}
+              rotulo="Competências que subiram"
+            />
+            {vendas && (
+              <Placar
+                valor={`+${vendas.depois - vendas.antes}`}
+                rotulo="Vendas no mês"
+                apoio={`${vendas.antes} para ${vendas.depois}`}
+                tom={melhorou(vendas) ? "ok" : "alerta"}
+              />
+            )}
+          </div>
         </div>
 
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center justify-center gap-3 border-t border-linha bg-laranja-suave px-5 py-7 lg:border-l lg:border-t-0">
           <Impressao
             notas={notasMediasDoTime("depois")}
             antes={notasMediasDoTime("antes")}
-            tamanho={150}
-            comEixos
+            tamanho={310}
+            rotulos
+            malha
+            fraco={aindaFraca.chave}
+            anima
+            className="max-w-full"
           />
-          <div className="flex items-center gap-4 text-[0.78rem]">
-            <span className="inline-flex items-center gap-1.5 text-suave">
-              <svg width="16" height="6" aria-hidden="true">
+          <div className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-[0.79rem] text-tinta-suave">
+            <span className="inline-flex items-center gap-1.5">
+              <svg width="16" height="4" aria-hidden="true">
                 <line
                   x1="0"
-                  y1="3"
+                  y1="2"
                   x2="16"
-                  y2="3"
+                  y2="2"
                   stroke="var(--suave)"
                   strokeWidth="1.5"
-                  strokeDasharray="3 3"
+                  strokeDasharray="4 4"
                 />
               </svg>
-              {cicloInicial.split(" ")[0]}
+              Raio-X de {cicloInicial.toLowerCase()}
             </span>
-            <span className="inline-flex items-center gap-1.5 font-semibold text-tinta-suave">
-              <svg width="16" height="6" aria-hidden="true">
-                <line x1="0" y1="3" x2="16" y2="3" stroke="var(--laranja)" strokeWidth="2.5" />
+            <span className="inline-flex items-center gap-1.5 font-semibold">
+              <svg width="16" height="4" aria-hidden="true">
+                <line x1="0" y1="2" x2="16" y2="2" stroke="var(--laranja)" strokeWidth="2.5" />
               </svg>
-              {ciclo.split(" ")[0]}
+              Ciclo de {ciclo.toLowerCase()}
             </span>
           </div>
         </div>
       </section>
 
-      {/* Competências: quanto cada uma andou na régua de 0 a 10. */}
-      <Secao
-        titulo="As seis competências"
-        apoio="Ordenadas pelo tamanho do avanço. A linha cinza é onde estava, o ponto laranja é onde está."
-      >
-        <div className="flex flex-col gap-1 rounded-xl border border-linha bg-white px-4 py-2 sm:px-5">
-          {competencias.map((c) => (
-            <div
-              key={c.chave}
-              className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-2 border-b border-linha py-3.5 last:border-b-0 sm:grid-cols-[10.5rem_1fr_auto]"
-            >
-              <span className="text-[0.92rem] font-semibold text-tinta">{c.nome}</span>
+      {/* Competência por competência: barra de cima é o Raio-X, a de baixo
+          é agora, e a marca vertical é a linha de corte do 5. */}
+      <section className="flex flex-col gap-2.5">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-1">
+          <h2 className="m-0 text-[1.05rem] font-bold tracking-[-0.015em] text-tinta">
+            Competência por competência
+          </h2>
+          <span className="text-[0.85rem] text-suave">
+            barra cinza é o Raio-X, barra laranja é agora, a marca vertical é o 5
+          </span>
+        </div>
 
-              {/* régua */}
-              <div className="col-span-2 sm:col-span-1">
-                <div className="relative h-5">
-                  <span className="absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-fundo-2" />
-                  <span
-                    className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-laranja/25"
-                    style={{ left: pct(c.antes), width: pct(c.depois - c.antes) }}
-                  />
-                  <span
-                    className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-suave"
-                    style={{ left: pct(c.antes) }}
-                    title={`Antes: ${fmt(c.antes)}`}
-                  />
-                  <span
-                    className="absolute top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-laranja"
-                    style={{ left: pct(c.depois) }}
-                    title={`Depois: ${fmt(c.depois)}`}
-                  />
-                </div>
+        <div className="overflow-hidden rounded-xl border border-linha bg-white">
+          {competencias.map((c, i) => (
+            <div key={c.chave} className="border-t border-linha px-5 py-4 first:border-t-0 sm:px-6">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <Vertice competencia={c.chave} nota={c.depois} tamanho={21} />
+                <h3 className="m-0 flex-1 text-[0.98rem] font-bold tracking-[-0.012em] text-tinta">
+                  {c.nome}
+                </h3>
+                <span className="text-[0.85rem] tabular-nums text-suave">
+                  {fmt(c.antes)} para{" "}
+                  <strong
+                    className={`text-[1.05rem] font-bold ${critica(c.depois) ? "text-alerta" : "text-tinta"}`}
+                  >
+                    {fmt(c.depois)}
+                  </strong>
+                </span>
+                <span
+                  className={`w-14 text-right text-[0.85rem] font-bold tabular-nums ${c.ganho > 0 ? "text-ok" : "text-suave"}`}
+                >
+                  {c.ganho > 0 ? "+" : ""}
+                  {fmt(c.ganho)}
+                </span>
               </div>
 
-              <div className="flex items-baseline justify-end gap-2 tabular-nums">
-                <span className="text-[0.88rem] text-suave">{fmt(c.antes)}</span>
-                <span className="text-[0.85rem] text-linha-forte">→</span>
-                <span className="w-9 text-right text-[1.1rem] font-extrabold tracking-[-0.02em] text-tinta">
-                  {fmt(c.depois)}
-                </span>
-                <span className="w-11 text-right text-[0.82rem] font-bold text-ok">
-                  +{fmt(c.ganho)}
-                </span>
+              <div className="relative mt-3 h-[26px]">
+                <span
+                  className="absolute left-0 top-0 h-[9px] rounded-full bg-linha-forte"
+                  style={{ width: `${c.antes * 10}%` }}
+                />
+                <span
+                  className={`barra-enche absolute left-0 top-[13px] h-[9px] rounded-full ${critica(c.depois) ? "bg-alerta" : "bg-laranja"}`}
+                  style={{ width: `${c.depois * 10}%`, animationDelay: `${i * 70}ms` }}
+                />
+                <span
+                  className="absolute -top-[3px] bottom-[-3px] left-1/2 w-px bg-alerta opacity-45"
+                  aria-hidden="true"
+                />
               </div>
             </div>
           ))}
         </div>
-      </Secao>
+      </section>
 
-      {/* Zona crítica: o número que o dono mais entende. */}
-      <section className="flex flex-col gap-4 rounded-xl border border-linha bg-white px-5 py-5 sm:flex-row sm:items-center sm:gap-8">
+      <div className="grid gap-5 lg:grid-cols-2">
+        {/* Pessoa por pessoa */}
+        <section className="flex flex-col gap-2.5">
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-1">
+            <h2 className="m-0 text-[1.05rem] font-bold tracking-[-0.015em] text-tinta">
+              Pessoa por pessoa
+            </h2>
+            <span className="text-[0.85rem] text-suave">
+              silhueta do Raio-X contra a de hoje
+            </span>
+          </div>
+
+          <div className="overflow-hidden rounded-xl border border-linha bg-white">
+            {individual.map((p) => {
+              const pessoa = pessoas.find((c) => c.id === p.id)!;
+              const saiu = p.antes < 5 && p.depois >= 5;
+
+              return (
+                <Link
+                  key={p.id}
+                  href={`/painel/corretor/${p.id}`}
+                  className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-2 border-t border-linha px-4 py-3 no-underline transition-colors first:border-t-0 hover:bg-fundo sm:px-5"
+                >
+                  <span className="min-w-0 truncate text-[0.94rem] font-semibold text-tinta">
+                    {p.nome}
+                  </span>
+
+                  <span className="flex items-center gap-1.5">
+                    <Impressao notas={pessoa.inicial} tamanho={34} className="opacity-45" />
+                    <span className="text-[0.85rem] text-linha-forte">›</span>
+                    <Impressao notas={pessoa.notas} tamanho={38} anima />
+                  </span>
+
+                  <span className="col-span-2 flex items-baseline gap-2 text-[0.85rem] tabular-nums text-suave">
+                    {fmt(p.antes)} para{" "}
+                    <strong className="text-[1.05rem] font-bold text-tinta">
+                      {fmt(p.depois)}
+                    </strong>
+                    <span
+                      className={`ml-auto font-semibold ${
+                        saiu
+                          ? "text-ok"
+                          : p.depois < 5
+                            ? "text-alerta"
+                            : "text-suave"
+                      }`}
+                    >
+                      {saiu
+                        ? "saiu da zona crítica"
+                        : p.depois < 5
+                          ? "ainda crítico"
+                          : "já estava acima de 5"}
+                    </span>
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Indicadores comerciais */}
+        <section className="flex flex-col gap-2.5">
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-1">
+            <h2 className="m-0 text-[1.05rem] font-bold tracking-[-0.015em] text-tinta">
+              O que isso fez na operação
+            </h2>
+            <span className="text-[0.85rem] text-suave">mesmo período, mesma base</span>
+          </div>
+
+          <div className="overflow-hidden rounded-xl border border-linha bg-white">
+            {indicadores.map((ind, i) => {
+              const bom = melhorou(ind);
+              // Barras só fazem sentido em taxa; tempo e contagem viram número.
+              const escala = ind.formato === "porcentagem";
+              const maior = Math.max(ind.antes, ind.depois) || 1;
+
+              return (
+                <div
+                  key={ind.chave}
+                  className="border-t border-linha px-5 py-3.5 first:border-t-0 sm:px-6"
+                >
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+                    <span className="flex-1 text-[0.92rem] font-semibold text-tinta">
+                      {ind.nome}
+                    </span>
+                    <span className="text-[0.85rem] tabular-nums text-suave">
+                      {escrever(ind.antes, ind.formato)} para{" "}
+                      <strong
+                        className={`text-[1.1rem] font-bold ${bom ? "text-tinta" : "text-alerta"}`}
+                      >
+                        {escrever(ind.depois, ind.formato)}
+                      </strong>
+                    </span>
+                  </div>
+
+                  {escala && (
+                    <div className="relative mt-2.5 h-[22px]">
+                      <span
+                        className="absolute left-0 top-0 h-2 rounded-full bg-linha-forte"
+                        style={{ width: `${(ind.antes / maior) * 100}%` }}
+                      />
+                      <span
+                        className={`barra-enche absolute left-0 top-3 h-2 rounded-full ${bom ? "bg-laranja" : "bg-alerta"}`}
+                        style={{
+                          width: `${(ind.depois / maior) * 100}%`,
+                          animationDelay: `${i * 70}ms`,
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  <p className="m-0 mt-1.5 text-[0.83rem] text-suave">{ind.leitura}</p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      </div>
+
+      <section className="flex flex-col gap-3 rounded-xl border border-linha bg-white px-5 py-5 sm:flex-row sm:items-center sm:gap-8">
         <div className="flex shrink-0 flex-col gap-1.5">
           <span className="text-[0.72rem] font-bold uppercase tracking-[0.12em] text-suave">
             Corretores com competência abaixo de 5
           </span>
           <div className="flex items-baseline gap-3">
-            <span className="text-[2.4rem] font-extrabold leading-none tracking-[-0.04em] tabular-nums text-suave">
+            <span className="text-[2.2rem] font-bold leading-none tabular-nums tracking-[-0.035em] text-suave">
               {zonaCritica.antes}
             </span>
-            <span className="text-[1.6rem] font-medium leading-none text-linha-forte">→</span>
+            <span className="text-[1.5rem] font-medium leading-none text-linha-forte">›</span>
             <span
-              className={`text-[3rem] font-extrabold leading-none tracking-[-0.045em] tabular-nums ${
+              className={`text-[2.8rem] font-bold leading-none tabular-nums tracking-[-0.04em] ${
                 zonaCritica.depois < zonaCritica.antes ? "text-ok" : "text-alerta"
               }`}
             >
@@ -177,8 +348,8 @@ export default async function PáginaEvolucao() {
           {zonaCritica.saiaram.length > 0 && (
             <p className="m-0 text-[0.92rem] text-tinta-suave">
               <strong className="font-bold text-ok">Saíram da zona crítica:</strong>{" "}
-              {zonaCritica.saiaram.map((p) => p.nome).join(", ")}. Nenhuma competência
-              abaixo de 5 hoje.
+              {zonaCritica.saiaram.map((p) => p.nome).join(", ")}. Nenhuma competência abaixo
+              de 5 hoje.
             </p>
           )}
           {zonaCritica.restantes.length > 0 && (
@@ -201,89 +372,6 @@ export default async function PáginaEvolucao() {
         </div>
       </section>
 
-      {/* Individual: mesma impressão do painel, agora com o fantasma do início. */}
-      <Secao
-        titulo="Corretor por corretor"
-        apoio="O contorno tracejado é o formato de dezembro. O sólido é hoje."
-      >
-        <div className="flex flex-col gap-2">
-          {individual.map((p) => {
-            const pessoa = comparaveis().find((c) => c.id === p.id)!;
-            return (
-              <Link
-                key={p.id}
-                href={`/painel/corretor/${p.id}`}
-                className="group flex items-center gap-4 rounded-xl border border-linha bg-white px-4 py-3.5 no-underline transition-colors hover:border-laranja"
-              >
-                <Impressao notas={pessoa.notas} antes={pessoa.inicial} tamanho={44} />
-
-                <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <span className="truncate text-[1rem] font-bold tracking-[-0.015em] text-tinta group-hover:text-laranja-escuro">
-                    {p.nome}
-                  </span>
-                  <span className="text-[0.82rem] text-suave">
-                    {p.ganho >= 1.5
-                      ? "avanço grande no período"
-                      : p.ganho >= 0.5
-                        ? "avanço consistente"
-                        : "praticamente parado"}
-                  </span>
-                </div>
-
-                <div className="flex shrink-0 items-baseline gap-2 tabular-nums">
-                  <span className="text-[0.95rem] text-suave">{fmt(p.antes)}</span>
-                  <span className="text-[0.9rem] text-linha-forte">→</span>
-                  <span className="text-[1.45rem] font-extrabold leading-none tracking-[-0.03em] text-tinta">
-                    {fmt(p.depois)}
-                  </span>
-                  <span
-                    className={`w-11 text-right text-[0.85rem] font-bold ${p.ganho > 0 ? "text-ok" : "text-suave"}`}
-                  >
-                    {p.ganho > 0 ? `+${fmt(p.ganho)}` : fmt(p.ganho)}
-                  </span>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </Secao>
-
-      {/* Indicadores comerciais: onde a nota vira dinheiro. */}
-      <Secao
-        titulo="O que isso fez na operação"
-        apoio="Os números do funil no mês do diagnóstico e no mês atual."
-      >
-        <div className="grid gap-2 sm:grid-cols-2">
-          {indicadores.map((ind) => {
-            const bom = melhorou(ind);
-            return (
-              <div
-                key={ind.chave}
-                className="flex flex-col gap-2 rounded-xl border border-linha bg-white px-4 py-4"
-              >
-                <span className="text-[0.85rem] font-semibold text-tinta-suave">
-                  {ind.nome}
-                </span>
-
-                <div className="flex items-baseline gap-2.5 tabular-nums">
-                  <span className="text-[1.15rem] font-semibold text-suave">
-                    {escrever(ind.antes, ind.formato)}
-                  </span>
-                  <span className="text-[1rem] text-linha-forte">→</span>
-                  <span
-                    className={`text-[1.9rem] font-extrabold leading-none tracking-[-0.035em] ${bom ? "text-laranja" : "text-tinta-suave"}`}
-                  >
-                    {escrever(ind.depois, ind.formato)}
-                  </span>
-                </div>
-
-                <p className="m-0 text-[0.84rem] text-suave">{ind.leitura}</p>
-              </div>
-            );
-          })}
-        </div>
-      </Secao>
-
       <footer className="flex flex-col gap-1.5 border-t border-linha pt-5 text-[0.82rem] text-suave">
         <span>
           A comparação usa só os {quantos} corretores que já estavam na equipe em{" "}
@@ -292,9 +380,8 @@ export default async function PáginaEvolucao() {
         </span>
         {novatos.length > 0 && (
           <span>
-            Fora da conta:{" "}
-            {novatos.map((p) => p.nome).join(", ")}, que {novatos.length === 1 ? "entrou" : "entraram"}{" "}
-            depois do diagnóstico.
+            Fora da conta: {novatos.map((p) => p.nome).join(", ")}, que{" "}
+            {novatos.length === 1 ? "entrou" : "entraram"} depois do diagnóstico.
           </span>
         )}
       </footer>

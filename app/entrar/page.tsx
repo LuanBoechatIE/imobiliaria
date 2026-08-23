@@ -2,10 +2,62 @@ import type { Metadata } from "next";
 import s from "./entrar.module.css";
 import { entrar } from "./acoes";
 import { AcessoDemo } from "./acesso-demo";
+import { Impressao } from "@/components/impressao";
+import { COMPETENCIAS } from "@/lib/dados";
 
 export const metadata: Metadata = {
   title: "Entrar",
 };
+
+/** Silhueta ilustrativa. Não é dado de cliente, é o produto se mostrando. */
+const EXEMPLO = {
+  velocidade: 7,
+  qualificacao: 6,
+  visita: 7,
+  followup: 4,
+  negociacao: 7,
+  registro: 6,
+};
+
+/** Malha de hexágonos ao fundo do painel de marca. */
+function Malha() {
+  const linhas = [];
+  for (let y = 0; y < 7; y++) {
+    for (let x = 0; x < 7; x++) {
+      const cx = 70 + x * 140 + (y % 2 ? 70 : 0);
+      const cy = 70 + y * 122;
+      const pontos = [0, 1, 2, 3, 4, 5]
+        .map((i) => {
+          const a = ((-90 + 60 * i) * Math.PI) / 180;
+          return `${(cx + 52 * Math.cos(a)).toFixed(1)},${(cy + 52 * Math.sin(a)).toFixed(1)}`;
+        })
+        .join(" ");
+      linhas.push(
+        <polygon
+          key={`${x}-${y}`}
+          points={pontos}
+          fill="none"
+          stroke="var(--laranja)"
+          strokeOpacity="0.13"
+          strokeWidth="1"
+        />
+      );
+    }
+  }
+
+  return (
+    <div className={s.malha} aria-hidden="true">
+      <svg
+        viewBox="0 0 900 900"
+        preserveAspectRatio="xMidYMid slice"
+        width="100%"
+        height="100%"
+      >
+        {linhas}
+      </svg>
+    </div>
+  );
+}
 
 export default async function PáginaEntrar({
   searchParams,
@@ -17,6 +69,8 @@ export default async function PáginaEntrar({
   return (
     <div className={s.tela}>
       <aside className={s.marca}>
+        <Malha />
+
         <div className={s.logo}>
           <span className={s.logoMarca}>B</span>
           <span className={s.logoNome}>Boechat</span>
@@ -24,28 +78,26 @@ export default async function PáginaEntrar({
 
         <div className={s.discurso}>
           <h2 className={s.discursoTitulo}>
-            Você não descobre quem vende bem olhando o fim do mês.
+            Corretor bom não é opinião. É evidência medida.
           </h2>
           <p className={s.discursoTexto}>
-            Aqui cada corretor é avaliado nas seis competências que decidem uma venda,
-            todo mês, com evidência. O que estiver baixo vira treino.
+            Seis competências, nota de 0 a 10, prova anexada em cada nota. A silhueta do
+            time muda quando o trabalho muda.
           </p>
+          <ul className={s.seis}>
+            {COMPETENCIAS.map((c) => (
+              <li key={c.chave}>{c.nome}</li>
+            ))}
+          </ul>
         </div>
 
-        <div className={s.provas}>
-          <span className={s.prova}>
-            <span className={s.provaMarca}>✓</span>
-            Nota por competência, atualizada todo mês
-          </span>
-          <span className={s.prova}>
-            <span className={s.provaMarca}>✓</span>
-            Treino definido pelo que a medição apontou
-          </span>
-          <span className={s.prova}>
-            <span className={s.provaMarca}>✓</span>
-            Roda junto com o CRM que você já usa
-          </span>
+        <div className={s.silhueta} aria-hidden="true">
+          <Impressao notas={EXEMPLO} tamanho={420} pontas anima className="w-full" />
         </div>
+
+        <p className={s.rodapeMarca}>
+          Avaliação, treino e comparação de antes e depois no mesmo lugar.
+        </p>
       </aside>
 
       <main className={s.lado}>

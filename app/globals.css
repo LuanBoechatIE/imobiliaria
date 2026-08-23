@@ -50,6 +50,8 @@
 
   --tinta: #1a1512;
   --tinta-suave: #4a423d;
+  --suave: #857b75;
+  /* Nome antigo, ainda usado pelo CSS Modules do login. */
   --muted: #857b75;
 
   --linha: #eae4e0;
@@ -57,6 +59,9 @@
 
   --alerta: #a4262c;
   --alerta-suave: #f8e9e9;
+
+  --ok: #1f7a4d;
+  --ok-suave: #e3f2e9;
 
   --font-ui: var(--fonte), "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
     Helvetica, Arial, sans-serif;
@@ -94,6 +99,75 @@ a {
   outline: 2px solid var(--laranja);
   outline-offset: 2px;
   border-radius: 3px;
+}
+
+/*
+ * O hexágono é a assinatura do produto: as seis competências viram um
+ * formato reconhecível. Ele reaparece em quatro escalas — moldura de
+ * foto, glifo de vértice, silhueta de lista e protagonista de tela —
+ * então o recorte mora aqui, em um lugar só.
+ */
+.hex-recorte {
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+
+/* Silhueta cresce do centro ao entrar na tela. */
+@keyframes hex-cresce {
+  from {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+}
+
+.hex-cresce {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: hex-cresce 0.7s cubic-bezier(0.2, 0.8, 0.25, 1) both;
+}
+
+/* Anel que sai do vértice mais fraco. Chama o olho e para. */
+@keyframes hex-pulso {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  60%,
+  100% {
+    transform: scale(3.4);
+    opacity: 0;
+  }
+}
+
+.hex-pulso {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: hex-pulso 2.4s ease-out 3;
+}
+
+/*
+ * Barras que enchem a partir do zero. Sem quadro final de propósito: o
+ * valor de chegada é o que o elemento já tem no style, então a mesma
+ * regra serve para qualquer largura ou altura calculada em servidor.
+ * (Nada de !important aqui: dentro de @keyframes ele é ignorado.)
+ */
+@keyframes barra-enche {
+  from {
+    width: 0;
+  }
+}
+
+.barra-enche {
+  animation: barra-enche 1s cubic-bezier(0.2, 0.8, 0.25, 1) both;
+}
+
+@keyframes coluna-enche {
+  from {
+    height: 0;
+  }
+}
+
+.coluna-enche {
+  animation: coluna-enche 0.8s cubic-bezier(0.2, 0.8, 0.25, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
