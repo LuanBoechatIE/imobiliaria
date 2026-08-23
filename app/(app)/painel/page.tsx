@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import s from "./painel.module.css";
-import { COOKIE_SESSAO, lerSessao } from "@/lib/sessao";
+import type { Metadata } from "next";
+import { ArrowRight, GraduationCap } from "lucide-react";
+import { Cabecalho, Pagina, Secao, Vazio } from "@/components/pagina";
+import { Impressao } from "@/components/impressao";
 import {
   COMPETENCIAS,
   IMOBILIARIA,
@@ -12,161 +12,204 @@ import {
   mediasPorCompetencia,
   type Corretor,
 } from "@/lib/dados";
+import { treinamentosDaCompetencia } from "@/lib/treinamentos";
 
-function Medidor({ nota }: { nota: number }) {
-  return (
-    <div className={s.trilho}>
-      <div className={s.preenche} style={{ width: `${(nota / 10) * 100}%` }} />
-    </div>
-  );
-}
+export const metadata: Metadata = { title: "Painel" };
 
-function Delta({ pessoa }: { pessoa: Corretor }) {
-  if (!pessoa.anterior) return <span className={s.delta}>1º ciclo</span>;
+function Variacao({ pessoa }: { pessoa: Corretor }) {
+  if (!pessoa.anterior) {
+    return <span className="text-[0.76rem] font-medium text-suave">1º ciclo</span>;
+  }
 
   const diff = media(pessoa.notas) - media(pessoa.anterior);
-  if (Math.abs(diff) < 0.05) return <span className={s.delta}>estável</span>;
+  if (Math.abs(diff) < 0.05) {
+    return <span className="text-[0.76rem] font-medium text-suave">estável</span>;
+  }
 
   const sobe = diff > 0;
   return (
-    <span className={`${s.delta} ${sobe ? s.deltaSobe : s.deltaCai}`}>
-      {sobe ? "▲" : "▼"} {fmt(Math.abs(diff))}
+    <span
+      className={`text-[0.76rem] font-semibold tabular-nums ${sobe ? "text-ok" : "text-alerta"}`}
+    >
+      {sobe ? "↑" : "↓"} {fmt(Math.abs(diff))}
     </span>
   );
 }
 
 export default async function PáginaPainel() {
-  const jar = await cookies();
-  const sessao = await lerSessao(jar.get(COOKIE_SESSAO)?.value);
-  if (!sessao) redirect("/entrar");
-
-  const { nome, cidade, ciclo, cicloAnterior, corretores } = IMOBILIARIA;
+  const { nome, ciclo, cicloAnterior, corretores } = IMOBILIARIA;
 
   const ranking = [...corretores].sort((a, b) => media(b.notas) - media(a.notas));
-  const mediaTime = corretores.reduce((soma, p) => soma + media(p.notas), 0) / corretores.length;
   const porCompetencia = mediasPorCompetencia(corretores);
   const maisFraca = porCompetencia[0];
   const emAtencao = corretores.filter((p) =>
     COMPETENCIAS.some((c) => critica(p.notas[c.chave]))
-  ).length;
+  );
+  const treinosDoTema = treinamentosDaCompetencia(maisFraca.chave);
 
   return (
-    <>
-      <main className={s.shell}>
-        <div className={s.topo}>
-          <div className={s.identidade}>
-            <span className={s.selo}>Dados de exemplo</span>
-            <h1 className={s.titulo}>{nome}</h1>
-            <span className={s.local}>
-              {cidade} · {corretores.length} corretores avaliados
-            </span>
-          </div>
-          <div className={s.cicloBox}>
-            <span className={s.rotulo}>Ciclo</span>
-            <span className={s.ciclo}>{ciclo}</span>
-            <span className={s.local}>comparado com {cicloAnterior}</span>
-          </div>
-        </div>
+    <Pagina>
+      <Cabecalho
+        etiqueta={`Ciclo de ${ciclo}`}
+        titulo={nome}
+        apoio={`${corretores.length} corretores avaliados, comparados com ${cicloAnterior.toLowerCase()}`}
+      />
 
-        <section className={s.resumo}>
-          <div className={s.tile}>
-            <span className={s.rotulo}>Nota do time</span>
-            <span className={s.tileValor}>{fmt(mediaTime)}</span>
-            <span className={s.tileNota}>média das 6 competências, de 0 a 10</span>
-          </div>
-          <div className={s.tile}>
-            <span className={s.rotulo}>Ponto mais fraco</span>
-            <span className={s.tileValorMenor}>{maisFraca.nome}</span>
-            <span className={s.tileNota}>
-              média {fmt(maisFraca.valor)}. É onde o time inteiro perde negócio.
-            </span>
-          </div>
-          <div className={s.tile}>
-            <span className={s.rotulo}>Precisam de atenção</span>
-            <span className={s.tileValor}>{emAtencao}</span>
-            <span className={s.tileNota}>
-              corretores com pelo menos uma competência abaixo de 5
-            </span>
-          </div>
-        </section>
-
-        <section className={s.bloco}>
-          <h2 className={s.blocoTitulo}>Onde o time está</h2>
-          <p className={s.blocoSub}>
-            Média de cada competência, da mais fraca para a mais forte. A ordem aqui
-            define o que entra no treino do mês.
-          </p>
-          <div className={s.timeGrid}>
-            {porCompetencia.map((c) => (
-              <div
-                key={c.chave}
-                className={`${s.timeItem} ${critica(c.valor) ? s.alerta : ""}`}
-              >
-                <div className={s.timeLinha}>
-                  <span className={s.timeNome}>{c.nome}</span>
-                  <span className={s.timeValor}>{fmt(c.valor)}</span>
+      {corretores.length === 0 ? (
+        <Vazio titulo="Nenhum corretor avaliado ainda">
+          Assim que a primeira avaliação fechar em Avaliações, o time aparece aqui.
+        </Vazio>
+      ) : (
+        <>
+          {/* O que fazer primeiro. Lidera a tela porque é a única parte
+              que pede uma decisão, não só informa. */}
+          <section className="overflow-hidden rounded-xl border border-linha bg-white">
+            <div className="flex flex-col gap-4 border-b border-linha px-5 py-5 sm:flex-row sm:items-center sm:gap-6">
+              <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                <span className="text-[0.72rem] font-bold uppercase tracking-[0.12em] text-suave">
+                  Onde o time mais perde negócio
+                </span>
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <span className="text-[1.6rem] font-extrabold leading-none tracking-[-0.03em] text-tinta">
+                    {maisFraca.nome}
+                  </span>
+                  <span
+                    className={`text-[1.05rem] font-bold tabular-nums ${critica(maisFraca.valor) ? "text-alerta" : "text-tinta-suave"}`}
+                  >
+                    média {fmt(maisFraca.valor)}
+                  </span>
                 </div>
-                <Medidor nota={c.valor} />
+                <p className="m-0 max-w-[54ch] text-[0.89rem] text-suave">
+                  É a competência mais baixa do time inteiro. Corrigir ela move mais
+                  resultado do que qualquer outra.
+                </p>
               </div>
-            ))}
-          </div>
-        </section>
 
-        <section className={s.bloco}>
-          <h2 className={s.blocoTitulo}>Corretor por corretor</h2>
-          <p className={s.blocoSub}>
-            Ordenado pela nota geral. Cada competência abaixo de 5 aparece destacada.
-          </p>
-          <div className={s.lista}>
-            {ranking.map((pessoa, i) => (
-              <Link
-                key={pessoa.id}
-                href={`/painel/corretor/${pessoa.id}`}
-                className={s.pessoa}
-              >
-                <span className={s.posicao}>{String(i + 1).padStart(2, "0")}</span>
+              <div className="shrink-0 sm:border-l sm:border-linha sm:pl-6">
+                {treinosDoTema.length > 0 ? (
+                  <Link
+                    href={`/treinamentos/${treinosDoTema[0].id}`}
+                    className="inline-flex items-center gap-2 rounded-md bg-laranja px-3.5 py-2 text-[0.88rem] font-semibold text-white no-underline transition-colors hover:bg-laranja-escuro"
+                  >
+                    <GraduationCap size={15} />
+                    Ver treinamento do tema
+                  </Link>
+                ) : (
+                  <Link
+                    href="/treinamentos"
+                    className="inline-flex items-center gap-2 rounded-md border border-linha-forte bg-white px-3.5 py-2 text-[0.88rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-laranja-escuro"
+                  >
+                    <GraduationCap size={15} />
+                    Registrar treinamento
+                  </Link>
+                )}
+              </div>
+            </div>
 
-                <div className={s.pessoaNome}>
-                  <span className={s.nome}>{pessoa.nome}</span>
-                  <span className={s.desde}>na equipe desde {pessoa.desde}</span>
-                </div>
-
-                <div className={s.geral}>
-                  <span className={s.geralValor}>{fmt(media(pessoa.notas))}</span>
-                  <Delta pessoa={pessoa} />
-                </div>
-
-                <div className={s.minis}>
-                  {COMPETENCIAS.map((c) => {
-                    const nota = pessoa.notas[c.chave];
-                    return (
-                      <div
-                        key={c.chave}
-                        className={`${s.mini} ${critica(nota) ? s.alerta : ""}`}
-                        title={`${c.nome}: ${fmt(nota)}`}
+            {/* As seis competências como uma régua contínua, da mais fraca
+                para a mais forte. */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+              {porCompetencia.map((c) => {
+                const alerta = critica(c.valor);
+                return (
+                  <div
+                    key={c.chave}
+                    className="flex flex-col gap-2 border-b border-r border-linha px-4 py-3.5 last:border-r-0"
+                  >
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="truncate text-[0.8rem] text-tinta-suave">{c.nome}</span>
+                      <span
+                        className={`text-[0.88rem] font-bold tabular-nums ${alerta ? "text-alerta" : "text-tinta"}`}
                       >
-                        <div className={s.miniTopo}>
-                          <span className={s.miniNome}>{c.curto}</span>
-                          <span className={s.miniValor}>{fmt(nota)}</span>
-                        </div>
-                        <Medidor nota={nota} />
-                      </div>
-                    );
-                  })}
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
+                        {fmt(c.valor)}
+                      </span>
+                    </div>
+                    <span className="block h-1.5 overflow-hidden rounded-full bg-fundo-2">
+                      <span
+                        className={`block h-full rounded-full ${alerta ? "bg-alerta" : "bg-laranja"}`}
+                        style={{ width: `${(c.valor / 10) * 100}%` }}
+                      />
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
 
-        <footer className={s.rodape}>
-          <span>
-            Toda nota é produzida a partir de evidência: áudio de atendimento, tempo de
-            resposta medido e role-play gravado.
-          </span>
-          <span>Imobiliária fictícia, números ilustrativos. Nenhum dado de cliente real.</span>
-        </footer>
-      </main>
-    </>
+            {emAtencao.length > 0 && (
+              <p className="m-0 bg-fundo-2 px-5 py-3 text-[0.86rem] text-tinta-suave">
+                <strong className="font-bold text-alerta">{emAtencao.length}</strong>{" "}
+                {emAtencao.length === 1 ? "corretor tem" : "corretores têm"} pelo menos uma
+                competência abaixo de 5:{" "}
+                {emAtencao.map((p, i) => (
+                  <span key={p.id}>
+                    {i > 0 && ", "}
+                    <Link
+                      href={`/painel/corretor/${p.id}`}
+                      className="font-semibold text-tinta-suave underline decoration-linha-forte underline-offset-2 hover:text-laranja-escuro"
+                    >
+                      {p.nome.split(" ")[0]}
+                    </Link>
+                  </span>
+                ))}
+              </p>
+            )}
+          </section>
+
+          <Secao
+            titulo="Corretor por corretor"
+            apoio="Cada hexágono é o formato das seis competências daquela pessoa. O anel tracejado marca o 5: o que afunda pra dentro dele precisa de atenção."
+          >
+            <div className="flex flex-col gap-2">
+              {ranking.map((pessoa, i) => {
+                const nota = media(pessoa.notas);
+                const fracas = COMPETENCIAS.filter((c) => critica(pessoa.notas[c.chave]));
+
+                return (
+                  <Link
+                    key={pessoa.id}
+                    href={`/painel/corretor/${pessoa.id}`}
+                    className="group flex items-center gap-4 rounded-xl border border-linha bg-white px-4 py-3.5 no-underline transition-colors hover:border-laranja"
+                  >
+                    <span className="w-5 shrink-0 text-[0.8rem] font-bold tabular-nums text-suave">
+                      {i + 1}
+                    </span>
+
+                    <Impressao notas={pessoa.notas} tamanho={40} />
+
+                    <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <span className="truncate text-[1rem] font-bold tracking-[-0.015em] text-tinta group-hover:text-laranja-escuro">
+                        {pessoa.nome}
+                      </span>
+                      <span className="truncate text-[0.82rem] text-suave">
+                        {fracas.length === 0
+                          ? "nenhuma competência abaixo de 5"
+                          : `precisa de ${fracas.map((c) => c.nome.toLowerCase()).join(", ")}`}
+                      </span>
+                    </div>
+
+                    <div className="flex shrink-0 flex-col items-end gap-0.5">
+                      <span className="text-[1.5rem] font-extrabold leading-none tracking-[-0.035em] tabular-nums text-tinta">
+                        {fmt(nota)}
+                      </span>
+                      <Variacao pessoa={pessoa} />
+                    </div>
+
+                    <ArrowRight
+                      size={16}
+                      className="hidden shrink-0 text-linha-forte transition-colors group-hover:text-laranja sm:block"
+                    />
+                  </Link>
+                );
+              })}
+            </div>
+          </Secao>
+        </>
+      )}
+
+      <footer className="border-t border-linha pt-5 text-[0.82rem] text-suave">
+        Cada nota vem de uma prova registrada: áudio de atendimento, tempo de resposta
+        medido ou role-play gravado. Abra um corretor para ver a de cada competência.
+      </footer>
+    </Pagina>
   );
 }

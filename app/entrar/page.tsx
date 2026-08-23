@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import s from "./entrar.module.css";
 import { entrar } from "./acoes";
+import { AcessoDemo } from "./acesso-demo";
 
 export const metadata: Metadata = {
   title: "Entrar",
@@ -66,7 +67,7 @@ export default async function PáginaEntrar({
             </p>
           ) : null}
 
-          <form action={entrar} className={s.form}>
+          <form action={entrar} className={s.form} data-login>
             <input type="hidden" name="de" value={de ?? ""} />
 
             <div className={s.campo}>
@@ -106,9 +107,7 @@ export default async function PáginaEntrar({
           </form>
 
           <div className={s.rodape}>
-            <span>Acesso de demonstração, enquanto o sistema não tem cliente real:</span>
-            <code>dono@valenorte.com · valenorte2026</code>
-            <code>luan@boechat.com · boechat2026</code>
+            <AcessoDemo />
           </div>
         </div>
       </main>

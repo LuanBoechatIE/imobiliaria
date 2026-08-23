@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { CheckCircle2, ChevronRight, CircleDashed, Clock3 } from "lucide-react";
+import { Cabecalho, Pagina, Secao } from "@/components/pagina";
 import {
   CICLO_ATUAL,
   ROTULO_STATUS,
@@ -56,20 +57,12 @@ export default async function PáginaAvaliacoes({
   const progresso = Math.round((resumo.notasLancadas / resumo.notasTotais) * 100);
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6 lg:px-8 lg:py-8">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex flex-col gap-0.5">
-          <span className="text-[0.7rem] font-semibold uppercase tracking-wider text-suave">
-            Ciclo em coleta
-          </span>
-          <h1 className="m-0 text-[1.75rem] font-bold leading-tight tracking-tight text-tinta">
-            {CICLO_ATUAL}
-          </h1>
-          <p className="m-0 text-[0.9rem] text-suave">
-            {resumo.avaliados} de {resumo.total} corretores com avaliação fechada
-          </p>
-        </div>
-      </div>
+    <Pagina>
+      <Cabecalho
+        etiqueta="Ciclo em coleta"
+        titulo={CICLO_ATUAL}
+        apoio={`${resumo.avaliados} de ${resumo.total} corretores com avaliação fechada`}
+      />
 
       {ok && (
         <p className="flex items-center gap-2 rounded-lg border border-ok/30 bg-ok-suave px-4 py-3 text-[0.9rem] font-medium text-ok">
@@ -78,69 +71,49 @@ export default async function PáginaAvaliacoes({
         </p>
       )}
 
-      {/* resumo */}
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="flex flex-col gap-1 rounded-xl border border-linha bg-white px-4 py-3.5">
-          <span className="text-[0.7rem] font-semibold uppercase tracking-wider text-suave">
-            Avaliados
+      {/* Uma barra só, porque a pergunta aqui é uma só: quanto falta. */}
+      <section className="flex flex-col gap-3 rounded-xl border border-linha bg-white px-5 py-5">
+        <div className="flex flex-wrap items-end justify-between gap-2">
+          <span className="text-[0.92rem] text-tinta-suave">
+            <strong className="text-[1.05rem] font-bold tabular-nums text-tinta">
+              {resumo.notasLancadas}
+            </strong>{" "}
+            de {resumo.notasTotais} notas lançadas neste ciclo
           </span>
-          <span className="text-[2rem] font-bold leading-none tracking-tight text-ok tabular-nums">
-            {resumo.avaliados}
-          </span>
-          <span className="text-[0.8rem] text-suave">as 6 competências fechadas</span>
-        </div>
-
-        <div className="flex flex-col gap-1 rounded-xl border border-linha bg-white px-4 py-3.5">
-          <span className="text-[0.7rem] font-semibold uppercase tracking-wider text-suave">
-            Pendentes
-          </span>
-          <span className="text-[2rem] font-bold leading-none tracking-tight text-laranja tabular-nums">
-            {resumo.pendentes}
-          </span>
-          <span className="text-[0.8rem] text-suave">
-            {resumo.emAndamento} começaram, {resumo.pendentes - resumo.emAndamento} nem
-            começaram
+          <span className="text-[1.35rem] font-extrabold leading-none tabular-nums tracking-[-0.03em] text-laranja">
+            {progresso}%
           </span>
         </div>
 
-        <div className="flex flex-col gap-1 rounded-xl border border-linha bg-white px-4 py-3.5">
-          <span className="text-[0.7rem] font-semibold uppercase tracking-wider text-suave">
-            Notas lançadas
-          </span>
-          <span className="text-[2rem] font-bold leading-none tracking-tight text-tinta tabular-nums">
-            {resumo.notasLancadas}
-          </span>
-          <span className="text-[0.8rem] text-suave">de {resumo.notasTotais} possíveis</span>
-        </div>
+        <span className="block h-2.5 overflow-hidden rounded-full bg-fundo-2">
+          <span
+            className="block h-full rounded-full bg-laranja transition-all"
+            style={{ width: `${progresso}%` }}
+          />
+        </span>
 
-        <div className="flex flex-col justify-center gap-2 rounded-xl border border-linha bg-white px-4 py-3.5">
-          <div className="flex items-baseline justify-between">
-            <span className="text-[0.7rem] font-semibold uppercase tracking-wider text-suave">
-              Progresso do ciclo
-            </span>
-            <span className="text-[1.05rem] font-bold tabular-nums text-tinta">
-              {progresso}%
-            </span>
-          </div>
-          <span className="block h-2 overflow-hidden rounded-full bg-fundo-2">
-            <span
-              className="block h-full rounded-full bg-laranja transition-all"
-              style={{ width: `${progresso}%` }}
-            />
+        <div className="flex flex-wrap gap-x-5 gap-y-1 text-[0.85rem]">
+          <span className="inline-flex items-center gap-1.5 text-suave">
+            <span className="size-2 rounded-full bg-ok" />
+            {resumo.avaliados} {resumo.avaliados === 1 ? "fechado" : "fechados"}
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-suave">
+            <span className="size-2 rounded-full bg-laranja" />
+            {resumo.emAndamento} em andamento
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-suave">
+            <span className="size-2 rounded-full bg-linha-forte" />
+            {resumo.pendentes - resumo.emAndamento} sem começar
           </span>
         </div>
       </section>
 
       {/* lista */}
-      <section className="flex flex-col gap-2">
-        <h2 className="m-0 text-[1.05rem] font-bold tracking-tight text-tinta">
-          Corretores do ciclo
-        </h2>
-        <p className="m-0 max-w-[62ch] text-[0.88rem] text-suave">
-          Quem está em andamento aparece primeiro. Corretor inativo não entra no ciclo.
-        </p>
-
-        <div className="mt-1 flex flex-col gap-2">
+      <Secao
+        titulo="Corretores do ciclo"
+        apoio="Quem já começou aparece primeiro. Corretor desativado não entra no ciclo."
+      >
+        <div className="flex flex-col gap-2">
           {corretores.map((pessoa) => {
             const status = statusDe(pessoa.id);
             const feitas = quantasPreenchidas(pessoa.id);
@@ -200,7 +173,7 @@ export default async function PáginaAvaliacoes({
             );
           })}
         </div>
-      </section>
-    </main>
+      </Secao>
+    </Pagina>
   );
 }

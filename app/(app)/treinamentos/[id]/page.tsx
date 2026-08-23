@@ -15,13 +15,9 @@ import { FormularioTreinamento } from "../formulario-treinamento";
 import { ItemAtividade } from "../item-atividade";
 import { NovaAtividade } from "../nova-atividade";
 import { NovoMaterial } from "../novo-material";
-import { excluirMaterial, mudarStatus } from "../acoes";
-import {
-  ROTULO_STATUS_TREINAMENTO,
-  acharTreinamento,
-  nomeCompetencia,
-  type StatusTreinamento,
-} from "@/lib/treinamentos";
+import { TrocaStatus } from "../troca-status";
+import { excluirMaterial } from "../acoes";
+import { acharTreinamento, nomeCompetencia } from "@/lib/treinamentos";
 import { acharPessoa, dataCurta, listarPessoas } from "@/lib/equipe";
 
 export async function generateMetadata({
@@ -32,8 +28,6 @@ export async function generateMetadata({
   const { id } = await params;
   return { title: acharTreinamento(id)?.titulo ?? "Treinamento" };
 }
-
-const OPCOES_STATUS: StatusTreinamento[] = ["agendado", "realizado", "cancelado"];
 
 export default async function PáginaTreinamento({
   params,
@@ -90,35 +84,7 @@ export default async function PáginaTreinamento({
           <p className="m-0 max-w-[64ch] text-[0.92rem] text-tinta-suave">{treinamento.descricao}</p>
         )}
 
-        <div className="flex flex-wrap items-center gap-1.5 border-t border-linha pt-3.5">
-          <span className="mr-1 text-[0.78rem] font-semibold uppercase tracking-wider text-suave">
-            Status
-          </span>
-          {OPCOES_STATUS.map((s) => {
-            const ativo = treinamento.status === s;
-            return (
-              <form key={s} action={mudarStatus}>
-                <input type="hidden" name="id" value={treinamento.id} />
-                <input type="hidden" name="status" value={s} />
-                <button
-                  type="submit"
-                  disabled={ativo}
-                  className={`rounded-full border px-3 py-1 text-[0.82rem] font-semibold transition-colors ${
-                    ativo
-                      ? s === "realizado"
-                        ? "border-ok/30 bg-ok-suave text-ok"
-                        : s === "cancelado"
-                          ? "border-linha-forte bg-fundo-2 text-suave"
-                          : "border-laranja/30 bg-laranja-suave text-laranja-escuro"
-                      : "border-linha-forte bg-white text-suave hover:border-laranja hover:text-laranja-escuro"
-                  }`}
-                >
-                  {ROTULO_STATUS_TREINAMENTO[s]}
-                </button>
-              </form>
-            );
-          })}
-        </div>
+        <TrocaStatus id={treinamento.id} atual={treinamento.status} />
       </section>
 
       {/* Gravação */}

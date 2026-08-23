@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Search } from "lucide-react";
+import { Cabecalho, Pagina, Vazio } from "@/components/pagina";
 import { AcoesPessoa } from "./acoes-pessoa";
 import { FormularioPessoa } from "./formulario-pessoa";
 import {
@@ -79,21 +80,18 @@ export default async function PáginaEquipe({
   };
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6 lg:px-8 lg:py-8">
-      {/* topo */}
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex flex-col gap-0.5">
-          <h1 className="m-0 text-[1.75rem] font-bold leading-tight tracking-tight text-tinta">
-            Equipe
-          </h1>
-          <p className="m-0 text-[0.9rem] text-suave">
-            {ativos} {ativos === 1 ? "pessoa ativa" : "pessoas ativas"} na Imobiliária Vale
-            Norte
-            {todas.length > ativos ? ` · ${todas.length - ativos} inativa(s)` : ""}
-          </p>
-        </div>
-        <FormularioPessoa gatilho="botao" />
-      </div>
+    <Pagina>
+      <Cabecalho
+        titulo="Equipe"
+        apoio={
+          <>
+            {ativos} {ativos === 1 ? "pessoa com acesso" : "pessoas com acesso"} ao sistema
+            {todas.length > ativos &&
+              ` · ${todas.length - ativos} ${todas.length - ativos === 1 ? "desativada" : "desativadas"}`}
+          </>
+        }
+        acao={<FormularioPessoa gatilho="botao" />}
+      />
 
       {/* filtros e busca */}
       <div className="flex flex-wrap items-center gap-3">
@@ -134,8 +132,7 @@ export default async function PáginaEquipe({
 
       {/* cabeçalho da tabela, só no desktop */}
       <div className="flex flex-col gap-2">
-        <div className="hidden grid-cols-[2rem_minmax(12rem,1.5fr)_9rem_8rem_7rem_8rem_2rem] items-center gap-4 px-4 text-[0.7rem] font-semibold uppercase tracking-wider text-suave lg:grid">
-          <span>#</span>
+        <div className="hidden grid-cols-[minmax(12rem,1.5fr)_9rem_8rem_7rem_8rem_2rem] items-center gap-4 px-4 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-suave lg:grid">
           <span>Pessoa</span>
           <span>Papel</span>
           <span>Na equipe desde</span>
@@ -145,28 +142,26 @@ export default async function PáginaEquipe({
         </div>
 
         {pessoas.length === 0 && (
-          <p className="rounded-xl border border-dashed border-linha-forte bg-white px-4 py-10 text-center text-[0.92rem] text-suave">
-            Ninguém encontrado com esse filtro.
-          </p>
+          <Vazio titulo="Ninguém encontrado">
+            {busca
+              ? `Nenhum nome com "${q}". Tente outro termo ou limpe a busca.`
+              : "Nenhuma pessoa nesse filtro. Escolha outro acima."}
+          </Vazio>
         )}
 
-        {pessoas.map((pessoa, i) => {
+        {pessoas.map((pessoa) => {
           const nota = notaAtual(pessoa);
           const inativo = pessoa.status === "inativo";
 
           return (
             <article
               key={pessoa.id}
-              className={`grid grid-cols-[2.5rem_1fr_auto] items-center gap-x-4 gap-y-3 rounded-xl border bg-white px-4 py-3.5 transition-colors lg:grid-cols-[2rem_minmax(12rem,1.5fr)_9rem_8rem_7rem_8rem_2rem] ${
+              className={`grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-3 rounded-xl border bg-white px-4 py-3.5 transition-colors lg:grid-cols-[minmax(12rem,1.5fr)_9rem_8rem_7rem_8rem_2rem] ${
                 inativo ? "border-linha opacity-70" : "border-linha hover:border-laranja"
               }`}
             >
-              <span className="hidden text-[0.8rem] font-semibold tabular-nums text-suave lg:block">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-
               {/* pessoa */}
-              <div className="col-span-2 flex min-w-0 items-center gap-3 lg:col-span-1">
+              <div className="flex min-w-0 items-center gap-3">
                 <span
                   className={`grid size-10 shrink-0 place-items-center rounded-full text-[1.05rem] font-bold ${
                     inativo
@@ -197,7 +192,7 @@ export default async function PáginaEquipe({
               </div>
 
               {/* papel */}
-              <div className="col-span-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.83rem] text-suave lg:col-span-1 lg:block">
+              <div className="col-span-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.83rem] text-suave lg:col-span-1 lg:block">
                 <span className="rounded-md bg-fundo-2 px-2 py-0.5 text-[0.78rem] font-semibold text-tinta-suave">
                   {NOME_PAPEL[pessoa.papel]}
                 </span>
@@ -210,10 +205,10 @@ export default async function PáginaEquipe({
               </span>
 
               {/* nota */}
-              <div className="col-span-3 lg:col-span-1">
+              <div className="col-span-2 lg:col-span-1">
                 {nota === null ? (
                   <span className="text-[0.85rem] text-suave">
-                    {pessoa.papel === "corretor" ? "sem nota no ciclo" : "—"}
+                    {pessoa.papel === "corretor" ? "sem nota no ciclo" : "não se aplica"}
                   </span>
                 ) : (
                   <div className="flex items-center gap-2">
@@ -252,6 +247,6 @@ export default async function PáginaEquipe({
         Quem é desativado perde o acesso ao sistema e sai dos rankings do ciclo, mas o
         histórico e as avaliações anteriores continuam guardados. Dá para reativar depois.
       </p>
-    </main>
+    </Pagina>
   );
 }

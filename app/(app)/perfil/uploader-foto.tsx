@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { Camera, Loader2, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { atualizarFoto } from "./acoes";
 
 const LADO = 320; // px, recorte quadrado antes de enviar
@@ -47,6 +48,7 @@ export function UploaderFoto({
         iniciarTransicao(async () => {
           const resultado = await atualizarFoto(dataUrl);
           if (resultado?.erro) setErro(resultado.erro);
+          else toast.success("Foto atualizada");
         });
       };
       imagem.onerror = () => setErro("Não consegui abrir essa imagem.");
@@ -61,6 +63,7 @@ export function UploaderFoto({
     setErro(null);
     iniciarTransicao(async () => {
       await atualizarFoto(null);
+      toast.success("Foto removida");
     });
   }
 

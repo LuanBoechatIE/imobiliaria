@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Calendar, GraduationCap, PlayCircle, Users } from "lucide-react";
+import { Cabecalho, Pagina, Vazio } from "@/components/pagina";
 import { FormularioTreinamento } from "./formulario-treinamento";
 import {
   ROTULO_STATUS_TREINAMENTO,
@@ -26,24 +27,18 @@ export default async function PáginaTreinamentos() {
   const agendados = treinamentos.filter((t) => t.status === "agendado").length;
 
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 lg:px-8 lg:py-8">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex flex-col gap-0.5">
-          <h1 className="m-0 text-[1.75rem] font-bold leading-tight tracking-tight text-tinta">
-            Treinamentos
-          </h1>
-          <p className="m-0 text-[0.9rem] text-suave">
-            {treinamentos.length} registrados · {realizados} realizados · {agendados} agendados
-          </p>
-        </div>
-        <FormularioTreinamento pessoas={pessoasAtivas} />
-      </div>
+    <Pagina largura="media">
+      <Cabecalho
+        titulo="Treinamentos"
+        apoio={`${realizados} ${realizados === 1 ? "realizado" : "realizados"} · ${agendados} ${agendados === 1 ? "agendado" : "agendados"}`}
+        acao={<FormularioTreinamento pessoas={pessoasAtivas} />}
+      />
 
       {treinamentos.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-linha-forte bg-white px-4 py-10 text-center text-[0.92rem] text-suave">
-          Nenhum treinamento registrado ainda. O primeiro pode ser o módulo do gestor —
-          é o que sustenta todos os outros.
-        </p>
+        <Vazio titulo="Nenhum treinamento registrado">
+          Comece pelo módulo do gestor. É ele que sustenta o padrão depois que o treino
+          termina.
+        </Vazio>
       ) : (
         <div className="flex flex-col gap-2">
           {treinamentos.map((t) => {
@@ -115,6 +110,6 @@ export default async function PáginaTreinamentos() {
           })}
         </div>
       )}
-    </main>
+    </Pagina>
   );
 }

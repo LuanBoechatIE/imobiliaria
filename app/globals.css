@@ -12,6 +12,8 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 
 @theme {
+  --font-sans: var(--fonte), "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+
   --color-laranja: #f05a22;
   --color-laranja-escuro: #d2450f;
   --color-laranja-claro: #ff7a45;
@@ -56,8 +58,8 @@
   --alerta: #a4262c;
   --alerta-suave: #f8e9e9;
 
-  --font-ui: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial,
-    sans-serif;
+  --font-ui: var(--fonte), "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+    Helvetica, Arial, sans-serif;
   --font-mono: "Cascadia Mono", Consolas, "SF Mono", ui-monospace, Menlo, monospace;
 
   --raio: 8px;

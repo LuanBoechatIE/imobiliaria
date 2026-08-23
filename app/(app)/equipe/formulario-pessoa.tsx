@@ -145,8 +145,8 @@ export function FormularioPessoa({
                   </div>
 
                   <p className="m-0 text-[0.83rem] text-suave">
-                    Essa senha só aparece agora. Copie e passe manualmente — no primeiro
-                    login o sistema já obriga a pessoa a trocar por uma senha própria.
+                    Essa senha só aparece agora. Copie e passe para a pessoa. No primeiro
+                    login o sistema já obriga a troca por uma senha própria.
                   </p>
 
                   <button

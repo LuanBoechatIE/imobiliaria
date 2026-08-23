@@ -125,6 +125,20 @@ export function acharTreinamento(id: string): Treinamento | undefined {
   return TREINAMENTOS.find((t) => t.id === id);
 }
 
+/** Treinamentos de que a pessoa participou, do mais recente para o mais antigo. */
+export function treinamentosDaPessoa(pessoaId: string): Treinamento[] {
+  return listarTreinamentos().filter(
+    (t) => t.status !== "cancelado" && t.participantesIds.includes(pessoaId)
+  );
+}
+
+/** Treinamentos que atacam uma competência específica. */
+export function treinamentosDaCompetencia(competencia: CompetenciaOuGeral): Treinamento[] {
+  return listarTreinamentos().filter(
+    (t) => t.status !== "cancelado" && t.competencia === competencia
+  );
+}
+
 export type DadosTreinamento = {
   titulo: string;
   competencia: CompetenciaOuGeral;

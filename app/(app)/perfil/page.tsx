@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Mail, ShieldCheck } from "lucide-react";
+import { Cabecalho, Pagina } from "@/components/pagina";
 import { UploaderFoto } from "./uploader-foto";
 import { COOKIE_SESSAO, lerSessao } from "@/lib/sessao";
 import { acharPorId } from "@/lib/usuarios";
@@ -18,15 +19,11 @@ export default async function PáginaPerfil() {
   const pessoa = usuario?.pessoaId ? acharPessoa(usuario.pessoaId) : undefined;
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-6 lg:px-8 lg:py-8">
-      <div className="flex flex-col gap-0.5">
-        <h1 className="m-0 text-[1.75rem] font-bold leading-tight tracking-tight text-tinta">
-          Perfil
-        </h1>
-        <p className="m-0 text-[0.9rem] text-suave">
-          Sua foto aparece no menu e em qualquer lugar do sistema com o seu nome.
-        </p>
-      </div>
+    <Pagina largura="estreita">
+      <Cabecalho
+        titulo="Perfil"
+        apoio="Sua foto aparece no menu e no topo de todas as telas."
+      />
 
       <section className="rounded-xl border border-linha bg-white p-5">
         <UploaderFoto nome={sessao.nome} fotoInicial={usuario?.foto ?? null} />
@@ -69,6 +66,6 @@ export default async function PáginaPerfil() {
           <span className="font-semibold text-tinta-suave">Equipe</span>.
         </p>
       </section>
-    </main>
+    </Pagina>
   );
 }
