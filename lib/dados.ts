@@ -27,6 +27,8 @@ export type Corretor = {
   desde: string;
   notas: Notas;
   anterior: Notas | null;
+  /** Foto do Raio-X: como a pessoa estava quando o trabalho começou. */
+  inicial: Notas | null;
   historico: PontoHistorico[];
   /** Evidências específicas. O que não estiver aqui usa o texto padrão. */
   evidencias?: Partial<Record<ChaveCompetencia, Evidencia[]>>;
@@ -37,6 +39,8 @@ export type Imobiliaria = {
   cidade: string;
   ciclo: string;
   cicloAnterior: string;
+  /** Ciclo do Raio-X, quando o trabalho começou. */
+  cicloInicial: string;
   corretores: Corretor[];
 };
 
@@ -49,6 +53,7 @@ export const IMOBILIARIA: Imobiliaria = {
   cidade: "Exemplo",
   ciclo: "Março 2026",
   cicloAnterior: "Fevereiro 2026",
+  cicloInicial: "Dezembro 2025",
   corretores: [
     {
       id: "ana",
@@ -56,10 +61,11 @@ export const IMOBILIARIA: Imobiliaria = {
       desde: "2022",
       notas: { velocidade: 9, qualificacao: 8.5, visita: 9, followup: 7.5, negociacao: 8, registro: 8.5 },
       anterior: { velocidade: 8.5, qualificacao: 8, visita: 8.5, followup: 6.5, negociacao: 8, registro: 8 },
+      inicial: { velocidade: 7, qualificacao: 6, visita: 8, followup: 4.5, negociacao: 7, registro: 7 },
       historico: [
-        { ciclo: "Dez", nota: 7.4 },
-        { ciclo: "Jan", nota: 7.6 },
-        { ciclo: "Fev", nota: 7.9 },
+        { ciclo: "Dez", nota: 6.6 },
+        { ciclo: "Jan", nota: 7.1 },
+        { ciclo: "Fev", nota: 7.7 },
         { ciclo: "Mar", nota: 8.4 },
       ],
       evidencias: {
@@ -79,10 +85,11 @@ export const IMOBILIARIA: Imobiliaria = {
       desde: "2019",
       notas: { velocidade: 8, qualificacao: 4, visita: 7, followup: 3, negociacao: 6, registro: 4.5 },
       anterior: { velocidade: 7.5, qualificacao: 4, visita: 7, followup: 3.5, negociacao: 6, registro: 4 },
+      inicial: { velocidade: 6.5, qualificacao: 2.5, visita: 6, followup: 1, negociacao: 5, registro: 2.5 },
       historico: [
-        { ciclo: "Dez", nota: 5.1 },
-        { ciclo: "Jan", nota: 5.2 },
-        { ciclo: "Fev", nota: 5.3 },
+        { ciclo: "Dez", nota: 3.9 },
+        { ciclo: "Jan", nota: 4.4 },
+        { ciclo: "Fev", nota: 4.9 },
         { ciclo: "Mar", nota: 5.4 },
       ],
       evidencias: {
@@ -137,9 +144,10 @@ export const IMOBILIARIA: Imobiliaria = {
       desde: "2023",
       notas: { velocidade: 7.5, qualificacao: 7, visita: 6.5, followup: 4.5, negociacao: 5.5, registro: 7 },
       anterior: { velocidade: 6, qualificacao: 6, visita: 6, followup: 4, negociacao: 5.5, registro: 6.5 },
+      inicial: { velocidade: 5, qualificacao: 4.5, visita: 5.5, followup: 2, negociacao: 4.5, registro: 5 },
       historico: [
-        { ciclo: "Dez", nota: 5.2 },
-        { ciclo: "Jan", nota: 5.4 },
+        { ciclo: "Dez", nota: 4.4 },
+        { ciclo: "Jan", nota: 5.0 },
         { ciclo: "Fev", nota: 5.7 },
         { ciclo: "Mar", nota: 6.3 },
       ],
@@ -150,10 +158,11 @@ export const IMOBILIARIA: Imobiliaria = {
       desde: "2021",
       notas: { velocidade: 5, qualificacao: 6, visita: 7.5, followup: 3.5, negociacao: 7, registro: 3 },
       anterior: { velocidade: 5.5, qualificacao: 6, visita: 7, followup: 4, negociacao: 6.5, registro: 3 },
+      inicial: { velocidade: 4.5, qualificacao: 4, visita: 6.5, followup: 1.5, negociacao: 6, registro: 2.5 },
       historico: [
-        { ciclo: "Dez", nota: 5.5 },
-        { ciclo: "Jan", nota: 5.4 },
-        { ciclo: "Fev", nota: 5.3 },
+        { ciclo: "Dez", nota: 4.2 },
+        { ciclo: "Jan", nota: 4.5 },
+        { ciclo: "Fev", nota: 4.9 },
         { ciclo: "Mar", nota: 5.3 },
       ],
     },
@@ -163,10 +172,11 @@ export const IMOBILIARIA: Imobiliaria = {
       desde: "2020",
       notas: { velocidade: 6.5, qualificacao: 7.5, visita: 8, followup: 6, negociacao: 7.5, registro: 6 },
       anterior: { velocidade: 6.5, qualificacao: 7, visita: 8, followup: 5, negociacao: 7, registro: 6 },
+      inicial: { velocidade: 6, qualificacao: 5.5, visita: 7.5, followup: 3.5, negociacao: 6.5, registro: 5 },
       historico: [
-        { ciclo: "Dez", nota: 6.3 },
-        { ciclo: "Jan", nota: 6.4 },
-        { ciclo: "Fev", nota: 6.6 },
+        { ciclo: "Dez", nota: 5.7 },
+        { ciclo: "Jan", nota: 6.1 },
+        { ciclo: "Fev", nota: 6.5 },
         { ciclo: "Mar", nota: 6.9 },
       ],
     },
@@ -176,10 +186,11 @@ export const IMOBILIARIA: Imobiliaria = {
       desde: "2024",
       notas: { velocidade: 4, qualificacao: 4.5, visita: 5, followup: 2.5, negociacao: 4, registro: 5.5 },
       anterior: { velocidade: 3, qualificacao: 4, visita: 4, followup: 2.5, negociacao: 3.5, registro: 5 },
+      inicial: { velocidade: 3.5, qualificacao: 1.5, visita: 4, followup: 0.5, negociacao: 4, registro: 4.5 },
       historico: [
-        { ciclo: "Dez", nota: 3.2 },
+        { ciclo: "Dez", nota: 3.0 },
         { ciclo: "Jan", nota: 3.4 },
-        { ciclo: "Fev", nota: 3.7 },
+        { ciclo: "Fev", nota: 3.8 },
         { ciclo: "Mar", nota: 4.3 },
       ],
       evidencias: {
@@ -215,6 +226,7 @@ export const IMOBILIARIA: Imobiliaria = {
       desde: "2025",
       notas: { velocidade: 7, qualificacao: 5.5, visita: 5, followup: 4, negociacao: 4.5, registro: 6.5 },
       anterior: null,
+      inicial: null,
       historico: [{ ciclo: "Mar", nota: 5.4 }],
     },
   ],
@@ -258,6 +270,7 @@ export function aplicarAvaliacaoAoCorretor(params: {
       desde,
       notas,
       anterior: null,
+      inicial: null,
       historico: [{ ciclo: cicloRotulo, nota: media(notas) }],
       evidencias: evidenciasPorCompetencia,
     });

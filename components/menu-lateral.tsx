@@ -9,6 +9,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   LineChart,
+  TrendingUp,
   User,
   Users,
 } from "lucide-react";
@@ -26,6 +27,7 @@ const ITENS: Item[] = [
   { href: "/avaliacoes", rotulo: "Avaliações", Icone: ClipboardCheck },
   { href: "/equipe", rotulo: "Equipe", Icone: Users },
   { href: "/treinamentos", rotulo: "Treinamentos", Icone: GraduationCap },
+  { href: "/evolucao", rotulo: "Antes e depois", Icone: TrendingUp },
   { href: "/numeros", rotulo: "Números", Icone: LineChart, emBreve: true },
 ];
 

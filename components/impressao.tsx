@@ -24,10 +24,13 @@ function pontos(valores: number[], raio: number, centro: number): string {
 
 export function Impressao({
   notas,
+  antes,
   tamanho = 44,
   comEixos = false,
 }: {
   notas: Notas;
+  /** Quando existe, desenha o momento anterior por baixo, em fantasma. */
+  antes?: Notas;
   tamanho?: number;
   /** Mostra o nome de cada competência ao redor. Só cabe em tamanho grande. */
   comEixos?: boolean;
@@ -61,6 +64,21 @@ export function Impressao({
         strokeWidth="1"
         strokeDasharray="2 2.5"
       />
+      {antes && (
+        <polygon
+          points={pontos(
+            COMPETENCIAS.map((c) => antes[c.chave]),
+            raio,
+            centro
+          )}
+          fill="var(--suave)"
+          fillOpacity="0.14"
+          stroke="var(--suave)"
+          strokeWidth="1.25"
+          strokeDasharray="3 3"
+        />
+      )}
+
       <polygon points={forma} fill={cor} fillOpacity="0.22" stroke={cor} strokeWidth="1.5" />
 
       {COMPETENCIAS.map((c, i) => {
