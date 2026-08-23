@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Navegacao } from "@/components/navegacao";
+import { Casca } from "./casca";
 import { sair } from "../entrar/acoes";
 import { COOKIE_SESSAO, lerSessao } from "@/lib/sessao";
 import { acharPorId } from "@/lib/usuarios";
@@ -14,15 +14,14 @@ export default async function LayoutApp({ children }: { children: React.ReactNod
   const foto = acharPorId(sessao.id)?.foto ?? null;
 
   return (
-    <div className="min-h-screen bg-fundo">
-      <Navegacao
-        nome={sessao.nome}
-        papel={sessao.papel}
-        foto={foto}
-        ciclo={IMOBILIARIA.ciclo}
-        sair={sair}
-      />
+    <Casca
+      nome={sessao.nome}
+      papel={sessao.papel}
+      foto={foto}
+      ciclo={IMOBILIARIA.ciclo}
+      sair={sair}
+    >
       {children}
-    </div>
+    </Casca>
   );
 }

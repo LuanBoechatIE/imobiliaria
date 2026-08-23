@@ -185,7 +185,7 @@ export default async function PáginaCorretor({
       <div className="grid items-start gap-5 lg:grid-cols-[22rem_1fr]">
         {/* Coluna de identidade: acompanha a rolagem, porque a silhueta é a
             referência que a pessoa consulta enquanto lê as provas. */}
-        <div className="flex flex-col gap-4 lg:sticky lg:top-[4.9rem]">
+        <div className="flex flex-col gap-4 lg:sticky lg:top-6">
           <section className="flex flex-col items-center rounded-xl border border-linha bg-white px-6 py-6 text-center">
             <HexAvatar nome={pessoa.nome} tamanho={92} />
             <h2 className="m-0 mt-3 text-[1.3rem] font-bold tracking-[-0.02em] text-tinta">

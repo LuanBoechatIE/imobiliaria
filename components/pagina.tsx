@@ -15,11 +15,11 @@ export function Pagina({
   largura?: "ampla" | "media" | "estreita";
   className?: string;
 }) {
-  // A largura máxima acompanha a da barra de navegação, para o conteúdo
-  // nascer alinhado com a marca e o menu em vez de flutuar dentro deles.
+  // A largura máxima já desconta o menu lateral, para o conteúdo caber
+  // inteiro em tela de 1440 sem precisar de rolagem horizontal.
   const max = {
-    ampla: "max-w-[74rem]",
-    media: "max-w-[60rem]",
+    ampla: "max-w-[70rem]",
+    media: "max-w-[58rem]",
     estreita: "max-w-[46rem]",
   }[largura];
 

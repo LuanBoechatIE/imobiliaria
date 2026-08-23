@@ -1,10 +1,48 @@
+/**
+ * As seis competências são fixas: são os seis lados do hexágono e a
+ * ordem nunca muda, senão comparar silhueta perderia o sentido.
+ *
+ * "mede" descreve o que entra na nota. Mora aqui porque a mesma frase é
+ * usada no formulário de avaliação e na trilha de treinamento, e as duas
+ * precisam dizer exatamente a mesma coisa.
+ */
 export const COMPETENCIAS = [
-  { chave: "velocidade", nome: "Velocidade", curto: "Vel" },
-  { chave: "qualificacao", nome: "Qualificação", curto: "Qual" },
-  { chave: "visita", nome: "Condução de visita", curto: "Vis" },
-  { chave: "followup", nome: "Follow-up", curto: "Follow" },
-  { chave: "negociacao", nome: "Negociação", curto: "Neg" },
-  { chave: "registro", nome: "Registro", curto: "Reg" },
+  {
+    chave: "velocidade",
+    nome: "Velocidade",
+    curto: "Vel",
+    mede: "Tempo entre o lead chegar e o corretor falar com ele.",
+  },
+  {
+    chave: "qualificacao",
+    nome: "Qualificação",
+    curto: "Qual",
+    mede: "Descobre renda, situação de crédito, urgência e quem decide.",
+  },
+  {
+    chave: "visita",
+    nome: "Condução de visita",
+    curto: "Vis",
+    mede: "Preparo, roteiro de imóveis, leitura de sinal e retorno depois.",
+  },
+  {
+    chave: "followup",
+    nome: "Follow-up",
+    curto: "Follow",
+    mede: "Cadência real de contato, e o que faz com quem parou de responder.",
+  },
+  {
+    chave: "negociacao",
+    nome: "Negociação",
+    curto: "Neg",
+    mede: "Conduz as duas pontas: o comprador e o proprietário.",
+  },
+  {
+    chave: "registro",
+    nome: "Registro",
+    curto: "Reg",
+    mede: "Deixa rastro no processo, de forma que a carteira fique com a imobiliária.",
+  },
 ] as const;
 
 export type ChaveCompetencia = (typeof COMPETENCIAS)[number]["chave"];

@@ -8,15 +8,6 @@ import { gravarAvaliacao } from "../acoes";
 import { COMPETENCIAS, fmt, type ChaveCompetencia, type Notas } from "@/lib/dados";
 import type { Avaliacao } from "@/lib/avaliacoes";
 
-const O_QUE_MEDE: Record<ChaveCompetencia, string> = {
-  velocidade: "Tempo entre o lead chegar e o corretor falar com ele.",
-  qualificacao: "Descobre renda, situação de crédito, urgência e quem decide.",
-  visita: "Preparo, roteiro de imóveis, leitura de sinal e retorno depois.",
-  followup: "Cadência real de contato, e o que faz com quem parou de responder.",
-  negociacao: "Com o comprador e com o proprietário.",
-  registro: "Usa o processo e deixa rastro, de forma que a carteira fique com a imobiliária.",
-};
-
 const TIPOS = ["áudio", "tempo", "role-play", "registro"] as const;
 
 const caixa =
@@ -106,7 +97,7 @@ export function Formulario({
                 </span>
               </legend>
 
-              <p className="m-0 text-[0.86rem] text-suave">{O_QUE_MEDE[c.chave]}</p>
+              <p className="m-0 text-[0.86rem] text-suave">{c.mede}</p>
 
               <div className="flex flex-col gap-1.5">
                 <RatingScaleGroup
@@ -183,7 +174,7 @@ export function Formulario({
 
       {/* A silhueta em construção substitui a barra de progresso: o que
           mede o avanço aqui é o mesmo desenho que o produto entrega. */}
-      <aside className="flex flex-col gap-4 lg:sticky lg:top-[4.9rem]">
+      <aside className="flex flex-col gap-4 lg:sticky lg:top-6">
         <div className="flex flex-col items-center rounded-xl border border-linha bg-white px-5 py-5 text-center">
           <span className="text-[0.72rem] font-bold uppercase tracking-[0.12em] text-suave">
             Silhueta em construção

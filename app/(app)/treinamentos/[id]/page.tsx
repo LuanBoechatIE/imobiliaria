@@ -255,7 +255,7 @@ export default async function PáginaTreinamento({
           </section>
         </div>
 
-        <aside className="flex flex-col gap-4 lg:sticky lg:top-[4.9rem]">
+        <aside className="flex flex-col gap-4 lg:sticky lg:top-6">
           <section className="flex flex-col items-center rounded-xl border border-linha bg-white px-5 py-5 text-center">
             <span className="text-[0.72rem] font-bold uppercase tracking-[0.12em] text-suave">
               O lado que este treino move
