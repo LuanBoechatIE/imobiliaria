@@ -11,7 +11,7 @@ import type { Avaliacao } from "@/lib/avaliacoes";
 const TIPOS = ["áudio", "tempo", "role-play", "registro"] as const;
 
 const caixa =
-  "w-full rounded-md border border-linha-forte bg-white px-3 py-2 text-[0.92rem] text-tinta outline-none transition focus:border-laranja focus:ring-3 focus:ring-laranja-suave";
+  "w-full rounded-md border border-borda-campo bg-white px-3 py-2 text-[0.92rem] text-tinta transition focus:border-acao";
 
 export function Formulario({
   corretorId,
@@ -87,7 +87,7 @@ export function Formulario({
                 <span
                   className={`text-[1.15rem] font-bold tabular-nums ${
                     valor === undefined
-                      ? "text-linha-forte"
+                      ? "text-suave"
                       : baixa
                         ? "text-alerta"
                         : "text-tinta"
@@ -212,7 +212,7 @@ export function Formulario({
                 >
                   <span
                     style={{ width: 16, height: 18 }}
-                    className={`hex-recorte shrink-0 ${feito ? "bg-laranja" : "bg-fundo-2"}`}
+                    className={`hex-recorte shrink-0 ${feito ? "bg-acao" : "bg-fundo-2"}`}
                     aria-hidden="true"
                   />
                   <span className="flex-1">{c.nome}</span>
@@ -242,7 +242,7 @@ export function Formulario({
               name="acao"
               value="concluir"
               disabled={enviando}
-              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-laranja px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-laranja-escuro disabled:opacity-60"
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-acao px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte disabled:opacity-60"
             >
               <Check size={16} strokeWidth={2.6} />
               Concluir

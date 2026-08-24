@@ -33,11 +33,11 @@ const RatingScaleItem = React.forwardRef<
     ref={ref}
     className={cn(
       "relative flex size-9 items-center justify-center rounded-md border border-linha-forte bg-white text-[0.85rem] font-semibold text-tinta-suave transition-all",
-      "hover:border-laranja hover:text-laranja-escuro",
+      "hover:border-laranja hover:text-acao",
       "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-laranja",
       atencao
         ? "data-[state=checked]:border-alerta data-[state=checked]:bg-alerta data-[state=checked]:text-white"
-        : "data-[state=checked]:border-laranja data-[state=checked]:bg-laranja data-[state=checked]:text-white",
+        : "data-[state=checked]:border-acao data-[state=checked]:bg-acao data-[state=checked]:text-white",
       "disabled:cursor-not-allowed disabled:opacity-50",
       className
     )}

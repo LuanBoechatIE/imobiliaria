@@ -77,7 +77,7 @@ export default async function PáginaEvolucao() {
 
           <h1 className="m-0 mt-3 max-w-[15ch] text-[2.3rem] font-bold leading-[1.05] tracking-[-0.035em] text-tinta sm:text-[2.7rem]">
             O time saiu de {fmt(time.antes)} para{" "}
-            <span className="text-laranja-escuro">{fmt(time.depois)}</span>.
+            <span className="text-acao">{fmt(time.depois)}</span>.
           </h1>
 
           <p className="m-0 mt-4 max-w-[46ch] text-[1rem] text-tinta-suave">
@@ -192,7 +192,7 @@ export default async function PáginaEvolucao() {
                   style={{ width: `${c.antes * 10}%` }}
                 />
                 <span
-                  className={`barra-enche absolute left-0 top-[13px] h-[9px] rounded-full ${critica(c.depois) ? "bg-alerta" : "bg-laranja"}`}
+                  className={`barra-enche absolute left-0 top-[13px] h-[9px] rounded-full ${critica(c.depois) ? "bg-alerta" : "bg-acao"}`}
                   style={{ width: `${c.depois * 10}%`, animationDelay: `${i * 70}ms` }}
                 />
                 <span
@@ -234,7 +234,7 @@ export default async function PáginaEvolucao() {
 
                   <span className="flex items-center gap-1.5">
                     <Impressao notas={pessoa.inicial} tamanho={34} className="opacity-45" />
-                    <span className="text-[0.85rem] text-linha-forte">›</span>
+                    <span className="text-[0.85rem] text-suave">›</span>
                     <Impressao notas={pessoa.notas} tamanho={38} anima />
                   </span>
 
@@ -307,7 +307,7 @@ export default async function PáginaEvolucao() {
                         style={{ width: `${(ind.antes / maior) * 100}%` }}
                       />
                       <span
-                        className={`barra-enche absolute left-0 top-3 h-2 rounded-full ${bom ? "bg-laranja" : "bg-alerta"}`}
+                        className={`barra-enche absolute left-0 top-3 h-2 rounded-full ${bom ? "bg-acao" : "bg-alerta"}`}
                         style={{
                           width: `${(ind.depois / maior) * 100}%`,
                           animationDelay: `${i * 70}ms`,
@@ -333,7 +333,7 @@ export default async function PáginaEvolucao() {
             <span className="text-[2.2rem] font-bold leading-none tabular-nums tracking-[-0.035em] text-suave">
               {zonaCritica.antes}
             </span>
-            <span className="text-[1.5rem] font-medium leading-none text-linha-forte">›</span>
+            <span className="text-[1.5rem] font-medium leading-none text-suave">›</span>
             <span
               className={`text-[2.8rem] font-bold leading-none tabular-nums tracking-[-0.04em] ${
                 zonaCritica.depois < zonaCritica.antes ? "text-ok" : "text-alerta"
@@ -360,7 +360,7 @@ export default async function PáginaEvolucao() {
                   {i > 0 && ", "}
                   <Link
                     href={`/painel/corretor/${p.id}`}
-                    className="font-semibold underline decoration-linha-forte underline-offset-2 hover:text-laranja-escuro"
+                    className="font-semibold underline decoration-linha-forte underline-offset-2 hover:text-acao"
                   >
                     {p.nome}
                   </Link>

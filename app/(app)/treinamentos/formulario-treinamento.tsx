@@ -10,7 +10,7 @@ import type { Pessoa } from "@/lib/equipe";
 import type { Treinamento } from "@/lib/treinamentos";
 
 const campo =
-  "w-full rounded-md border border-linha-forte bg-white px-3 py-2 text-[0.95rem] text-tinta outline-none transition focus:border-laranja focus:ring-3 focus:ring-laranja-suave";
+  "w-full rounded-md border border-borda-campo bg-white px-3 py-2 text-[0.95rem] text-tinta transition focus:border-acao";
 const rotulo = "text-[0.83rem] font-semibold text-tinta-suave";
 
 export function FormularioTreinamento({
@@ -36,7 +36,7 @@ export function FormularioTreinamento({
         <button
           type="button"
           onClick={() => setAberto(true)}
-          className="inline-flex items-center gap-1.5 rounded-md bg-laranja px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-laranja-escuro"
+          className="inline-flex items-center gap-1.5 rounded-md bg-acao px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte"
         >
           <Plus size={16} strokeWidth={2.6} />
           Novo treinamento
@@ -45,7 +45,7 @@ export function FormularioTreinamento({
         <button
           type="button"
           onClick={() => setAberto(true)}
-          className="inline-flex items-center gap-1.5 rounded-md border border-linha-forte bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-laranja-escuro"
+          className="inline-flex items-center gap-1.5 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-acao"
         >
           Editar informações
         </button>
@@ -70,7 +70,7 @@ export function FormularioTreinamento({
               transition={{ type: "spring", stiffness: 380, damping: 32 }}
             >
               <div className="flex items-center gap-2.5 border-b border-linha px-5 py-4">
-                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-laranja-suave text-laranja-escuro">
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-laranja-suave text-acao">
                   <GraduationCap size={16} strokeWidth={2.4} />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -214,7 +214,7 @@ export function FormularioTreinamento({
                   <button
                     type="submit"
                     disabled={enviando}
-                    className="rounded-md bg-laranja px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-laranja-escuro disabled:opacity-60"
+                    className="rounded-md bg-acao px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte disabled:opacity-60"
                   >
                     {enviando ? "Salvando..." : editando ? "Salvar" : "Criar treinamento"}
                   </button>

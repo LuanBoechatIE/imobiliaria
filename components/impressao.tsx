@@ -71,7 +71,12 @@ export function Impressao({
 
   const valores = COMPETENCIAS.map((c) => notas[c.chave]);
   const temCritica = valores.some(critica);
-  const cor = temCritica ? "var(--alerta)" : "var(--laranja)";
+
+  // O traço é o que separa a silhueta do fundo, e ela aparece tanto sobre
+  // branco quanto sobre --laranja-suave, então usa a cor de ação, que
+  // passa 3:1 nos dois. O preenchimento por baixo continua sendo a marca.
+  const cor = temCritica ? "var(--alerta)" : "var(--acao)";
+  const preenchimento = temCritica ? "var(--alerta)" : "var(--laranja)";
   const indiceFraco = fraco ? COMPETENCIAS.findIndex((c) => c.chave === fraco) : -1;
 
   return (
@@ -133,7 +138,7 @@ export function Impressao({
       <g className={anima ? "hex-cresce" : undefined}>
         <polygon
           points={poligono(valores, raio)}
-          fill={cor}
+          fill={preenchimento}
           fillOpacity="0.16"
           stroke={cor}
           strokeWidth={rotulos ? 2 : 2.5}
@@ -230,7 +235,7 @@ export function Vertice({
   if (i < 0) return null;
 
   const raio = 82;
-  const cor = nota !== undefined && critica(nota) ? "var(--alerta)" : "var(--laranja)";
+  const cor = nota !== undefined && critica(nota) ? "var(--alerta)" : "var(--acao)";
   const [x, y] = ponto(nota === undefined ? raio : (Math.max(nota, 0) / 10) * raio, i);
 
   return (
@@ -251,7 +256,7 @@ export function Vertice({
               cy={my.toFixed(2)}
               r="16"
               fill="none"
-              stroke="var(--laranja)"
+              stroke="var(--acao)"
               strokeWidth="6"
               strokeDasharray="10 9"
             />

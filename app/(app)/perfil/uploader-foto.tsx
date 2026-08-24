@@ -70,7 +70,7 @@ export function UploaderFoto({
   return (
     <div className="flex items-center gap-4">
       <div className="relative" style={{ width: 80, height: 89 }}>
-        <span className="hex-recorte grid size-full place-items-center overflow-hidden bg-laranja-suave text-[1.7rem] font-bold text-laranja-escuro">
+        <span className="hex-recorte grid size-full place-items-center overflow-hidden bg-laranja-suave text-[1.7rem] font-bold text-acao">
           {foto ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={foto} alt="" className="size-full object-cover" />
@@ -90,7 +90,7 @@ export function UploaderFoto({
           <button
             type="button"
             onClick={() => arquivo.current?.click()}
-            className="inline-flex items-center gap-1.5 rounded-md border border-linha-forte bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-laranja-escuro"
+            className="inline-flex items-center gap-1.5 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-acao"
           >
             <Camera size={15} />
             {foto ? "Trocar foto" : "Adicionar foto"}
@@ -99,7 +99,7 @@ export function UploaderFoto({
             <button
               type="button"
               onClick={remover}
-              className="inline-flex items-center gap-1.5 rounded-md border border-linha-forte bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-alerta transition-colors hover:bg-alerta-suave"
+              className="inline-flex items-center gap-1.5 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-alerta transition-colors hover:bg-alerta-suave"
             >
               <Trash2 size={15} />
               Remover

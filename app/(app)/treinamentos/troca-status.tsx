@@ -8,7 +8,7 @@ import { ROTULO_STATUS_TREINAMENTO, type StatusTreinamento } from "@/lib/treinam
 const OPCOES: StatusTreinamento[] = ["agendado", "realizado", "cancelado"];
 
 const ATIVO: Record<StatusTreinamento, string> = {
-  agendado: "border-laranja/30 bg-laranja-suave text-laranja-escuro",
+  agendado: "border-laranja/30 bg-laranja-suave text-acao",
   realizado: "border-ok/30 bg-ok-suave text-ok",
   cancelado: "border-linha-forte bg-fundo-2 text-suave",
 };
@@ -43,7 +43,7 @@ export function TrocaStatus({ id, atual }: { id: string; atual: StatusTreinament
             className={`rounded-full border px-3 py-1 text-[0.82rem] font-semibold transition-colors disabled:cursor-default ${
               ativo
                 ? ATIVO[s]
-                : "border-linha-forte bg-white text-suave hover:border-laranja hover:text-laranja-escuro disabled:opacity-50"
+                : "border-linha-forte bg-white text-suave hover:border-laranja hover:text-acao disabled:opacity-50"
             }`}
           >
             {ROTULO_STATUS_TREINAMENTO[s]}

@@ -81,7 +81,7 @@ export function MenuLateral({
             return (
               <span
                 key={href}
-                className="flex cursor-default items-center gap-2.5 rounded-lg px-3 py-2 text-[0.9rem] text-suave/70"
+                className="flex cursor-default items-center gap-2.5 rounded-lg px-3 py-2 text-[0.9rem] text-suave"
               >
                 <Icone size={17} strokeWidth={2} className="shrink-0 opacity-60" />
                 <span className="flex-1">{rotulo}</span>
@@ -102,14 +102,14 @@ export function MenuLateral({
               className={cn(
                 "relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-[0.9rem] no-underline transition-colors",
                 estaAtivo
-                  ? "bg-laranja-suave font-semibold text-laranja-escuro"
+                  ? "bg-laranja-suave font-semibold text-acao"
                   : "text-tinta-suave hover:bg-fundo-2 hover:text-tinta"
               )}
             >
               {estaAtivo && (
                 <motion.span
                   layoutId="menu-ativo"
-                  className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-laranja"
+                  className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-acao"
                   transition={{ type: "spring", stiffness: 600, damping: 38 }}
                 />
               )}
@@ -136,7 +136,16 @@ export function MenuLateral({
           <HexAvatar nome={nome} foto={foto} tamanho={30} />
           <span className="flex min-w-0 flex-col leading-tight">
             <span className="truncate text-[0.87rem] font-semibold text-tinta">{nome}</span>
-            <span className="text-[0.75rem] text-suave">{NOME_PAPEL[papel]}</span>
+            {/* Sobre a superfície de marca o secundário sai do matiz laranja,
+                não de um cinza neutro que brigaria com o fundo. */}
+            <span
+              className={cn(
+                "text-[0.75rem]",
+                ativo("/perfil") ? "text-suave-marca" : "text-suave"
+              )}
+            >
+              {NOME_PAPEL[papel]}
+            </span>
           </span>
         </Link>
 

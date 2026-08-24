@@ -20,12 +20,12 @@ export function NovaAtividade({ treinamentoId }: { treinamentoId: string }) {
       <input
         name="titulo"
         placeholder="Nova atividade ou tarefa"
-        className="flex-1 rounded-md border border-linha-forte bg-white px-3 py-1.5 text-[0.88rem] text-tinta outline-none transition focus:border-laranja focus:ring-3 focus:ring-laranja-suave"
+        className="flex-1 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.88rem] text-tinta transition focus:border-acao"
         required
       />
       <button
         type="submit"
-        className="inline-flex shrink-0 items-center gap-1 rounded-md border border-linha-forte bg-white px-2.5 py-1.5 text-[0.83rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-laranja-escuro"
+        className="inline-flex shrink-0 items-center gap-1 rounded-md border border-linha-forte bg-white px-2.5 py-1.5 text-[0.83rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-acao"
       >
         <Plus size={14} />
         Adicionar

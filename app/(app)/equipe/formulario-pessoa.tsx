@@ -7,7 +7,7 @@ import { salvarPessoa } from "./acoes";
 import type { Pessoa } from "@/lib/equipe";
 
 const campo =
-  "w-full rounded-md border border-linha-forte bg-white px-3 py-2 text-[0.95rem] text-tinta outline-none transition focus:border-laranja focus:ring-3 focus:ring-laranja-suave";
+  "w-full rounded-md border border-borda-campo bg-white px-3 py-2 text-[0.95rem] text-tinta transition focus:border-acao";
 const rotulo = "text-[0.83rem] font-semibold text-tinta-suave";
 
 function BotaoCopiar({ texto }: { texto: string }) {
@@ -21,7 +21,7 @@ function BotaoCopiar({ texto }: { texto: string }) {
         setCopiado(true);
         setTimeout(() => setCopiado(false), 1800);
       }}
-      className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-linha-forte bg-white px-2.5 py-1.5 text-[0.82rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-laranja-escuro"
+      className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-linha-forte bg-white px-2.5 py-1.5 text-[0.82rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-acao"
     >
       <AnimatePresence mode="wait" initial={false}>
         {copiado ? (
@@ -72,7 +72,7 @@ export function FormularioPessoa({
         <button
           type="button"
           onClick={() => setAberto(true)}
-          className="inline-flex items-center gap-1.5 rounded-md bg-laranja px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-laranja-escuro"
+          className="inline-flex items-center gap-1.5 rounded-md bg-acao px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte"
         >
           <Plus size={16} strokeWidth={2.6} />
           Adicionar pessoa
@@ -137,7 +137,7 @@ export function FormularioPessoa({
                       Senha temporária
                     </span>
                     <div className="flex items-center gap-2">
-                      <code className="flex-1 rounded-md border border-linha-forte bg-white px-3 py-2 text-[1.05rem] font-semibold tracking-wide text-tinta">
+                      <code className="flex-1 rounded-md border border-borda-campo bg-white px-3 py-2 text-[1.05rem] font-semibold tracking-wide text-tinta">
                         {estado.senhaTemporaria}
                       </code>
                       <BotaoCopiar texto={estado.senhaTemporaria} />
@@ -152,7 +152,7 @@ export function FormularioPessoa({
                   <button
                     type="button"
                     onClick={() => setAberto(false)}
-                    className="rounded-md bg-laranja px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-laranja-escuro"
+                    className="rounded-md bg-acao px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte"
                   >
                     Entendi, fechar
                   </button>
@@ -266,7 +266,7 @@ export function FormularioPessoa({
                       <button
                         type="submit"
                         disabled={enviando}
-                        className="rounded-md bg-laranja px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-laranja-escuro disabled:opacity-60"
+                        className="rounded-md bg-acao px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte disabled:opacity-60"
                       >
                         {enviando ? "Salvando..." : editando ? "Salvar" : "Adicionar"}
                       </button>

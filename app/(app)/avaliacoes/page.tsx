@@ -20,7 +20,7 @@ export const metadata: Metadata = { title: "Avaliações" };
 
 const ESTILO: Record<StatusAvaliacao, string> = {
   avaliado: "border-ok/30 bg-ok-suave text-ok",
-  "em-andamento": "border-laranja/30 bg-laranja-suave text-laranja-escuro",
+  "em-andamento": "border-laranja/30 bg-laranja-suave text-acao",
   "nao-avaliado": "border-linha-forte bg-fundo-2 text-suave",
 };
 
@@ -60,7 +60,9 @@ function HexColeta({
     <span
       title={`${nome} · ${feitas} de ${total} provas`}
       style={{ width: 56, height: 62 }}
-      className="hex-recorte grid shrink-0 place-items-center bg-linha-forte"
+      // A moldura é o que representa "não iniciada", então ela é o
+      // elemento gráfico que precisa se separar do fundo, não o miolo.
+      className="hex-recorte grid shrink-0 place-items-center bg-borda-campo"
     >
       <span
         style={{ width: 53, height: 59 }}
@@ -71,7 +73,10 @@ function HexColeta({
           style={{
             height: `${pct}%`,
             animationDelay: `${atraso}ms`,
-            background: cheio ? "var(--laranja)" : "var(--laranja-claro)",
+            // Fechada usa a cor de ação; em andamento, a marca. Os dois
+            // tons passam 3:1 sobre o fundo da malha, e a altura do
+            // preenchimento continua sendo o código principal.
+            background: cheio ? "var(--acao)" : "var(--laranja)",
           }}
         />
         <span
@@ -154,7 +159,7 @@ export default async function PáginaAvaliacoes({
           </div>
         </div>
 
-        <div className="border-t border-linha bg-fundo-2 px-5 py-6 lg:border-l lg:border-t-0">
+        <div className="border-t border-linha bg-fundo px-5 py-6 lg:border-l lg:border-t-0">
           <div className="flex flex-wrap justify-center gap-2.5">
             {corretores.map((pessoa, i) => (
               <HexColeta
@@ -171,7 +176,7 @@ export default async function PáginaAvaliacoes({
             <span className="inline-flex items-center gap-1.5">
               <span
                 style={{ width: 10, height: 11 }}
-                className="hex-recorte bg-laranja"
+                className="hex-recorte bg-acao"
                 aria-hidden="true"
               />
               Fechada
@@ -179,7 +184,7 @@ export default async function PáginaAvaliacoes({
             <span className="inline-flex items-center gap-1.5">
               <span
                 style={{ width: 10, height: 11 }}
-                className="hex-recorte bg-laranja-claro"
+                className="hex-recorte bg-laranja"
                 aria-hidden="true"
               />
               Em andamento
@@ -238,7 +243,7 @@ export default async function PáginaAvaliacoes({
                 <div className="col-span-3 flex items-center gap-2.5 lg:col-span-1">
                   <span className="block h-[7px] w-24 shrink-0 overflow-hidden rounded-full bg-fundo-2">
                     <span
-                      className={`block h-full rounded-full ${status === "avaliado" ? "bg-ok" : "bg-laranja"}`}
+                      className={`block h-full rounded-full ${status === "avaliado" ? "bg-ok" : "bg-acao"}`}
                       style={{ width: `${(feitas / total) * 100}%` }}
                     />
                   </span>
@@ -257,7 +262,7 @@ export default async function PáginaAvaliacoes({
                   >
                     {ROTULO_STATUS[status]}
                   </span>
-                  <span className="inline-flex items-center gap-0.5 text-[0.85rem] font-semibold text-laranja-escuro lg:hidden">
+                  <span className="inline-flex items-center gap-0.5 text-[0.85rem] font-semibold text-acao lg:hidden">
                     {ACAO[status]}
                     <ChevronRight size={16} />
                   </span>

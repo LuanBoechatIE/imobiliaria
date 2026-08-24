@@ -41,7 +41,7 @@ export function HexAvatar({
       }}
       className={cn(
         "hex-recorte grid shrink-0 place-items-center overflow-hidden font-bold leading-none",
-        tom === "laranja" ? "bg-laranja-suave text-laranja-escuro" : "bg-fundo-2 text-suave",
+        tom === "laranja" ? "bg-laranja-suave text-acao" : "bg-fundo-2 text-suave",
         className
       )}
     >

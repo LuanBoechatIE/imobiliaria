@@ -49,9 +49,9 @@ export function AcessoDemo() {
             key={email}
             type="button"
             onClick={() => preencher(email, senha)}
-            className="flex items-center gap-2.5 rounded-md border border-linha-forte bg-white px-3 py-2.5 text-left transition-colors hover:border-laranja"
+            className="flex items-center gap-2.5 rounded-md border border-borda-campo bg-white px-3 py-2.5 text-left transition-colors hover:border-laranja"
           >
-            <span className="grid size-7 shrink-0 place-items-center rounded-md bg-laranja-suave text-laranja-escuro">
+            <span className="grid size-7 shrink-0 place-items-center rounded-md bg-laranja-suave text-acao">
               <Icone size={14} strokeWidth={2.3} />
             </span>
             <span className="flex min-w-0 flex-col leading-tight">

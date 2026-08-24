@@ -34,7 +34,7 @@ export function Voltar({ href, children }: { href: string; children: React.React
   return (
     <Link
       href={href}
-      className="-mb-2 w-fit text-[0.87rem] font-semibold text-suave no-underline transition-colors hover:text-laranja-escuro"
+      className="-mb-2 w-fit text-[0.87rem] font-semibold text-suave no-underline transition-colors hover:text-acao"
     >
       ← {children}
     </Link>

@@ -175,7 +175,7 @@ export default async function PáginaCorretor({
         acao={
           <Link
             href={`/avaliacoes/${pessoa.id}`}
-            className="rounded-md bg-laranja px-3.5 py-2 text-[0.88rem] font-semibold text-white no-underline transition-colors hover:bg-laranja-escuro"
+            className="rounded-md bg-acao px-3.5 py-2 text-[0.88rem] font-semibold text-white no-underline transition-colors hover:bg-acao-forte"
           >
             Avaliar no ciclo em coleta
           </Link>
@@ -352,7 +352,7 @@ export default async function PáginaCorretor({
 
                   <span className="mt-3 block h-[7px] overflow-hidden rounded-full bg-fundo-2">
                     <span
-                      className={`barra-enche block h-full rounded-full ${alerta ? "bg-alerta" : "bg-laranja"}`}
+                      className={`barra-enche block h-full rounded-full ${alerta ? "bg-alerta" : "bg-acao"}`}
                       style={{ width: `${(valor / 10) * 100}%` }}
                     />
                   </span>
@@ -363,7 +363,7 @@ export default async function PáginaCorretor({
                         key={i}
                         className="rounded-lg border border-linha bg-white px-3.5 py-3"
                       >
-                        <span className="text-[0.7rem] font-bold uppercase tracking-[0.06em] text-laranja-escuro">
+                        <span className="text-[0.7rem] font-bold uppercase tracking-[0.06em] text-acao">
                           {prova.tipo}
                         </span>
                         <p className="m-0 mt-1 text-[0.9rem] text-tinta-suave">{prova.texto}</p>
@@ -386,7 +386,7 @@ export default async function PáginaCorretor({
                 </h2>
                 <Link
                   href="/treinamentos"
-                  className="text-[0.85rem] font-semibold text-laranja-escuro no-underline hover:underline"
+                  className="text-[0.85rem] font-semibold text-acao no-underline hover:underline"
                 >
                   Todos
                 </Link>

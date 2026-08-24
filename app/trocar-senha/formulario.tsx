@@ -5,7 +5,7 @@ import { AlertCircle, KeyRound } from "lucide-react";
 import { trocarSenha } from "./acoes";
 
 const campo =
-  "w-full rounded-md border border-linha-forte bg-white px-3 py-2.5 text-[0.95rem] text-tinta outline-none transition focus:border-laranja focus:ring-3 focus:ring-laranja-suave";
+  "w-full rounded-md border border-borda-campo bg-white px-3 py-2.5 text-[0.95rem] text-tinta transition focus:border-acao";
 const rotulo = "text-[0.83rem] font-semibold text-tinta-suave";
 
 export function FormularioTrocarSenha() {
@@ -70,7 +70,7 @@ export function FormularioTrocarSenha() {
       <button
         type="submit"
         disabled={enviando}
-        className="mt-1 inline-flex items-center justify-center gap-2 rounded-md bg-laranja px-4 py-2.5 text-[0.95rem] font-semibold text-white transition-colors hover:bg-laranja-escuro disabled:opacity-60"
+        className="mt-1 inline-flex items-center justify-center gap-2 rounded-md bg-acao px-4 py-2.5 text-[0.95rem] font-semibold text-white transition-colors hover:bg-acao-forte disabled:opacity-60"
       >
         <KeyRound size={16} />
         {enviando ? "Salvando..." : "Definir senha e entrar"}

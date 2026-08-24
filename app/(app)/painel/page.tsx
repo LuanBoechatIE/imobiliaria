@@ -91,7 +91,7 @@ function CartaoAcao({
       <span
         style={{ width: 26, height: 29 }}
         className={`hex-recorte grid shrink-0 place-items-center text-[0.76rem] font-bold ${
-          alerta ? "bg-alerta-suave text-alerta" : "bg-laranja-suave text-laranja-escuro"
+          alerta ? "bg-alerta-suave text-alerta" : "bg-laranja-suave text-acao"
         }`}
       >
         {marca}
@@ -103,7 +103,7 @@ function CartaoAcao({
         <span className="text-[0.83rem] text-suave">{apoio}</span>
         <Link
           href={href}
-          className="mt-1 w-fit text-[0.83rem] font-semibold text-laranja-escuro no-underline hover:underline"
+          className="mt-1 w-fit text-[0.83rem] font-semibold text-acao no-underline hover:underline"
         >
           {acao}
         </Link>
@@ -149,7 +149,7 @@ export default async function PáginaPainel() {
           </span>
 
           <h1 className="m-0 mt-3 max-w-[15ch] text-[2rem] font-bold leading-[1.08] tracking-[-0.03em] text-tinta sm:text-[2.15rem]">
-            <span className="text-laranja-escuro">{maisFraca.nome}</span> é o ponto mais fraco
+            <span className="text-acao">{maisFraca.nome}</span> é o ponto mais fraco
             do time.
           </h1>
 
@@ -184,7 +184,7 @@ export default async function PáginaPainel() {
             fraco={maisFraca.chave}
             anima
           />
-          <span className="absolute inset-x-0 bottom-3.5 text-center text-[0.76rem] font-semibold text-laranja-escuro">
+          <span className="absolute inset-x-0 bottom-3.5 text-center text-[0.76rem] font-semibold text-acao">
             Silhueta do time · {ciclo.toLowerCase()}
           </span>
         </div>
@@ -240,7 +240,7 @@ export default async function PáginaPainel() {
         acao={
           <Link
             href="/equipe"
-            className="rounded-md border border-linha-forte bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-laranja-escuro"
+            className="rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-acao"
           >
             Gerenciar equipe
           </Link>

@@ -20,19 +20,19 @@ export function NovoMaterial({ treinamentoId }: { treinamentoId: string }) {
       <input
         name="nome"
         placeholder="Nome do material"
-        className="flex-1 rounded-md border border-linha-forte bg-white px-3 py-1.5 text-[0.88rem] text-tinta outline-none transition focus:border-laranja focus:ring-3 focus:ring-laranja-suave"
+        className="flex-1 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.88rem] text-tinta transition focus:border-acao"
         required
       />
       <input
         name="url"
         type="url"
         placeholder="Link (Drive, Docs...)"
-        className="flex-1 rounded-md border border-linha-forte bg-white px-3 py-1.5 text-[0.88rem] text-tinta outline-none transition focus:border-laranja focus:ring-3 focus:ring-laranja-suave"
+        className="flex-1 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.88rem] text-tinta transition focus:border-acao"
         required
       />
       <button
         type="submit"
-        className="inline-flex shrink-0 items-center justify-center gap-1 rounded-md border border-linha-forte bg-white px-2.5 py-1.5 text-[0.83rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-laranja-escuro"
+        className="inline-flex shrink-0 items-center justify-center gap-1 rounded-md border border-linha-forte bg-white px-2.5 py-1.5 text-[0.83rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-acao"
       >
         <Plus size={14} />
         Adicionar

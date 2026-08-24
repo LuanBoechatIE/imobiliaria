@@ -27,7 +27,7 @@ export const metadata: Metadata = { title: "Treinamentos" };
 
 const ESTILO_STATUS: Record<StatusTreinamento, string> = {
   realizado: "border-ok/30 bg-ok-suave text-ok",
-  agendado: "border-laranja/30 bg-laranja-suave text-laranja-escuro",
+  agendado: "border-laranja/30 bg-laranja-suave text-acao",
   cancelado: "border-linha-forte bg-fundo-2 text-suave",
 };
 
@@ -69,7 +69,7 @@ function Cartao({ t }: { t: Treinamento }) {
       <span
         style={{ width: 42, height: 46 }}
         className={`hex-recorte grid shrink-0 place-items-center ${
-          t.gravacaoUrl ? "bg-laranja text-white" : "bg-fundo-2 text-linha-forte"
+          t.gravacaoUrl ? "bg-acao text-white" : "bg-fundo-2 text-suave"
         }`}
         aria-hidden="true"
       >
@@ -225,7 +225,7 @@ export default async function PáginaTreinamentos({
               href={url("todos")}
               className={`flex items-center gap-2.5 border-b border-linha px-4 py-2.5 no-underline transition-colors ${
                 trilhaPedida === "todos"
-                  ? "bg-laranja-suave font-semibold text-laranja-escuro"
+                  ? "bg-laranja-suave font-semibold text-acao"
                   : "text-tinta-suave hover:bg-fundo"
               }`}
             >
@@ -248,7 +248,7 @@ export default async function PáginaTreinamentos({
                   href={url(trilha.chave)}
                   className={`flex items-center gap-2.5 border-b border-linha px-4 py-2.5 no-underline transition-colors last:border-b-0 ${
                     ativa
-                      ? "bg-laranja-suave text-laranja-escuro"
+                      ? "bg-laranja-suave text-acao"
                       : "text-tinta-suave hover:bg-fundo"
                   }`}
                 >
@@ -280,7 +280,7 @@ export default async function PáginaTreinamentos({
                   </span>
 
                   <span
-                    className={`text-[0.82rem] tabular-nums ${vazia ? "text-linha-forte" : "text-suave"}`}
+                    className={`text-[0.82rem] tabular-nums ${vazia ? "text-suave" : "text-suave"}`}
                   >
                     {trilha.itens.length}
                   </span>
@@ -336,7 +336,7 @@ export default async function PáginaTreinamentos({
                           {i > 0 && ", "}
                           <Link
                             href={`/painel/corretor/${c.id}`}
-                            className="font-semibold text-tinta-suave underline decoration-linha-forte underline-offset-2 hover:text-laranja-escuro"
+                            className="font-semibold text-tinta-suave underline decoration-linha-forte underline-offset-2 hover:text-acao"
                           >
                             {c.nome.split(" ")[0]}
                           </Link>
@@ -375,7 +375,7 @@ export default async function PáginaTreinamentos({
                     : "Buscar por título ou assunto"
                 }
                 aria-label="Buscar treinamento"
-                className="w-full rounded-md border border-linha-forte bg-white py-2.5 pl-9 pr-3 text-[0.92rem] text-tinta outline-none transition focus:border-laranja focus:ring-3 focus:ring-laranja-suave"
+                className="w-full rounded-md border border-borda-campo bg-white py-2.5 pl-9 pr-3 text-[0.92rem] text-tinta transition focus:border-acao"
               />
             </form>
 
@@ -386,7 +386,7 @@ export default async function PáginaTreinamentos({
                   busca ? (
                     <Link
                       href={url(trilhaPedida, "")}
-                      className="rounded-md border border-linha-forte bg-white px-3.5 py-2 text-[0.88rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-laranja-escuro"
+                      className="rounded-md border border-linha-forte bg-white px-3.5 py-2 text-[0.88rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-acao"
                     >
                       Limpar busca
                     </Link>

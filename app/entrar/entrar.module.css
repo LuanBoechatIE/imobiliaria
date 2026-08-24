@@ -109,7 +109,7 @@
 .seis li {
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--laranja-escuro);
+  color: var(--acao);
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(240, 90, 34, 0.18);
   padding: 0.25rem 0.65rem;
@@ -148,7 +148,7 @@
 }
 
 .logoMobile .logoMarca {
-  background: var(--laranja);
+  background: var(--acao);
   color: var(--branco);
 }
 
@@ -207,7 +207,7 @@
 
 .entrada:focus {
   outline: none;
-  border-color: var(--laranja);
+  border-color: var(--acao);
   box-shadow: 0 0 0 3px var(--laranja-suave);
 }
 
@@ -217,7 +217,7 @@
   font-size: 0.97rem;
   font-weight: 650;
   color: var(--branco);
-  background: var(--laranja);
+  background: var(--acao);
   border: none;
   border-radius: var(--raio-sm);
   padding: 0.72rem 1rem;
@@ -226,7 +226,7 @@
 }
 
 .botao:hover {
-  background: var(--laranja-escuro);
+  background: var(--acao-forte);
 }
 
 .erro {

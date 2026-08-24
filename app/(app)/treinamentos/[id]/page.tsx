@@ -128,7 +128,7 @@ export default async function PáginaTreinamento({
                     rel="noopener noreferrer"
                     aria-label="Abrir gravação"
                     style={{ width: 44, height: 48 }}
-                    className="hex-recorte grid shrink-0 place-items-center bg-laranja text-white transition-colors hover:bg-laranja-escuro"
+                    className="hex-recorte grid shrink-0 place-items-center bg-acao text-white transition-colors hover:bg-acao-forte"
                   >
                     <Play size={15} fill="currentColor" />
                   </a>
@@ -144,7 +144,7 @@ export default async function PáginaTreinamento({
                     href={treinamento.gravacaoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-linha-forte bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-laranja-escuro"
+                    className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-acao"
                   >
                     Abrir
                     <ExternalLink size={13} />
@@ -196,7 +196,7 @@ export default async function PáginaTreinamento({
                   rel="noopener noreferrer"
                   className="flex min-w-0 flex-1 flex-col no-underline"
                 >
-                  <span className="truncate text-[0.92rem] font-semibold text-tinta hover:text-laranja-escuro">
+                  <span className="truncate text-[0.92rem] font-semibold text-tinta hover:text-acao">
                     {m.nome}
                   </span>
                   <span className="truncate text-[0.78rem] text-suave">{m.url}</span>
@@ -239,7 +239,7 @@ export default async function PáginaTreinamento({
               <div className="px-5 pt-4 sm:px-6">
                 <span className="block h-[7px] overflow-hidden rounded-full bg-fundo-2">
                   <span
-                    className="barra-enche block h-full rounded-full bg-laranja"
+                    className="barra-enche block h-full rounded-full bg-acao"
                     style={{ width: `${(feitas / totalAtividades) * 100}%` }}
                   />
                 </span>

@@ -11,20 +11,41 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
 
+/*
+ * A cor tem dois papéis separados, e a diferença entre eles é o que
+ * mantém a paleta legível:
+ *
+ *   --laranja  é a MARCA. Vive em preenchimento translúcido, no símbolo
+ *              e em borda decorativa. Nunca carrega texto nem vira a
+ *              superfície de um botão, porque #f05a22 com branco em cima
+ *              dá 3.4:1 e não passa em texto.
+ *   --acao     é o TRABALHO. Superfície de botão, traço do hexágono,
+ *              texto de link e estado ativo. Mesmo matiz da marca, mais
+ *              escuro, e passa 4.5:1 sobre branco, sobre --fundo, sobre
+ *              --fundo-2 e sobre --laranja-suave.
+ *
+ * Todo par de frente e fundo abaixo foi calculado, não estimado. Texto
+ * comum a 4.5:1, elemento gráfico e borda de controle a 3:1.
+ */
+
 @theme {
   --font-sans: var(--fonte), "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
 
   --color-laranja: #f05a22;
-  --color-laranja-escuro: #d2450f;
-  --color-laranja-claro: #ff7a45;
+  --color-acao: #ca3400;
+  --color-acao-forte: #b32000;
   --color-laranja-suave: #fdeee7;
 
   --color-tinta: #1a1512;
   --color-tinta-suave: #4a423d;
-  --color-suave: #857b75;
+  --color-suave: #746a65;
+  /* Secundário sobre superfície de marca: tirado do matiz laranja, não cinza. */
+  --color-suave-marca: #816860;
 
   --color-linha: #eae4e0;
   --color-linha-forte: #d8d0cb;
+  /* Borda que é o único indicador de um campo, então precisa dos 3:1. */
+  --color-borda-campo: #968f8a;
 
   --color-fundo: #faf8f7;
   --color-fundo-2: #f2ede9;
@@ -36,32 +57,40 @@
   --color-ok-suave: #e3f2e9;
 }
 
+/*
+ * Os mesmos valores como variáveis soltas, para o CSS Modules do login.
+ * Referenciam os tokens do @theme em vez de repetir os literais: manter
+ * duas listas de hex em paralelo já deixou --suave definido em um lugar
+ * e ausente no outro uma vez.
+ */
 :root {
   color-scheme: light;
 
-  --laranja: #f05a22;
-  --laranja-escuro: #d2450f;
-  --laranja-claro: #ff7a45;
-  --laranja-suave: #fdeee7;
+  --laranja: var(--color-laranja);
+  --acao: var(--color-acao);
+  --acao-forte: var(--color-acao-forte);
+  --laranja-suave: var(--color-laranja-suave);
 
   --branco: #ffffff;
-  --fundo: #faf8f7;
-  --fundo-2: #f2ede9;
+  --fundo: var(--color-fundo);
+  --fundo-2: var(--color-fundo-2);
 
-  --tinta: #1a1512;
-  --tinta-suave: #4a423d;
-  --suave: #857b75;
+  --tinta: var(--color-tinta);
+  --tinta-suave: var(--color-tinta-suave);
+  --suave: var(--color-suave);
+  --suave-marca: var(--color-suave-marca);
   /* Nome antigo, ainda usado pelo CSS Modules do login. */
-  --muted: #857b75;
+  --muted: var(--color-suave);
 
-  --linha: #eae4e0;
-  --linha-forte: #d8d0cb;
+  --linha: var(--color-linha);
+  --linha-forte: var(--color-linha-forte);
+  --borda-campo: var(--color-borda-campo);
 
-  --alerta: #a4262c;
-  --alerta-suave: #f8e9e9;
+  --alerta: var(--color-alerta);
+  --alerta-suave: var(--color-alerta-suave);
 
-  --ok: #1f7a4d;
-  --ok-suave: #e3f2e9;
+  --ok: var(--color-ok);
+  --ok-suave: var(--color-ok-suave);
 
   --font-ui: var(--fonte), "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
     Helvetica, Arial, sans-serif;
@@ -92,13 +121,59 @@ body {
 }
 
 a {
-  color: var(--laranja-escuro);
+  color: var(--acao);
 }
 
 :focus-visible {
-  outline: 2px solid var(--laranja);
+  outline: 2px solid var(--acao);
   outline-offset: 2px;
   border-radius: 3px;
+}
+
+/*
+ * As partes que o navegador desenha também são do produto. Sem isto a
+ * seleção sai azul de sistema no meio de uma tela laranja, e o cursor
+ * de texto some contra a borda do campo.
+ */
+::selection {
+  background: #fbdcd0;
+  color: var(--tinta);
+}
+
+input,
+textarea,
+select {
+  caret-color: var(--acao);
+}
+
+/* Números de nota, data e contagem alinham em coluna em qualquer lugar. */
+.tabular-nums,
+table {
+  font-variant-numeric: tabular-nums;
+}
+
+* {
+  scrollbar-color: var(--linha-forte) transparent;
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--linha-forte);
+  border: 3px solid var(--fundo);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--suave);
 }
 
 /*

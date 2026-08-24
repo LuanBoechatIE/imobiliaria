@@ -110,7 +110,7 @@ export default async function PáginaEquipe({
         <section className="flex flex-wrap items-center gap-3.5 rounded-xl border border-laranja/25 bg-laranja-suave px-4 py-3.5">
           <span
             style={{ width: 26, height: 29 }}
-            className="hex-recorte grid shrink-0 place-items-center bg-laranja text-[0.78rem] font-bold text-white"
+            className="hex-recorte grid shrink-0 place-items-center bg-acao text-[0.78rem] font-bold text-white"
           >
             {semRaioX.length}
           </span>
@@ -128,7 +128,7 @@ export default async function PáginaEquipe({
           </div>
           <Link
             href="/avaliacoes"
-            className="shrink-0 rounded-md border border-linha-forte bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-laranja-escuro"
+            className="shrink-0 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-acao"
           >
             Avaliar agora
           </Link>
@@ -146,8 +146,8 @@ export default async function PáginaEquipe({
                 href={url(filtro.chave)}
                 className={`rounded-full border px-3 py-1.5 text-[0.85rem] font-semibold no-underline transition-colors ${
                   ativo
-                    ? "border-laranja bg-laranja text-white"
-                    : "border-linha-forte bg-white text-tinta-suave hover:border-laranja hover:text-laranja-escuro"
+                    ? "border-laranja bg-acao text-white"
+                    : "border-linha-forte bg-white text-tinta-suave hover:border-laranja hover:text-acao"
                 }`}
               >
                 {filtro.rotulo}
@@ -167,7 +167,7 @@ export default async function PáginaEquipe({
             defaultValue={q}
             placeholder="Buscar por nome"
             aria-label="Buscar por nome"
-            className="w-full rounded-md border border-linha-forte bg-white py-2 pl-9 pr-3 text-[0.9rem] text-tinta outline-none transition focus:border-laranja focus:ring-3 focus:ring-laranja-suave"
+            className="w-full rounded-md border border-borda-campo bg-white py-2 pl-9 pr-3 text-[0.9rem] text-tinta transition focus:border-acao"
           />
         </form>
       </div>
