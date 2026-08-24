@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { AlertCircle, Check, Save } from "lucide-react";
-import { RatingScaleGroup, RatingScaleItem } from "@/components/ui/rating-scale-group";
+import { EscalaNota } from "@/components/ui/rating-scale-group";
 import { Impressao, Vertice } from "@/components/impressao";
 import { gravarAvaliacao } from "../acoes";
 import { COMPETENCIAS, fmt, type ChaveCompetencia, type Notas } from "@/lib/dados";
@@ -100,20 +100,11 @@ export function Formulario({
               <p className="m-0 text-[0.86rem] text-suave">{c.mede}</p>
 
               <div className="flex flex-col gap-1.5">
-                <RatingScaleGroup
+                <EscalaNota
                   name={`nota-${c.chave}`}
-                  value={valor ?? ""}
-                  onValueChange={(v) => setNotas((n) => ({ ...n, [c.chave]: v }))}
-                >
-                  {Array.from({ length: 11 }).map((_, n) => (
-                    <RatingScaleItem
-                      key={n}
-                      value={String(n)}
-                      label={String(n)}
-                      atencao={n < 5}
-                    />
-                  ))}
-                </RatingScaleGroup>
+                  valor={valor}
+                  aoMudar={(v) => setNotas((n) => ({ ...n, [c.chave]: v }))}
+                />
                 <div className="flex flex-wrap justify-between gap-x-4 text-[0.73rem] text-suave">
                   <span className="font-semibold text-alerta">0 a 4 · zona crítica</span>
                   <span>5 a 7 · faz o básico</span>

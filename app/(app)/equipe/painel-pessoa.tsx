@@ -1,0 +1,343 @@
+"use client";
+
+/**
+ * Corpo da janela de pessoa. Separado do botão porque a lista de
+ * equipe é aberta muito mais vezes para consultar do que para
+ * cadastrar, e quem só consulta não precisa baixar o formulário.
+ */
+
+import { useActionState, useEffect, useId, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { AlertCircle, Check, Copy, KeyRound, Plus, X } from "lucide-react";
+import { salvarPessoa } from "./acoes";
+import type { Pessoa } from "@/lib/equipe";
+
+const campo =
+  "w-full rounded-md border border-borda-campo bg-white px-3 py-2 text-[0.95rem] text-tinta transition focus:border-acao";
+const rotulo = "text-[0.83rem] font-semibold text-tinta-suave";
+
+function BotaoCopiar({ texto }: { texto: string }) {
+  const [estado, setEstado] = useState<"parado" | "copiado" | "falhou">("parado");
+
+  /**
+   * `navigator.clipboard` não existe fora de contexto seguro e pode ser
+   * negado por permissão. Como esta é a única vez que a senha aparece,
+   * a falha precisa virar instrução, não silêncio: cai para a seleção
+   * do texto, que sempre funciona com Ctrl+C.
+   */
+  async function copiar() {
+    try {
+      if (!navigator.clipboard) throw new Error("sem área de transferência");
+      await navigator.clipboard.writeText(texto);
+      setEstado("copiado");
+      setTimeout(() => setEstado("parado"), 1800);
+    } catch {
+      setEstado("falhou");
+      const campo = document.getElementById("senha-temporaria");
+      if (campo) {
+        const faixa = document.createRange();
+        faixa.selectNodeContents(campo);
+        const selecao = window.getSelection();
+        selecao?.removeAllRanges();
+        selecao?.addRange(faixa);
+      }
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={copiar}
+      className="alvo-alto inline-flex shrink-0 items-center gap-1.5 rounded-md border border-linha-forte bg-white px-2.5 py-1.5 text-[0.82rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-acao"
+    >
+      <AnimatePresence mode="wait" initial={false}>
+        {estado === "copiado" ? (
+          <motion.span
+            key="ok"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="inline-flex items-center gap-1.5 text-ok"
+          >
+            <Check size={14} /> Copiado
+          </motion.span>
+        ) : estado === "falhou" ? (
+          <motion.span
+            key="falhou"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="inline-flex items-center gap-1.5 text-alerta"
+          >
+            <AlertCircle size={14} /> Use Ctrl+C
+          </motion.span>
+        ) : (
+          <motion.span
+            key="copiar"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="inline-flex items-center gap-1.5"
+          >
+            <Copy size={14} /> Copiar
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </button>
+  );
+}
+
+export function PainelPessoa({
+  pessoa,
+  aoFechar,
+}: {
+  pessoa?: Pessoa;
+  aoFechar: () => void;
+}) {
+  const [estado, acao, enviando] = useActionState(salvarPessoa, null);
+  const editando = Boolean(pessoa);
+  const tituloId = useId();
+  const gatilhoAnterior = useRef<HTMLElement | null>(null);
+
+  // Fecha sozinho só quando não há senha para mostrar (edição, ou erro).
+  useEffect(() => {
+    if (estado?.ok && !estado.senhaTemporaria) aoFechar();
+  }, [estado, aoFechar]);
+
+  /**
+   * Enquanto a janela está aberta: Esc fecha, a página atrás não rola
+   * junto e o foco volta para o botão que abriu. Sem isso, quem navega
+   * por teclado sai da janela e continua tabulando na lista escondida
+   * atrás dela.
+   */
+  useEffect(() => {
+    gatilhoAnterior.current = document.activeElement as HTMLElement | null;
+
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") aoFechar();
+    };
+    const rolagem = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", esc);
+
+    return () => {
+      document.body.style.overflow = rolagem;
+      document.removeEventListener("keydown", esc);
+      gatilhoAnterior.current?.focus();
+      gatilhoAnterior.current = null;
+    };
+  }, [aoFechar]);
+
+  return (
+    <AnimatePresence>
+          <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
+            <motion.div
+              className="absolute inset-0 bg-tinta/35"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !estado?.senhaTemporaria && aoFechar()}
+            />
+
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={tituloId}
+              className="relative max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-t-2xl border border-linha bg-white p-5 shadow-xl sm:rounded-xl"
+              initial={{ opacity: 0, y: 24, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 380, damping: 32 }}
+            >
+              <button
+                type="button"
+                onClick={() => aoFechar()}
+                aria-label="Fechar"
+                className="alvo-toque absolute right-3 top-3 grid size-8 place-items-center rounded-lg text-suave transition-colors hover:bg-fundo-2"
+              >
+                <X size={17} />
+              </button>
+
+              {estado?.senhaTemporaria ? (
+                // ---------- sucesso: mostra a senha UMA vez ----------
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-2.5">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-full bg-ok-suave text-ok">
+                      <Check size={18} strokeWidth={2.6} />
+                    </span>
+                    <div>
+                      <h2
+                        id={tituloId}
+                        className="m-0 text-[1.05rem] font-bold tracking-tight text-tinta"
+                      >
+                        Pessoa adicionada
+                      </h2>
+                      <p className="m-0 text-[0.83rem] text-suave">
+                        Login criado para {estado.emailCriado}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-2 rounded-lg border border-linha-forte bg-fundo-2 p-3.5">
+                    <span className="flex items-center gap-1.5 text-[0.78rem] font-semibold uppercase tracking-wider text-suave">
+                      <KeyRound size={13} />
+                      Senha temporária
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <code
+                        id="senha-temporaria"
+                        className="min-w-0 flex-1 break-all rounded-md border border-borda-campo bg-white px-3 py-2 text-[1.05rem] font-semibold tracking-wide text-tinta"
+                      >
+                        {estado.senhaTemporaria}
+                      </code>
+                      <BotaoCopiar texto={estado.senhaTemporaria} />
+                    </div>
+                  </div>
+
+                  <p className="m-0 text-[0.83rem] text-suave">
+                    Essa senha só aparece agora. Copie e passe para a pessoa. No primeiro
+                    login o sistema já obriga a troca por uma senha própria.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => aoFechar()}
+                    className="rounded-md bg-acao px-3.5 py-2 alvo-alto text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte"
+                  >
+                    Entendi, fechar
+                  </button>
+                </div>
+              ) : (
+                // ---------- formulário ----------
+                <>
+                  <h2
+                    id={tituloId}
+                    className="mb-0.5 text-[1.15rem] font-bold tracking-tight text-tinta"
+                  >
+                    {editando ? "Editar pessoa" : "Adicionar pessoa"}
+                  </h2>
+                  <p className="mb-4 text-[0.87rem] text-suave">
+                    {editando
+                      ? "As avaliações já registradas continuam ligadas a esta pessoa."
+                      : "Cria login com senha temporária, que a pessoa troca no primeiro acesso."}
+                  </p>
+
+                  {estado?.erro && (
+                    <p
+                      role="alert"
+                      className="mb-3 flex items-start gap-2 rounded-lg border border-alerta/30 bg-alerta-suave px-3.5 py-2.5 text-[0.87rem] text-alerta"
+                    >
+                      <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                      {estado.erro}
+                    </p>
+                  )}
+
+                  <form action={acao} className="flex flex-col gap-3">
+                    {pessoa && <input type="hidden" name="id" value={pessoa.id} />}
+
+                    <div className="flex flex-col gap-1">
+                      <label className={rotulo} htmlFor="nome">
+                        Nome
+                      </label>
+                      <input
+                        id="nome"
+                        name="nome"
+                        className={campo}
+                        defaultValue={pessoa?.nome}
+                        placeholder="Nome completo"
+                        maxLength={80}
+                        autoComplete="name"
+                        required
+                        autoFocus
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <label className={rotulo} htmlFor="email">
+                        E-mail
+                      </label>
+                      <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        className={campo}
+                        defaultValue={pessoa?.email}
+                        placeholder="pessoa@imobiliaria.com"
+                        maxLength={120}
+                        autoComplete="off"
+                        required
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="flex flex-col gap-1">
+                        <label className={rotulo} htmlFor="cargo">
+                          Cargo
+                        </label>
+                        <input
+                          id="cargo"
+                          name="cargo"
+                          className={campo}
+                          defaultValue={pessoa?.cargo}
+                          placeholder="Corretor"
+                          maxLength={40}
+                          required
+                        />
+                      </div>
+
+                      <div className="flex flex-col gap-1">
+                        <label className={rotulo} htmlFor="papel">
+                          Papel no sistema
+                        </label>
+                        <select
+                          id="papel"
+                          name="papel"
+                          className={campo}
+                          defaultValue={pessoa?.papel ?? "corretor"}
+                        >
+                          <option value="corretor">Corretor</option>
+                          <option value="gestor">Gestor</option>
+                          <option value="dono">Dono</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <label className={rotulo} htmlFor="entrada">
+                        Entrada na equipe
+                      </label>
+                      <input
+                        id="entrada"
+                        name="entrada"
+                        type="date"
+                        className={campo}
+                        defaultValue={pessoa?.entrada ?? new Date().toISOString().slice(0, 10)}
+                        max={new Date().toISOString().slice(0, 10)}
+                        required
+                      />
+                    </div>
+
+                    <div className="mt-1 flex justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => aoFechar()}
+                        className="rounded-md border border-linha-forte bg-white px-3.5 py-2 text-[0.9rem] font-semibold text-tinta-suave transition-colors hover:bg-fundo-2"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={enviando}
+                        className="rounded-md bg-acao px-3.5 py-2 alvo-alto text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte disabled:opacity-60"
+                      >
+                        {enviando ? "Salvando..." : editando ? "Salvar" : "Adicionar"}
+                      </button>
+                    </div>
+                  </form>
+                </>
+              )}
+            </motion.div>
+          </div>
+    </AnimatePresence>
+  );
+}

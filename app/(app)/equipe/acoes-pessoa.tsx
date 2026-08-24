@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { AnimatePresence, motion } from "motion/react";
 import { MoreHorizontal } from "lucide-react";
 import { alternarStatus } from "./acoes";
 import { executar } from "@/lib/acao";
@@ -59,15 +58,8 @@ export function AcoesPessoa({ pessoa }: { pessoa: Pessoa }) {
         <MoreHorizontal size={18} />
       </button>
 
-      <AnimatePresence>
-        {aberto && (
-          <motion.div
-            className="absolute right-0 top-9 z-20 w-48 overflow-hidden rounded-lg border border-linha bg-white py-1 shadow-lg"
-            initial={{ opacity: 0, y: -6, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -6, scale: 0.97 }}
-            transition={{ duration: 0.14 }}
-          >
+      {aberto && (
+        <div className="surge absolute right-0 top-9 z-20 w-48 overflow-hidden rounded-lg border border-linha bg-white py-1 shadow-lg">
             {pessoa.papel === "corretor" && !inativo && (
               <Link
                 href={`/painel/corretor/${pessoa.id}`}
@@ -88,9 +80,8 @@ export function AcoesPessoa({ pessoa }: { pessoa: Pessoa }) {
             >
               {inativo ? "Reativar acesso" : "Desativar acesso"}
             </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </div>
   );
 }

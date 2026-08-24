@@ -245,28 +245,67 @@ table {
 }
 
 /*
- * Barras que enchem a partir do zero. Sem quadro final de propósito: o
- * valor de chegada é o que o elemento já tem no style, então a mesma
- * regra serve para qualquer largura ou altura calculada em servidor.
- * (Nada de !important aqui: dentro de @keyframes ele é ignorado.)
+ * Botão da escala de nota. O input de rádio está visualmente escondido
+ * dentro do rótulo, então o anel de foco precisa ser desenhado no
+ * rótulo quando o input recebe foco de teclado — sem isto, tabular pela
+ * escala não mostra onde a pessoa está.
+ */
+.escala-item:has(:focus-visible) {
+  outline: 2px solid var(--acao);
+  outline-offset: 2px;
+}
+
+/*
+ * Menu que abre a partir do botão. É CSS puro de propósito: uma
+ * transição de 140ms em opacidade e deslocamento não justifica carregar
+ * uma biblioteca de animação numa tela que a maioria só usa para
+ * consultar a lista.
+ */
+@keyframes surge {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+}
+
+.surge {
+  transform-origin: top right;
+  animation: surge 0.14s ease-out both;
+}
+
+/*
+ * Barras que enchem a partir do zero.
+ *
+ * A revelação é feita por `clip-path`, não animando `width` ou `height`.
+ * Animar a caixa obriga o navegador a recalcular o layout da página a
+ * cada quadro, e em /evolucao são nove barras subindo ao mesmo tempo:
+ * na máquina de escritório de uma imobiliária isso aparece como
+ * engasgo. Recortar não mexe no layout e mantém o raio das pontas
+ * intacto, o que `transform: scaleX()` achataria.
+ *
+ * Sem quadro final de propósito: o valor de chegada é o que o elemento
+ * já tem no style, então a mesma regra serve para qualquer largura ou
+ * altura calculada no servidor.
  */
 @keyframes barra-enche {
   from {
-    width: 0;
+    clip-path: inset(0 100% 0 0);
   }
 }
 
 .barra-enche {
+  clip-path: inset(0 0 0 0);
   animation: barra-enche 1s cubic-bezier(0.2, 0.8, 0.25, 1) both;
 }
 
 @keyframes coluna-enche {
   from {
-    height: 0;
+    clip-path: inset(100% 0 0 0);
   }
 }
 
 .coluna-enche {
+  clip-path: inset(0 0 0 0);
   animation: coluna-enche 0.8s cubic-bezier(0.2, 0.8, 0.25, 1) both;
 }
 
