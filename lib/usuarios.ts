@@ -80,6 +80,31 @@ const USUARIOS: Usuario[] = [
     foto: null,
     deveTrocarSenha: false,
   },
+  // Dois corretores para a demonstração da área de quem é avaliado.
+  // Ricardo é o caso cheio: nota baixa, treino atribuído e atividade em
+  // aberto. Ana é o caso limpo, e serve para conferir os estados vazios.
+  {
+    id: "u-ricardo",
+    nome: "Ricardo Mendes",
+    email: "ricardo@valenorte.com",
+    senhaHash: HASH_VALENORTE,
+    papel: "corretor",
+    imobiliariaId: "vale-norte",
+    pessoaId: "ricardo",
+    foto: null,
+    deveTrocarSenha: false,
+  },
+  {
+    id: "u-ana",
+    nome: "Ana Ribeiro",
+    email: "ana@valenorte.com",
+    senhaHash: HASH_VALENORTE,
+    papel: "corretor",
+    imobiliariaId: "vale-norte",
+    pessoaId: "ana",
+    foto: null,
+    deveTrocarSenha: false,
+  },
 ];
 
 export function acharPorEmail(email: string): Usuario | undefined {

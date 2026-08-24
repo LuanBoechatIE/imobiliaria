@@ -19,6 +19,8 @@ export async function atualizarFoto(dataUrl: string | null) {
 
   definirFoto(sessao.id, dataUrl);
   revalidatePath("/perfil");
+  // O corretor usa o mesmo recortador em /meu-perfil, que é outra rota.
+  revalidatePath("/meu-perfil");
   revalidatePath("/", "layout");
   return { ok: true };
 }

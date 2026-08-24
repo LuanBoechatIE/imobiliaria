@@ -3,59 +3,41 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
-import {
-  ClipboardCheck,
-  GraduationCap,
-  LayoutDashboard,
-  LineChart,
-  LogOut,
-  TrendingUp,
-  Users,
-} from "lucide-react";
+import { GraduationCap, LayoutDashboard, ListChecks, LogOut, Target } from "lucide-react";
 import { HexAvatar } from "@/components/hex-avatar";
-import { MenuCorretor } from "@/components/menu-corretor";
-import { NOME_PAPEL } from "@/lib/equipe";
-import type { Papel } from "@/lib/sessao";
+import { IMOBILIARIA } from "@/lib/dados";
 import { cn } from "@/lib/utils";
 
-type Item = {
-  href: string;
-  rotulo: string;
-  Icone: typeof Users;
-  emBreve?: boolean;
-};
+/**
+ * O menu de quem é avaliado, não de quem avalia.
+ *
+ * Quatro destinos e nada mais. A área do corretor responde uma pergunta
+ * só — "o que eu faço agora para melhorar" — e cada item a mais aqui
+ * seria um convite a sair dela. Nada de painel da casa, ranking, equipe
+ * ou biblioteca de treinamento: isso não é escondido por gentileza, é
+ * barrado no middleware e conferido de novo em cada página.
+ */
 
-const ITENS: Item[] = [
-  { href: "/painel", rotulo: "Painel", Icone: LayoutDashboard },
-  { href: "/avaliacoes", rotulo: "Avaliações", Icone: ClipboardCheck },
-  { href: "/equipe", rotulo: "Equipe", Icone: Users },
-  { href: "/treinamentos", rotulo: "Treinamentos", Icone: GraduationCap },
-  { href: "/evolucao", rotulo: "Antes e depois", Icone: TrendingUp },
-  { href: "/numeros", rotulo: "Números", Icone: LineChart, emBreve: true },
+const ITENS = [
+  { href: "/meu-painel", rotulo: "Meu painel", Icone: LayoutDashboard },
+  { href: "/meu-desempenho", rotulo: "Meu desempenho", Icone: Target },
+  { href: "/meus-treinamentos", rotulo: "Meus treinamentos", Icone: GraduationCap },
+  { href: "/minhas-atividades", rotulo: "Minhas atividades", Icone: ListChecks },
 ];
 
-export function MenuLateral({
+export function MenuCorretor({
   nome,
-  papel,
   foto,
-  ciclo,
   sair,
   aoNavegar,
 }: {
   nome: string;
-  papel: Papel;
   foto: string | null;
-  ciclo: string;
   sair: () => Promise<void>;
   aoNavegar?: () => void;
 }) {
   const caminho = usePathname();
   const ativo = (href: string) => caminho === href || caminho.startsWith(`${href}/`);
-
-  // Quem é avaliado navega por outro mapa. Ver components/menu-corretor.tsx.
-  if (papel === "corretor") {
-    return <MenuCorretor nome={nome} foto={foto} sair={sair} aoNavegar={aoNavegar} />;
-  }
 
   return (
     <nav className="flex h-full w-full flex-col bg-white">
@@ -71,33 +53,20 @@ export function MenuLateral({
           </svg>
           Boechat
         </span>
-        <span className="pl-[1.9rem] text-[0.78rem] text-suave">Imobiliárias</span>
+        <span className="truncate pl-[1.9rem] text-[0.78rem] text-suave">
+          {IMOBILIARIA.nome}
+        </span>
       </div>
 
       <div className="mx-5 mb-3 rounded-lg bg-fundo-2 px-3 py-2">
         <span className="block text-[0.66rem] font-bold uppercase tracking-[0.1em] text-suave">
-          Ciclo atual
+          Corretor
         </span>
-        <span className="block text-[0.87rem] font-semibold text-tinta">{ciclo}</span>
+        <span className="block truncate text-[0.87rem] font-semibold text-tinta">{nome}</span>
       </div>
 
       <div className="flex flex-1 flex-col gap-0.5 px-3">
-        {ITENS.map(({ href, rotulo, Icone, emBreve }) => {
-          if (emBreve) {
-            return (
-              <span
-                key={href}
-                className="flex cursor-default items-center gap-2.5 rounded-lg px-3 py-2 text-[0.9rem] text-suave"
-              >
-                <Icone size={17} strokeWidth={2} className="shrink-0 opacity-60" />
-                <span className="flex-1">{rotulo}</span>
-                <span className="rounded-full bg-fundo-2 px-1.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wide text-suave">
-                  em breve
-                </span>
-              </span>
-            );
-          }
-
+        {ITENS.map(({ href, rotulo, Icone }) => {
           const estaAtivo = ativo(href);
 
           return (
@@ -132,25 +101,23 @@ export function MenuLateral({
 
       <div className="border-t border-linha p-3">
         <Link
-          href="/perfil"
+          href="/meu-perfil"
           onClick={aoNavegar}
           className={cn(
             "alvo-alto flex items-center gap-2.5 rounded-lg px-2 py-2 no-underline transition-colors",
-            ativo("/perfil") ? "bg-laranja-suave" : "hover:bg-fundo-2"
+            ativo("/meu-perfil") ? "bg-laranja-suave" : "hover:bg-fundo-2"
           )}
         >
           <HexAvatar nome={nome} foto={foto} tamanho={30} />
           <span className="flex min-w-0 flex-col leading-tight">
-            <span className="truncate text-[0.87rem] font-semibold text-tinta">{nome}</span>
-            {/* Sobre a superfície de marca o secundário sai do matiz laranja,
-                não de um cinza neutro que brigaria com o fundo. */}
+            <span className="truncate text-[0.87rem] font-semibold text-tinta">Meu perfil</span>
             <span
               className={cn(
                 "text-[0.75rem]",
-                ativo("/perfil") ? "text-suave-marca" : "text-suave"
+                ativo("/meu-perfil") ? "text-suave-marca" : "text-suave"
               )}
             >
-              {NOME_PAPEL[papel]}
+              Dados da conta
             </span>
           </span>
         </Link>
