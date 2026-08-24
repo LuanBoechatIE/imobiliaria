@@ -7,15 +7,23 @@ import { Impressao, Vertice } from "@/components/impressao";
 import { HexAvatar } from "@/components/hex-avatar";
 import {
   COMPETENCIAS,
-  IMOBILIARIA,
   acharCorretor,
   critica,
   evidenciaPadrao,
   fmt,
+  historicoDe,
   media,
-  type Corretor,
+  notasDoCiclo,
+  type Notas,
   type PontoHistorico,
 } from "@/lib/dados";
+import {
+  acharCiclo,
+  cicloDeComparacao,
+  lerChaveCiclo,
+  type ChaveCiclo,
+} from "@/lib/ciclos";
+import { AvisoCicloPassado, SeletorCiclo } from "@/components/seletor-ciclo";
 import { dataCurta } from "@/lib/equipe";
 import { nomeCompetencia, treinamentosDaPessoa } from "@/lib/treinamentos";
 
@@ -128,12 +136,12 @@ function Evolucao({ pontos }: { pontos: PontoHistorico[] }) {
   );
 }
 
-function Variacao({ pessoa }: { pessoa: Corretor }) {
-  if (!pessoa.anterior) {
+function Variacao({ notas, base }: { notas: Notas; base: Notas | null }) {
+  if (!base) {
     return <span className="text-[0.85rem] font-medium text-suave">primeiro ciclo</span>;
   }
 
-  const diff = media(pessoa.notas) - media(pessoa.anterior);
+  const diff = media(notas) - media(base);
   if (Math.abs(diff) < 0.05) {
     return <span className="text-[0.85rem] font-medium text-suave">estável no mês</span>;
   }
@@ -151,36 +159,61 @@ function Variacao({ pessoa }: { pessoa: Corretor }) {
 
 export default async function PáginaCorretor({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ ciclo?: string }>;
 }) {
   const { id } = await params;
   const pessoa = acharCorretor(id);
   if (!pessoa) notFound();
 
-  const nota = media(pessoa.notas);
-  const aTreinar = COMPETENCIAS.filter((c) => critica(pessoa.notas[c.chave]));
+  const chave = lerChaveCiclo((await searchParams).ciclo);
+  const cicloVisto = acharCiclo(chave);
+  const éAtual = chave === "atual";
+
+  // Pedir um ciclo que essa pessoa não tem (entrou depois do Raio-X)
+  // cai no atual, em vez de mostrar uma tela quebrada.
+  const notas = notasDoCiclo(pessoa, chave) ?? pessoa.notas;
+  const semDados = (["atual", "anterior", "inicial"] as ChaveCiclo[]).filter(
+    (c) => notasDoCiclo(pessoa, c) === null
+  );
+
+  const chaveBase = cicloDeComparacao(chave);
+  const base = chaveBase ? notasDoCiclo(pessoa, chaveBase) : null;
+
+  const nota = media(notas);
+  const aTreinar = COMPETENCIAS.filter((c) => critica(notas[c.chave]));
   const treinamentos = treinamentosDaPessoa(id);
-  const pior = [...COMPETENCIAS].sort(
-    (a, b) => pessoa.notas[a.chave] - pessoa.notas[b.chave]
-  )[0];
+  const pior = [...COMPETENCIAS].sort((a, b) => notas[a.chave] - notas[b.chave])[0];
 
   return (
     <Pagina>
-      <Voltar href="/painel">Voltar para o time</Voltar>
+      <Voltar href={éAtual ? "/painel" : `/painel?ciclo=${chave}`}>Voltar para o time</Voltar>
 
       <Cabecalho
-        etiqueta={`Equipe · ciclo de ${IMOBILIARIA.ciclo}`}
+        etiqueta={`Equipe · ${éAtual ? "ciclo de" : "ciclo fechado de"} ${cicloVisto.rotulo}`}
         titulo={pessoa.nome}
         acao={
-          <Link
-            href={`/avaliacoes/${pessoa.id}`}
-            className="rounded-md bg-acao px-3.5 py-2 alvo-alto text-[0.88rem] font-semibold text-white no-underline transition-colors hover:bg-acao-forte"
-          >
-            Avaliar no ciclo em coleta
-          </Link>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <SeletorCiclo
+              atual={chave}
+              base={`/painel/corretor/${pessoa.id}`}
+              indisponiveis={semDados}
+            />
+            {éAtual && (
+              <Link
+                href={`/avaliacoes/${pessoa.id}`}
+                className="rounded-md bg-acao px-3.5 py-2 alvo-alto text-[0.88rem] font-semibold text-white no-underline transition-colors hover:bg-acao-forte"
+              >
+                Avaliar no ciclo em coleta
+              </Link>
+            )}
+          </div>
         }
       />
+
+      <AvisoCicloPassado ciclo={chave} rotulo={cicloVisto.rotulo} className="-mt-3" />
 
       <div className="grid items-start gap-5 lg:grid-cols-[22rem_1fr]">
         {/* Coluna de identidade: acompanha a rolagem, porque a silhueta é a
@@ -201,13 +234,13 @@ export default async function PáginaCorretor({
               >
                 {fmt(nota)}
               </span>
-              <Variacao pessoa={pessoa} />
+              <Variacao notas={notas} base={base} />
             </div>
 
             <div className="mt-2 w-full">
               <Impressao
-                notas={pessoa.notas}
-                antes={pessoa.inicial ?? undefined}
+                notas={notas}
+                antes={base ?? undefined}
                 tamanho={300}
                 rotulos
                 malha
@@ -217,7 +250,7 @@ export default async function PáginaCorretor({
               />
             </div>
 
-            {pessoa.inicial && (
+            {base && (
               <div className="flex items-center justify-center gap-5 text-[0.78rem] text-suave">
                 <span className="inline-flex items-center gap-1.5">
                   <svg width="15" height="4" aria-hidden="true">
@@ -231,13 +264,14 @@ export default async function PáginaCorretor({
                       strokeDasharray="4 4"
                     />
                   </svg>
-                  Raio-X de {IMOBILIARIA.cicloInicial.split(" ")[0].toLowerCase()}
+                  {chaveBase === "inicial" ? "Raio-X de " : ""}
+                  {acharCiclo(chaveBase!).rotulo.split(" ")[0].toLowerCase()}
                 </span>
                 <span className="inline-flex items-center gap-1.5 font-semibold text-tinta-suave">
                   <svg width="15" height="4" aria-hidden="true">
                     <line x1="0" y1="2" x2="15" y2="2" stroke="var(--laranja)" strokeWidth="2.5" />
                   </svg>
-                  {IMOBILIARIA.ciclo.split(" ")[0]}
+                  {cicloVisto.rotulo.split(" ")[0]}
                 </span>
               </div>
             )}
@@ -253,13 +287,15 @@ export default async function PáginaCorretor({
                     : "nenhuma"}
                 </dd>
               </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-suave">Provas no ciclo</dt>
-                <dd className="m-0 font-semibold text-tinta">
-                  {COMPETENCIAS.filter((c) => pessoa.evidencias?.[c.chave]?.length).length} de{" "}
-                  {COMPETENCIAS.length}
-                </dd>
-              </div>
+              {éAtual && (
+                <div className="flex justify-between gap-3">
+                  <dt className="text-suave">Provas no ciclo</dt>
+                  <dd className="m-0 font-semibold text-tinta">
+                    {COMPETENCIAS.filter((c) => pessoa.evidencias?.[c.chave]?.length).length} de{" "}
+                    {COMPETENCIAS.length}
+                  </dd>
+                </div>
+              )}
               <div className="flex justify-between gap-3">
                 <dt className="text-suave">Treinos feitos</dt>
                 <dd className="m-0 font-semibold text-tinta">{treinamentos.length}</dd>
@@ -267,7 +303,7 @@ export default async function PáginaCorretor({
             </dl>
           </section>
 
-          {aTreinar.length > 0 && (
+          {éAtual && aTreinar.length > 0 && (
             <section className="rounded-xl border border-laranja/30 bg-laranja-suave px-5 py-4">
               <h2 className="m-0 text-[0.95rem] font-bold tracking-[-0.015em] text-tinta">
                 O que treinar no próximo ciclo
@@ -305,7 +341,7 @@ export default async function PáginaCorretor({
               </span>
             </div>
             <div className="px-4">
-              <Evolucao pontos={pessoa.historico} />
+              <Evolucao pontos={historicoDe(pessoa)} />
             </div>
           </section>
 
@@ -315,15 +351,23 @@ export default async function PáginaCorretor({
                 As seis competências
               </h2>
               <span className="text-[0.85rem] text-suave">
-                cada nota carrega a prova que a gerou
+                {éAtual
+                  ? "cada nota carrega a prova que a gerou"
+                  : `como estavam em ${cicloVisto.rotulo.toLowerCase()}`}
               </span>
             </div>
 
             {COMPETENCIAS.map((c) => {
-              const valor = pessoa.notas[c.chave];
-              const antes = pessoa.inicial?.[c.chave];
+              const valor = notas[c.chave];
+              const antes = base?.[c.chave];
               const alerta = critica(valor);
-              const provas = pessoa.evidencias?.[c.chave] ?? [evidenciaPadrao(c.chave, valor)];
+              // As provas registradas são sempre as da última avaliação,
+              // ou seja, do ciclo atual. Repeti-las embaixo de uma nota
+              // antiga seria apresentar como evidência algo que ainda
+              // não tinha acontecido.
+              const provas = éAtual
+                ? pessoa.evidencias?.[c.chave] ?? [evidenciaPadrao(c.chave, valor)]
+                : [];
 
               return (
                 <article
@@ -340,7 +384,10 @@ export default async function PáginaCorretor({
                         className={`text-[0.8rem] font-semibold tabular-nums ${valor >= antes ? "text-ok" : "text-alerta"}`}
                       >
                         {valor >= antes ? "+" : "−"}
-                        {fmt(Math.abs(valor - antes))} desde o Raio-X
+                        {fmt(Math.abs(valor - antes))}{" "}
+                        {chaveBase === "inicial"
+                          ? "desde o Raio-X"
+                          : `desde ${acharCiclo(chaveBase!).rotulo.split(" ")[0].toLowerCase()}`}
                       </span>
                     )}
                     <span
@@ -357,7 +404,7 @@ export default async function PáginaCorretor({
                     />
                   </span>
 
-                  <div className="mt-3 flex flex-col gap-2">
+                  <div className={`flex flex-col gap-2 ${provas.length ? "mt-3" : ""}`}>
                     {provas.map((prova, i) => (
                       <div
                         key={i}

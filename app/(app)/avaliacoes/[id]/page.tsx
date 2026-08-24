@@ -4,7 +4,7 @@ import { Cabecalho, Pagina, Voltar } from "@/components/pagina";
 import { HexAvatar } from "@/components/hex-avatar";
 import { Formulario } from "./formulario";
 import {
-  CICLO_ATUAL,
+  cicloAtual,
   ROTULO_STATUS,
   acharAvaliacao,
   quantasPreenchidas,
@@ -33,7 +33,7 @@ export default async function PáginaAvaliar({
       <Voltar href="/avaliacoes">Voltar para o ciclo</Voltar>
 
       <Cabecalho
-        etiqueta={`Avaliações · coleta de ${CICLO_ATUAL.toLowerCase()}`}
+        etiqueta={`Avaliações · coleta de ${cicloAtual().toLowerCase()}`}
         titulo="Avaliar corretor"
         apoio="Toda nota precisa de uma prova junto. Sem o fato concreto, o corretor contesta e o dono perde a confiança no número."
       />

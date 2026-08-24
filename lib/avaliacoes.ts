@@ -6,14 +6,20 @@ import {
   type TipoEvidencia,
 } from "./dados";
 import { acharPessoa, listarPessoas, type Pessoa } from "./equipe";
+import { dataNoCicloAtual, rotuloCiclo } from "./ciclos";
 
-/** Rótulo curto do ciclo, para o histórico de evolução do corretor. */
-function rotuloCurto(ciclo: string): string {
-  return ciclo.split(" ")[0].slice(0, 3);
+/**
+ * O ciclo que está sendo coletado é sempre o mês corrente, o mesmo que o
+ * painel exibe: avaliação de agosto se coleta em agosto. Era uma string
+ * fixa ("Abril 2026") e por isso a coleta continuava apontando para um
+ * mês morto enquanto o calendário andava.
+ *
+ * Função e não constante, pelo mesmo motivo dos getters em `lib/dados.ts`:
+ * o módulo carrega uma vez, o mês vira sozinho.
+ */
+export function cicloAtual(): string {
+  return rotuloCiclo(0);
 }
-
-/** Ciclo que está sendo coletado agora. O painel mostra o ciclo já fechado. */
-export const CICLO_ATUAL = "Abril 2026";
 
 export type ItemAvaliacao = {
   nota: number;
@@ -38,13 +44,21 @@ export const ROTULO_STATUS: Record<StatusAvaliacao, string> = {
   avaliado: "Avaliado",
 };
 
-/** Base em memória, igual ao resto da fase de demonstração. */
+/**
+ * Base em memória, igual ao resto da fase de demonstração.
+ *
+ * O ciclo destes registros é getter, e não valor: assim a coleta de
+ * exemplo acompanha a virada do mês em vez de sumir da tela quando o
+ * calendário passa do mês em que o arquivo foi escrito.
+ */
 const AVALIACOES: Avaliacao[] = [
   {
     corretorId: "ana",
-    ciclo: CICLO_ATUAL,
+    get ciclo() {
+      return cicloAtual();
+    },
     concluida: true,
-    atualizadaEm: "2026-08-14T15:20:00",
+    atualizadaEm: dataNoCicloAtual(10),
     avaliadaPor: "Samuel",
     itens: {
       velocidade: { nota: 9, tipo: "tempo", evidencia: "Mediana de 8 minutos até o primeiro contato em 22 leads." },
@@ -57,9 +71,11 @@ const AVALIACOES: Avaliacao[] = [
   },
   {
     corretorId: "patricia",
-    ciclo: CICLO_ATUAL,
+    get ciclo() {
+      return cicloAtual();
+    },
     concluida: true,
-    atualizadaEm: "2026-08-15T10:05:00",
+    atualizadaEm: dataNoCicloAtual(9),
     avaliadaPor: "Samuel",
     itens: {
       velocidade: { nota: 7, tipo: "tempo", evidencia: "Mediana de 40 minutos. Cai para 3h nos leads que entram à noite." },
@@ -72,9 +88,11 @@ const AVALIACOES: Avaliacao[] = [
   },
   {
     corretorId: "ricardo",
-    ciclo: CICLO_ATUAL,
+    get ciclo() {
+      return cicloAtual();
+    },
     concluida: false,
-    atualizadaEm: "2026-08-18T16:40:00",
+    atualizadaEm: dataNoCicloAtual(6),
     avaliadaPor: "Samuel",
     itens: {
       velocidade: { nota: 8, tipo: "tempo", evidencia: "Mediana de 12 minutos. Melhor tempo do time." },
@@ -89,7 +107,7 @@ export function corretoresDoCiclo(): Pessoa[] {
 }
 
 export function acharAvaliacao(corretorId: string): Avaliacao | undefined {
-  return AVALIACOES.find((a) => a.corretorId === corretorId && a.ciclo === CICLO_ATUAL);
+  return AVALIACOES.find((a) => a.corretorId === corretorId && a.ciclo === cicloAtual());
 }
 
 export function statusDe(corretorId: string): StatusAvaliacao {
@@ -131,7 +149,7 @@ export function salvarAvaliacao(
   } else {
     AVALIACOES.push({
       corretorId,
-      ciclo: CICLO_ATUAL,
+      ciclo: cicloAtual(),
       itens,
       concluida: concluir,
       atualizadaEm: new Date().toISOString(),
@@ -149,14 +167,13 @@ export function salvarAvaliacao(
     for (const c of COMPETENCIAS) {
       const item = itens[c.chave]!; // salvarAvaliacao já garantiu que todas as 6 existem
       notas[c.chave] = item.nota;
-      evidencias[c.chave] = { tipo: item.tipo, texto: item.evidencia, quando: CICLO_ATUAL };
+      evidencias[c.chave] = { tipo: item.tipo, texto: item.evidencia, quando: cicloAtual() };
     }
 
     aplicarAvaliacaoAoCorretor({
       id: corretorId,
       nome: pessoa?.nome ?? corretorId,
       desde: pessoa?.entrada?.slice(0, 4) ?? new Date().getFullYear().toString(),
-      cicloRotulo: rotuloCurto(CICLO_ATUAL),
       notas,
       evidencias,
     });

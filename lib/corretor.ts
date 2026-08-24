@@ -9,11 +9,14 @@ import {
   acharCorretor,
   critica,
   evidenciaPadrao,
+  historicoDe,
   media,
+  notasDoCiclo,
   type ChaveCompetencia,
   type Corretor,
   type Evidencia,
 } from "./dados";
+import { cicloDeComparacao, type ChaveCiclo } from "./ciclos";
 
 /**
  * Identidade do corretor logado, resolvida sempre a partir da sessão.
@@ -102,10 +105,22 @@ export function statusDaNota(nota: number): StatusCompetencia {
   return nota < 7 ? "desenvolvendo" : "consistente";
 }
 
-export function lerCompetencias(corretor: Corretor): LeituraCompetencia[] {
+/**
+ * As seis competências no ciclo pedido, cada uma já comparada com o
+ * ciclo imediatamente anterior a ele. O padrão é o ciclo atual; a tela
+ * passa outro quando o corretor está olhando para trás.
+ */
+export function lerCompetencias(
+  corretor: Corretor,
+  ciclo: ChaveCiclo = "atual"
+): LeituraCompetencia[] {
+  const notas = notasDoCiclo(corretor, ciclo) ?? corretor.notas;
+  const chaveBase = cicloDeComparacao(ciclo);
+  const base = chaveBase ? notasDoCiclo(corretor, chaveBase) : null;
+
   return COMPETENCIAS.map((c) => {
-    const nota = corretor.notas[c.chave];
-    const anterior = corretor.anterior?.[c.chave] ?? null;
+    const nota = notas[c.chave];
+    const anterior = base?.[c.chave] ?? null;
     return {
       chave: c.chave,
       nome: c.nome,
@@ -120,9 +135,10 @@ export function lerCompetencias(corretor: Corretor): LeituraCompetencia[] {
 
 export function lerCompetencia(
   corretor: Corretor,
-  chave: string
+  chave: string,
+  ciclo: ChaveCiclo = "atual"
 ): LeituraCompetencia | null {
-  return lerCompetencias(corretor).find((c) => c.chave === chave) ?? null;
+  return lerCompetencias(corretor, ciclo).find((c) => c.chave === chave) ?? null;
 }
 
 /** Provas registradas na competência. Cai no texto padrão quando não há. */
@@ -168,6 +184,6 @@ export function evolucaoDo(corretor: Corretor): Evolucao {
     nota,
     anterior,
     variacao: anterior === null ? null : nota - anterior,
-    historico: corretor.historico,
+    historico: historicoDe(corretor),
   };
 }

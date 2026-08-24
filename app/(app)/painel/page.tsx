@@ -1,18 +1,27 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { Pagina, Secao, Vazio } from "@/components/pagina";
+import { Cabecalho, Pagina, Secao, Vazio } from "@/components/pagina";
 import { Impressao } from "@/components/impressao";
 import { HexAvatar } from "@/components/hex-avatar";
 import {
   COMPETENCIAS,
   IMOBILIARIA,
+  corretoresNoCiclo,
   critica,
   fmt,
   media,
   mediasPorCompetencia,
+  notasDoCiclo,
   type Corretor,
   type Notas,
 } from "@/lib/dados";
+import {
+  acharCiclo,
+  cicloDeComparacao,
+  lerChaveCiclo,
+  type ChaveCiclo,
+} from "@/lib/ciclos";
+import { AvisoCicloPassado, SeletorCiclo } from "@/components/seletor-ciclo";
 import { resumoDoCiclo } from "@/lib/avaliacoes";
 import { treinamentosDaCompetencia } from "@/lib/treinamentos";
 import { dataCurta } from "@/lib/equipe";
@@ -21,20 +30,20 @@ import { BOTAO } from "@/components/estilos";
 export const metadata: Metadata = { title: "Painel" };
 
 /** Média do time em cada competência, no formato que a Impressão desenha. */
-function silhuetaDoTime(corretores: Corretor[]): Notas {
+function silhuetaDoTime(corretores: Corretor[], pegar: (c: Corretor) => Notas): Notas {
   const notas = {} as Notas;
   for (const c of COMPETENCIAS) {
-    notas[c.chave] = corretores.reduce((s, p) => s + p.notas[c.chave], 0) / corretores.length;
+    notas[c.chave] = corretores.reduce((s, p) => s + pegar(p)[c.chave], 0) / corretores.length;
   }
   return notas;
 }
 
-function Variacao({ pessoa }: { pessoa: Corretor }) {
-  if (!pessoa.anterior) {
+function Variacao({ notas, base }: { notas: Notas; base: Notas | null }) {
+  if (!base) {
     return <span className="text-[0.78rem] font-medium text-suave">1º ciclo</span>;
   }
 
-  const diff = media(pessoa.notas) - media(pessoa.anterior);
+  const diff = media(notas) - media(base);
   if (Math.abs(diff) < 0.05) {
     return <span className="text-[0.78rem] font-medium text-suave">estável</span>;
   }
@@ -113,52 +122,103 @@ function CartaoAcao({
   );
 }
 
-export default async function PáginaPainel() {
-  const { nome, ciclo, corretores } = IMOBILIARIA;
+export default async function PáginaPainel({
+  searchParams,
+}: {
+  searchParams: Promise<{ ciclo?: string }>;
+}) {
+  const { nome } = IMOBILIARIA;
+  const chave = lerChaveCiclo((await searchParams).ciclo);
+  const cicloVisto = acharCiclo(chave);
+
+  // Cada ciclo tem o seu elenco: quem entrou depois do Raio-X não
+  // aparece nele, e incluir essa pessoa com nota zero afundaria a média
+  // do time por um motivo que não é desempenho de ninguém.
+  const corretores = corretoresNoCiclo(chave);
+  const notasDe = (p: Corretor) => notasDoCiclo(p, chave)!;
+
+  const chaveBase = cicloDeComparacao(chave);
+  const baseDe = (p: Corretor) => (chaveBase ? notasDoCiclo(p, chaveBase) : null);
+
+  // Um ciclo só entra no seletor se alguém tiver nota nele.
+  const semDados = (["atual", "anterior", "inicial"] as ChaveCiclo[]).filter(
+    (c) => corretoresNoCiclo(c).length === 0
+  );
 
   if (corretores.length === 0) {
     return (
       <Pagina>
-        <Vazio titulo="Nenhum corretor avaliado ainda">
-          Assim que a primeira avaliação fechar em Avaliações, o time aparece aqui.
+        <Cabecalho
+          etiqueta={`Time · ${cicloVisto.rotulo}`}
+          titulo="Painel"
+          acao={<SeletorCiclo atual={chave} base="/painel" indisponiveis={semDados} />}
+        />
+        <Vazio titulo={`Nenhum corretor avaliado em ${cicloVisto.rotulo.toLowerCase()}`}>
+          {chave === "atual"
+            ? "Assim que a primeira avaliação fechar em Avaliações, o time aparece aqui."
+            : "Nesse ciclo ainda não havia avaliação registrada. Escolha outro ciclo acima."}
         </Vazio>
       </Pagina>
     );
   }
 
-  const ranking = [...corretores].sort((a, b) => media(b.notas) - media(a.notas));
-  const porCompetencia = mediasPorCompetencia(corretores);
+  const ranking = [...corretores].sort((a, b) => media(notasDe(b)) - media(notasDe(a)));
+  const porCompetencia = mediasPorCompetencia(corretores, notasDe);
   const maisFraca = porCompetencia[0];
-  const notaGeral = corretores.reduce((s, p) => s + media(p.notas), 0) / corretores.length;
+  const notaGeral = corretores.reduce((s, p) => s + media(notasDe(p)), 0) / corretores.length;
 
-  const fracosNela = corretores.filter((p) => critica(p.notas[maisFraca.chave]));
+  const fracosNela = corretores.filter((p) => critica(notasDe(p)[maisFraca.chave]));
   const emAtencao = corretores.filter((p) =>
-    COMPETENCIAS.some((c) => critica(p.notas[c.chave]))
+    COMPETENCIAS.some((c) => critica(notasDe(p)[c.chave]))
   );
 
   const resumo = resumoDoCiclo();
   const treinoDoTema = treinamentosDaCompetencia(maisFraca.chave)[0];
+  const éAtual = chave === "atual";
 
   return (
     <Pagina>
+      {/* A troca de ciclo fica acima de tudo porque muda o significado de
+          cada número abaixo dela. */}
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[0.72rem] font-bold uppercase tracking-[0.12em] text-laranja">
+            {éAtual ? "Ciclo atual" : "Ciclo fechado"} · {cicloVisto.rotulo}
+          </span>
+          <span className="text-[0.88rem] text-suave">
+            {corretores.length}{" "}
+            {corretores.length === 1 ? "corretor avaliado" : "corretores avaliados"} neste ciclo
+          </span>
+        </div>
+        <SeletorCiclo atual={chave} base="/painel" indisponiveis={semDados} />
+      </div>
+
+      <AvisoCicloPassado ciclo={chave} rotulo={cicloVisto.rotulo} className="-mt-3" />
+
       {/* O diagnóstico lidera a tela: a pergunta do dono não é "como
           estamos", é "o que está travando". */}
       <section className="grid overflow-hidden rounded-xl border border-linha bg-white md:grid-cols-[1fr_20rem]">
         <div className="flex flex-col px-6 py-6 sm:px-7 sm:py-7">
           <span className="text-[0.72rem] font-bold uppercase tracking-[0.12em] text-suave">
-            {nome} · o que está travando o time agora
+            {nome} ·{" "}
+            {éAtual
+              ? "o que está travando o time agora"
+              : `o que travava o time em ${cicloVisto.rotulo.toLowerCase()}`}
           </span>
 
           <h1 className="m-0 mt-3 max-w-[15ch] text-[2rem] font-bold leading-[1.08] tracking-[-0.03em] text-tinta sm:text-[2.15rem]">
-            <span className="text-acao">{maisFraca.nome}</span> é o ponto mais fraco
-            do time.
+            <span className="text-acao">{maisFraca.nome}</span>{" "}
+            {éAtual ? "é" : "era"} o ponto mais fraco do time.
           </h1>
 
           <p className="m-0 mt-3.5 max-w-[52ch] text-[0.98rem] text-tinta-suave">
             Média {fmt(maisFraca.valor)} de 10
-            {critica(maisFraca.valor) ? ", abaixo da linha de corte" : ""}, e ela aparece fraca
-            em {fracosNela.length} {fracosNela.length === 1 ? "corretor" : "corretores"} de{" "}
-            {corretores.length}. Corrigir ela move mais resultado do que qualquer outra.
+            {critica(maisFraca.valor) ? ", abaixo da linha de corte" : ""}, e ela{" "}
+            {éAtual ? "aparece" : "aparecia"} fraca em {fracosNela.length}{" "}
+            {fracosNela.length === 1 ? "corretor" : "corretores"} de {corretores.length}.{" "}
+            {éAtual
+              ? "Corrigir ela move mais resultado do que qualquer outra."
+              : "Compare com o ciclo atual para ver o que mudou desde então."}
           </p>
 
           <div className="mt-6 flex flex-wrap gap-x-8 gap-y-4 border-t border-linha pt-5">
@@ -172,13 +232,23 @@ export default async function PáginaPainel() {
               valor={`${fracosNela.length} de ${corretores.length}`}
               rotulo="Corretores fracos nela"
             />
-            <Prova valor={String(resumo.notasLancadas)} rotulo="Provas no ciclo em coleta" />
+            {éAtual && (
+              <Prova valor={String(resumo.notasLancadas)} rotulo="Provas no ciclo em coleta" />
+            )}
           </div>
         </div>
 
         <div className="relative grid place-items-center border-t border-linha bg-laranja-suave px-4 pb-9 pt-5 md:border-l md:border-t-0">
+          {/* Vendo um ciclo fechado, a silhueta pontilhada é o ciclo que
+              veio antes dele: a comparação continua sendo com o passado
+              imediato, nunca com um mês que ainda não tinha acontecido. */}
           <Impressao
-            notas={silhuetaDoTime(corretores)}
+            notas={silhuetaDoTime(corretores, notasDe)}
+            antes={
+              chaveBase && corretoresNoCiclo(chaveBase).length > 0
+                ? silhuetaDoTime(corretoresNoCiclo(chaveBase), (p) => notasDoCiclo(p, chaveBase)!)
+                : undefined
+            }
             tamanho={280}
             rotulos
             malha
@@ -186,11 +256,15 @@ export default async function PáginaPainel() {
             anima
           />
           <span className="absolute inset-x-0 bottom-3.5 text-center text-[0.76rem] font-semibold text-acao">
-            Silhueta do time · {ciclo.toLowerCase()}
+            Silhueta do time · {cicloVisto.rotulo.toLowerCase()}
           </span>
         </div>
       </section>
 
+      {/* Os cartões de ação só existem no ciclo atual: "faltam 3
+          avaliações" e "marcar treino" são coisas para fazer agora, e
+          num ciclo fechado viram convite para agir sobre o passado. */}
+      {éAtual && (
       <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
         {emAtencao.length > 0 && (
           <CartaoAcao
@@ -234,6 +308,7 @@ export default async function PáginaPainel() {
           />
         )}
       </div>
+      )}
 
       <Secao
         titulo="Time por silhueta"
@@ -258,23 +333,26 @@ export default async function PáginaPainel() {
           </div>
 
           {ranking.map((pessoa, i) => {
-            const nota = media(pessoa.notas);
-            const fracas = COMPETENCIAS.filter((c) => critica(pessoa.notas[c.chave]));
-            const pior = [...COMPETENCIAS].sort(
-              (a, b) => pessoa.notas[a.chave] - pessoa.notas[b.chave]
-            )[0];
+            const notas = notasDe(pessoa);
+            const nota = media(notas);
+            const fracas = COMPETENCIAS.filter((c) => critica(notas[c.chave]));
+            const pior = [...COMPETENCIAS].sort((a, b) => notas[a.chave] - notas[b.chave])[0];
 
             return (
               <Link
                 key={pessoa.id}
-                href={`/painel/corretor/${pessoa.id}`}
+                href={
+                  éAtual
+                    ? `/painel/corretor/${pessoa.id}`
+                    : `/painel/corretor/${pessoa.id}?ciclo=${chave}`
+                }
                 className="grid grid-cols-[1.6rem_2.75rem_1fr_auto] items-center gap-x-4 gap-y-1.5 border-t border-linha px-4 py-3 no-underline transition-colors first:border-t-0 hover:bg-fundo lg:grid-cols-[1.6rem_2.75rem_minmax(9rem,1fr)_12rem_4rem_4rem] lg:px-5"
               >
                 <span className="text-right text-[0.82rem] font-medium tabular-nums text-suave">
                   {i + 1}
                 </span>
 
-                <Impressao notas={pessoa.notas} tamanho={42} anima />
+                <Impressao notas={notas} tamanho={42} anima />
 
                 <div className="flex min-w-0 items-center gap-3">
                   <HexAvatar nome={pessoa.nome} tamanho={32} />
@@ -293,9 +371,9 @@ export default async function PáginaPainel() {
                 <span className="col-span-4 text-[0.85rem] text-tinta-suave lg:col-span-1">
                   {pior.nome}{" "}
                   <span
-                    className={`tabular-nums ${critica(pessoa.notas[pior.chave]) ? "font-semibold text-alerta" : "text-suave"}`}
+                    className={`tabular-nums ${critica(notas[pior.chave]) ? "font-semibold text-alerta" : "text-suave"}`}
                   >
-                    {fmt(pessoa.notas[pior.chave])}
+                    {fmt(notas[pior.chave])}
                   </span>
                 </span>
 
@@ -306,7 +384,7 @@ export default async function PáginaPainel() {
                 </span>
 
                 <span className="text-right">
-                  <Variacao pessoa={pessoa} />
+                  <Variacao notas={notas} base={baseDe(pessoa)} />
                 </span>
               </Link>
             );
@@ -315,8 +393,17 @@ export default async function PáginaPainel() {
       </Secao>
 
       <footer className="border-t border-linha pt-5 text-[0.82rem] text-suave">
-        Cada nota vem de uma prova registrada: áudio de atendimento, tempo de resposta
-        medido ou role-play gravado. Abra um corretor para ver a de cada competência.
+        {éAtual ? (
+          <>
+            Cada nota vem de uma prova registrada: áudio de atendimento, tempo de resposta
+            medido ou role-play gravado. Abra um corretor para ver a de cada competência.
+          </>
+        ) : (
+          <>
+            As notas deste ciclo estão fechadas. As provas que as geraram não ficam
+            guardadas: o sistema mantém as da avaliação mais recente.
+          </>
+        )}
       </footer>
     </Pagina>
   );

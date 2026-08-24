@@ -4,14 +4,28 @@ import { ChevronRight } from "lucide-react";
 import { Cabecalho, Pagina, Vazio } from "@/components/pagina";
 import { Impressao, Vertice } from "@/components/impressao";
 import { Barra, SeloCompetencia, Variacao } from "@/components/corretor-ui";
-import { IMOBILIARIA, fmt } from "@/lib/dados";
+import { IMOBILIARIA, fmt, media, notasDoCiclo } from "@/lib/dados";
 import { evolucaoDo, exigirCorretor, lerCompetencias } from "@/lib/corretor";
+import {
+  acharCiclo,
+  cicloDeComparacao,
+  lerChaveCiclo,
+  type ChaveCiclo,
+} from "@/lib/ciclos";
+import { AvisoCicloPassado, SeletorCiclo } from "@/components/seletor-ciclo";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Meu desempenho" };
 
-export default async function PáginaMeuDesempenho() {
+export default async function PáginaMeuDesempenho({
+  searchParams,
+}: {
+  searchParams: Promise<{ ciclo?: string }>;
+}) {
   const { corretor } = await exigirCorretor();
+  const chave = lerChaveCiclo((await searchParams).ciclo);
+  const cicloVisto = acharCiclo(chave);
+  const éAtual = chave === "atual";
 
   if (!corretor) {
     return (
@@ -27,22 +41,42 @@ export default async function PáginaMeuDesempenho() {
     );
   }
 
-  const competencias = lerCompetencias(corretor);
+  const semDados = (["atual", "anterior", "inicial"] as ChaveCiclo[]).filter(
+    (c) => notasDoCiclo(corretor, c) === null
+  );
+
+  const competencias = lerCompetencias(corretor, chave);
   const evolucao = evolucaoDo(corretor);
   const pior = [...competencias].sort((a, b) => a.nota - b.nota)[0];
+
+  const notas = notasDoCiclo(corretor, chave) ?? corretor.notas;
+  const chaveBase = cicloDeComparacao(chave);
+  const base = chaveBase ? notasDoCiclo(corretor, chaveBase) : null;
+
+  const notaDoCiclo = media(notas);
+  const variacao = base ? notaDoCiclo - media(base) : null;
 
   return (
     <Pagina largura="media">
       <Cabecalho
-        etiqueta={`Ciclo atual · ${IMOBILIARIA.ciclo}`}
+        etiqueta={`${éAtual ? "Ciclo atual" : "Ciclo fechado"} · ${cicloVisto.rotulo}`}
         titulo="Meu desempenho"
-        apoio="Suas seis competências. Cada nota carrega a prova que a gerou."
+        apoio={
+          éAtual
+            ? "Suas seis competências. Cada nota carrega a prova que a gerou."
+            : "Como você estava neste ciclo. Troque acima para comparar com os outros."
+        }
+        acao={
+          <SeletorCiclo atual={chave} base="/meu-desempenho" indisponiveis={semDados} />
+        }
       />
+
+      <AvisoCicloPassado ciclo={chave} rotulo={cicloVisto.rotulo} className="-mt-3" />
 
       <section className="flex flex-col items-center gap-5 rounded-xl border border-linha bg-white px-6 py-6 sm:flex-row sm:items-center sm:gap-8">
         <Impressao
-          notas={corretor.notas}
-          antes={corretor.inicial ?? undefined}
+          notas={notas}
+          antes={base ?? undefined}
           tamanho={186}
           malha
           fraco={pior.chave}
@@ -57,21 +91,26 @@ export default async function PáginaMeuDesempenho() {
           <span
             className={cn(
               "mt-1 text-[3rem] font-bold leading-none tabular-nums tracking-[-0.04em]",
-              evolucao.nota < 5 ? "text-alerta" : "text-tinta"
+              notaDoCiclo < 5 ? "text-alerta" : "text-tinta"
             )}
           >
-            {fmt(evolucao.nota)}
+            {fmt(notaDoCiclo)}
           </span>
           <Variacao
-            valor={evolucao.variacao}
-            sufixo="em relação ao ciclo anterior"
+            valor={variacao}
+            sufixo={
+              chaveBase === "inicial"
+                ? "em relação ao Raio-X"
+                : "em relação ao ciclo anterior"
+            }
             className="mt-2"
           />
 
-          {corretor.inicial && (
+          {base && (
             <p className="m-0 mt-3 max-w-[42ch] text-[0.88rem] text-suave">
-              A silhueta pontilhada é como você estava no Raio-X de{" "}
-              {IMOBILIARIA.cicloInicial.split(" ")[0].toLowerCase()}. A cheia é agora.
+              A silhueta pontilhada é como você estava em{" "}
+              {acharCiclo(chaveBase!).rotulo.split(" ")[0].toLowerCase()}. A cheia é{" "}
+              {éAtual ? "agora" : cicloVisto.rotulo.split(" ")[0].toLowerCase()}.
             </p>
           )}
         </div>
@@ -83,14 +122,20 @@ export default async function PáginaMeuDesempenho() {
             As seis competências
           </h2>
           <span className="text-[0.85rem] text-suave">
-            toque em uma para ver a prova e o que fazer
+            {éAtual
+              ? "toque em uma para ver a prova e o que fazer"
+              : `suas notas em ${cicloVisto.rotulo.toLowerCase()}`}
           </span>
         </div>
 
         {competencias.map((c) => (
           <Link
             key={c.chave}
-            href={`/meu-desempenho/${c.chave}`}
+            href={
+              éAtual
+                ? `/meu-desempenho/${c.chave}`
+                : `/meu-desempenho/${c.chave}?ciclo=${chave}`
+            }
             className={cn(
               "block border-t border-linha px-5 py-4 no-underline transition-colors first:border-t-0 hover:bg-fundo sm:px-6",
               c.status === "atencao" && "bg-alerta-suave/40"
@@ -121,7 +166,7 @@ export default async function PáginaMeuDesempenho() {
               <span className="text-[0.83rem] text-suave">
                 {c.anterior === null
                   ? "sem ciclo anterior para comparar"
-                  : `anterior ${fmt(c.anterior)}`}
+                  : `${acharCiclo(chaveBase!).rotulo.split(" ")[0].toLowerCase()} ${fmt(c.anterior)}`}
               </span>
               <Variacao valor={c.variacao} />
             </div>

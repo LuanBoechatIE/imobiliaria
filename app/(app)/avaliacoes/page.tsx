@@ -4,7 +4,7 @@ import { CheckCircle2, ChevronRight } from "lucide-react";
 import { Pagina, Secao, Vazio } from "@/components/pagina";
 import { HexAvatar } from "@/components/hex-avatar";
 import {
-  CICLO_ATUAL,
+  cicloAtual,
   ROTULO_STATUS,
   acharAvaliacao,
   corretoresDoCiclo,
@@ -127,7 +127,7 @@ export default async function PáginaAvaliacoes({
       <section className="grid overflow-hidden rounded-xl border border-linha bg-white lg:grid-cols-[1fr_24rem]">
         <div className="flex flex-col px-6 py-6 sm:px-7">
           <span className="text-[0.72rem] font-bold uppercase tracking-[0.12em] text-suave">
-            Coleta de {CICLO_ATUAL.toLowerCase()}
+            Coleta de {cicloAtual().toLowerCase()}
           </span>
 
           <h1 className="m-0 mt-3 max-w-[18ch] text-[1.85rem] font-bold leading-[1.12] tracking-[-0.028em] text-tinta">

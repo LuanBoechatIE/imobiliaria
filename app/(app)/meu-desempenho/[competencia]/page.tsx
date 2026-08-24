@@ -5,7 +5,9 @@ import { ArrowRight, GraduationCap, ListChecks } from "lucide-react";
 import { Cabecalho, Pagina, Secao, Vazio, Voltar } from "@/components/pagina";
 import { Vertice } from "@/components/impressao";
 import { Barra, SeloAtividade, SeloCompetencia, Variacao } from "@/components/corretor-ui";
-import { IMOBILIARIA, fmt } from "@/lib/dados";
+import { fmt, notasDoCiclo } from "@/lib/dados";
+import { acharCiclo, lerChaveCiclo, type ChaveCiclo } from "@/lib/ciclos";
+import { AvisoCicloPassado, SeletorCiclo } from "@/components/seletor-ciclo";
 import { exigirCorretor, lerCompetencia, provasDa } from "@/lib/corretor";
 import {
   atividadesDaCompetencia,
@@ -34,17 +36,30 @@ export async function generateMetadata({
  */
 export default async function PáginaCompetência({
   params,
+  searchParams,
 }: {
   params: Promise<{ competencia: string }>;
+  searchParams: Promise<{ ciclo?: string }>;
 }) {
   const { competencia } = await params;
   const { pessoa, corretor } = await exigirCorretor();
   if (!corretor) notFound();
 
-  const leitura = lerCompetencia(corretor, competencia);
+  const chave = lerChaveCiclo((await searchParams).ciclo);
+  const cicloVisto = acharCiclo(chave);
+  const éAtual = chave === "atual";
+
+  const leitura = lerCompetencia(corretor, competencia, chave);
   if (!leitura) notFound();
 
-  const provas = provasDa(corretor, leitura.chave);
+  const semDados = (["atual", "anterior", "inicial"] as ChaveCiclo[]).filter(
+    (c) => notasDoCiclo(corretor, c) === null
+  );
+
+  // A prova é sempre a da última avaliação. Num ciclo fechado ela não
+  // descreve aquela nota, então a tela mostra o número sem prova em vez
+  // de sugerir uma que não é dali.
+  const provas = éAtual ? provasDa(corretor, leitura.chave) : [];
   const plano = planoDaCompetencia(pessoa.id, leitura.chave);
   const treinos = treinamentosDaCompetenciaDoCorretor(pessoa.id, leitura.chave);
   const atividades = atividadesDaCompetencia(pessoa.id, leitura.chave);
@@ -53,13 +68,24 @@ export default async function PáginaCompetência({
 
   return (
     <Pagina largura="media">
-      <Voltar href="/meu-desempenho">Voltar para meu desempenho</Voltar>
+      <Voltar href={éAtual ? "/meu-desempenho" : `/meu-desempenho?ciclo=${chave}`}>
+        Voltar para meu desempenho
+      </Voltar>
 
       <Cabecalho
-        etiqueta={`Ciclo atual · ${IMOBILIARIA.ciclo}`}
+        etiqueta={`${éAtual ? "Ciclo atual" : "Ciclo fechado"} · ${cicloVisto.rotulo}`}
         titulo={leitura.nome}
         apoio={leitura.mede}
+        acao={
+          <SeletorCiclo
+            atual={chave}
+            base={`/meu-desempenho/${leitura.chave}`}
+            indisponiveis={semDados}
+          />
+        }
       />
+
+      <AvisoCicloPassado ciclo={chave} rotulo={cicloVisto.rotulo} className="-mt-3" />
 
       <section
         className={cn(
@@ -70,7 +96,9 @@ export default async function PáginaCompetência({
         <Vertice competencia={leitura.chave} nota={leitura.nota} tamanho={64} />
 
         <div className="flex flex-col">
-          <span className="text-[0.78rem] text-suave">Nota atual</span>
+          <span className="text-[0.78rem] text-suave">
+            {éAtual ? "Nota atual" : `Nota em ${cicloVisto.rotulo.split(" ")[0].toLowerCase()}`}
+          </span>
           <span
             className={cn(
               "text-[2.4rem] font-bold leading-none tabular-nums tracking-[-0.04em]",
@@ -101,6 +129,13 @@ export default async function PáginaCompetência({
         titulo="Por que recebi essa nota"
         apoio="O que foi observado na sua operação, não opinião sobre você."
       >
+        {provas.length === 0 && (
+          <Vazio titulo={`As provas de ${cicloVisto.rotulo.toLowerCase()} não ficam guardadas`}>
+            O sistema mantém as observações da avaliação mais recente. Volte ao ciclo atual
+            para ler a prova de cada nota.
+          </Vazio>
+        )}
+
         <div className="flex flex-col gap-2">
           {provas.map((prova, i) => (
             <article

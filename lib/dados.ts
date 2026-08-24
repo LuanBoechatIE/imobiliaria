@@ -1,3 +1,11 @@
+import {
+  MESES_DESDE_O_RAIO_X,
+  mesPorExtenso,
+  rotuloCiclo,
+  rotuloCurto,
+  type ChaveCiclo,
+} from "./ciclos";
+
 /**
  * As seis competências são fixas: são os seis lados do hexágono e a
  * ordem nunca muda, senão comparar silhueta perderia o sentido.
@@ -57,6 +65,7 @@ export type Evidencia = {
   quando: string;
 };
 
+/** Um ponto da curva de evolução, já com o rótulo do mês resolvido. */
 export type PontoHistorico = { ciclo: string; nota: number };
 
 export type Corretor = {
@@ -67,7 +76,13 @@ export type Corretor = {
   anterior: Notas | null;
   /** Foto do Raio-X: como a pessoa estava quando o trabalho começou. */
   inicial: Notas | null;
-  historico: PontoHistorico[];
+  /**
+   * Notas gerais em ordem, da mais antiga para a mais recente, sempre
+   * terminando no ciclo atual. Só o número é guardado: o mês de cada
+   * ponto é derivado da posição na hora de ler (ver `historicoDe`),
+   * porque um rótulo gravado envelheceria junto com o dado.
+   */
+  historico: number[];
   /** Evidências específicas. O que não estiver aqui usa o texto padrão. */
   evidencias?: Partial<Record<ChaveCompetencia, Evidencia[]>>;
 };
@@ -89,9 +104,18 @@ export type Imobiliaria = {
 export const IMOBILIARIA: Imobiliaria = {
   nome: "Imobiliária Vale Norte",
   cidade: "Exemplo",
-  ciclo: "Março 2026",
-  cicloAnterior: "Fevereiro 2026",
-  cicloInicial: "Dezembro 2025",
+  // Getters, e não valores: o módulo é avaliado uma vez quando o
+  // servidor sobe, então uma string fixa aqui congelaria o ciclo no mês
+  // do deploy. Lendo a cada acesso, a virada de mês aparece sozinha.
+  get ciclo() {
+    return rotuloCiclo(0);
+  },
+  get cicloAnterior() {
+    return rotuloCiclo(-1);
+  },
+  get cicloInicial() {
+    return rotuloCiclo(-MESES_DESDE_O_RAIO_X);
+  },
   corretores: [
     {
       id: "ana",
@@ -100,19 +124,14 @@ export const IMOBILIARIA: Imobiliaria = {
       notas: { velocidade: 9, qualificacao: 8.5, visita: 9, followup: 7.5, negociacao: 8, registro: 8.5 },
       anterior: { velocidade: 8.5, qualificacao: 8, visita: 8.5, followup: 6.5, negociacao: 8, registro: 8 },
       inicial: { velocidade: 7, qualificacao: 6, visita: 8, followup: 4.5, negociacao: 7, registro: 7 },
-      historico: [
-        { ciclo: "Dez", nota: 6.6 },
-        { ciclo: "Jan", nota: 7.1 },
-        { ciclo: "Fev", nota: 7.7 },
-        { ciclo: "Mar", nota: 8.4 },
-      ],
+      historico: [6.6, 7.1, 7.7, 8.4],
       evidencias: {
         visita: [
           {
             tipo: "áudio",
             texto:
               "Confirmou a visita na véspera, levou 3 imóveis dentro do perfil e fechou perguntando qual dos três o cliente levaria hoje.",
-            quando: "12 mar",
+            quando: `12 ${rotuloCurto().toLowerCase()}`,
           },
         ],
       },
@@ -124,18 +143,13 @@ export const IMOBILIARIA: Imobiliaria = {
       notas: { velocidade: 8, qualificacao: 4, visita: 7, followup: 3, negociacao: 6, registro: 4.5 },
       anterior: { velocidade: 7.5, qualificacao: 4, visita: 7, followup: 3.5, negociacao: 6, registro: 4 },
       inicial: { velocidade: 6.5, qualificacao: 2.5, visita: 6, followup: 1, negociacao: 5, registro: 2.5 },
-      historico: [
-        { ciclo: "Dez", nota: 3.9 },
-        { ciclo: "Jan", nota: 4.4 },
-        { ciclo: "Fev", nota: 4.9 },
-        { ciclo: "Mar", nota: 5.4 },
-      ],
+      historico: [3.9, 4.4, 4.9, 5.4],
       evidencias: {
         velocidade: [
           {
             tipo: "tempo",
             texto: "Mediana de 12 minutos entre o lead entrar e o primeiro contato. Melhor tempo do time.",
-            quando: "março",
+            quando: mesPorExtenso(),
           },
         ],
         qualificacao: [
@@ -149,7 +163,7 @@ export const IMOBILIARIA: Imobiliaria = {
             tipo: "role-play",
             texto:
               "Foi direto para o imóvel sem entender por que a pessoa está mudando. Sem motivo, não há urgência para trabalhar depois.",
-            quando: "8 mar",
+            quando: `8 ${rotuloCurto().toLowerCase()}`,
           },
         ],
         followup: [
@@ -157,13 +171,13 @@ export const IMOBILIARIA: Imobiliaria = {
             tipo: "tempo",
             texto:
               "9 clientes visitaram imóvel e não receberam nenhum contato depois. O mais antigo está há 23 dias sem retorno.",
-            quando: "março",
+            quando: mesPorExtenso(),
           },
           {
             tipo: "áudio",
             texto:
               "Cliente pediu para pensar. Não houve nova tentativa de contato em nenhum canal.",
-            quando: "3 mar",
+            quando: `3 ${rotuloCurto().toLowerCase()}`,
           },
         ],
         registro: [
@@ -171,7 +185,7 @@ export const IMOBILIARIA: Imobiliaria = {
             tipo: "registro",
             texto:
               "6 negociações ativas vivem só no WhatsApp pessoal dele. Se ele sair da imobiliária, a carteira sai junto.",
-            quando: "março",
+            quando: mesPorExtenso(),
           },
         ],
       },
@@ -183,12 +197,7 @@ export const IMOBILIARIA: Imobiliaria = {
       notas: { velocidade: 7.5, qualificacao: 7, visita: 6.5, followup: 4.5, negociacao: 5.5, registro: 7 },
       anterior: { velocidade: 6, qualificacao: 6, visita: 6, followup: 4, negociacao: 5.5, registro: 6.5 },
       inicial: { velocidade: 5, qualificacao: 4.5, visita: 5.5, followup: 2, negociacao: 4.5, registro: 5 },
-      historico: [
-        { ciclo: "Dez", nota: 4.4 },
-        { ciclo: "Jan", nota: 5.0 },
-        { ciclo: "Fev", nota: 5.7 },
-        { ciclo: "Mar", nota: 6.3 },
-      ],
+      historico: [4.4, 5.0, 5.7, 6.3],
     },
     {
       id: "marcos",
@@ -197,12 +206,7 @@ export const IMOBILIARIA: Imobiliaria = {
       notas: { velocidade: 5, qualificacao: 6, visita: 7.5, followup: 3.5, negociacao: 7, registro: 3 },
       anterior: { velocidade: 5.5, qualificacao: 6, visita: 7, followup: 4, negociacao: 6.5, registro: 3 },
       inicial: { velocidade: 4.5, qualificacao: 4, visita: 6.5, followup: 1.5, negociacao: 6, registro: 2.5 },
-      historico: [
-        { ciclo: "Dez", nota: 4.2 },
-        { ciclo: "Jan", nota: 4.5 },
-        { ciclo: "Fev", nota: 4.9 },
-        { ciclo: "Mar", nota: 5.3 },
-      ],
+      historico: [4.2, 4.5, 4.9, 5.3],
     },
     {
       id: "patricia",
@@ -211,12 +215,7 @@ export const IMOBILIARIA: Imobiliaria = {
       notas: { velocidade: 6.5, qualificacao: 7.5, visita: 8, followup: 6, negociacao: 7.5, registro: 6 },
       anterior: { velocidade: 6.5, qualificacao: 7, visita: 8, followup: 5, negociacao: 7, registro: 6 },
       inicial: { velocidade: 6, qualificacao: 5.5, visita: 7.5, followup: 3.5, negociacao: 6.5, registro: 5 },
-      historico: [
-        { ciclo: "Dez", nota: 5.7 },
-        { ciclo: "Jan", nota: 6.1 },
-        { ciclo: "Fev", nota: 6.5 },
-        { ciclo: "Mar", nota: 6.9 },
-      ],
+      historico: [5.7, 6.1, 6.5, 6.9],
     },
     {
       id: "eduardo",
@@ -225,19 +224,14 @@ export const IMOBILIARIA: Imobiliaria = {
       notas: { velocidade: 4, qualificacao: 4.5, visita: 5, followup: 2.5, negociacao: 4, registro: 5.5 },
       anterior: { velocidade: 3, qualificacao: 4, visita: 4, followup: 2.5, negociacao: 3.5, registro: 5 },
       inicial: { velocidade: 3.5, qualificacao: 1.5, visita: 4, followup: 0.5, negociacao: 4, registro: 4.5 },
-      historico: [
-        { ciclo: "Dez", nota: 3.0 },
-        { ciclo: "Jan", nota: 3.4 },
-        { ciclo: "Fev", nota: 3.8 },
-        { ciclo: "Mar", nota: 4.3 },
-      ],
+      historico: [3.0, 3.4, 3.8, 4.3],
       evidencias: {
         velocidade: [
           {
             tipo: "tempo",
             texto:
               "Mediana de 5 horas para o primeiro contato. Dois leads de sexta só foram respondidos na segunda.",
-            quando: "março",
+            quando: mesPorExtenso(),
           },
         ],
         followup: [
@@ -245,7 +239,7 @@ export const IMOBILIARIA: Imobiliaria = {
             tipo: "tempo",
             texto:
               "Nenhum contato depois da primeira conversa em 11 dos 14 leads recebidos.",
-            quando: "março",
+            quando: mesPorExtenso(),
           },
         ],
         negociacao: [
@@ -253,7 +247,7 @@ export const IMOBILIARIA: Imobiliaria = {
             tipo: "role-play",
             texto:
               "Levou a proposta baixa direto ao proprietário sem preparar o terreno. Proprietário recusou sem contraproposta.",
-            quando: "15 mar",
+            quando: `15 ${rotuloCurto().toLowerCase()}`,
           },
         ],
       },
@@ -265,13 +259,46 @@ export const IMOBILIARIA: Imobiliaria = {
       notas: { velocidade: 7, qualificacao: 5.5, visita: 5, followup: 4, negociacao: 4.5, registro: 6.5 },
       anterior: null,
       inicial: null,
-      historico: [{ ciclo: "Mar", nota: 5.4 }],
+      historico: [5.4],
     },
   ],
 };
 
 export function acharCorretor(id: string): Corretor | undefined {
   return IMOBILIARIA.corretores.find((c) => c.id === id);
+}
+
+/**
+ * A curva de evolução com o mês de cada ponto resolvido agora: o último
+ * é sempre o ciclo atual, e os anteriores contam para trás a partir dele.
+ *
+ * Isso assume ciclos consecutivos, sem buraco. É verdade por construção
+ * — o ciclo fecha todo mês e quem não foi avaliado não gera ponto — e é
+ * o preço de não gravar o mês junto da nota, que é o que faria a curva
+ * envelhecer.
+ */
+export function historicoDe(corretor: Corretor): PontoHistorico[] {
+  const ultimo = corretor.historico.length - 1;
+  return corretor.historico.map((nota, i) => ({
+    ciclo: rotuloCurto(i - ultimo),
+    nota,
+  }));
+}
+
+/**
+ * As notas da pessoa em um dos três ciclos comparáveis. Devolve null
+ * quando aquele ciclo não existe para ela: quem entrou depois do Raio-X
+ * não tem foto inicial, e quem está no primeiro ciclo não tem anterior.
+ */
+export function notasDoCiclo(corretor: Corretor, ciclo: ChaveCiclo): Notas | null {
+  if (ciclo === "anterior") return corretor.anterior;
+  if (ciclo === "inicial") return corretor.inicial;
+  return corretor.notas;
+}
+
+/** Quem tem nota no ciclo pedido. É a base de qualquer média de time. */
+export function corretoresNoCiclo(ciclo: ChaveCiclo, corretores = IMOBILIARIA.corretores) {
+  return corretores.filter((c) => notasDoCiclo(c, ciclo) !== null);
 }
 
 /**
@@ -288,11 +315,10 @@ export function aplicarAvaliacaoAoCorretor(params: {
   id: string;
   nome: string;
   desde: string;
-  cicloRotulo: string;
   notas: Notas;
   evidencias: Partial<Record<ChaveCompetencia, Evidencia>>;
 }): void {
-  const { id, nome, desde, cicloRotulo, notas, evidencias } = params;
+  const { id, nome, desde, notas, evidencias } = params;
   const existente = IMOBILIARIA.corretores.find((c) => c.id === id);
 
   const evidenciasPorCompetencia: Partial<Record<ChaveCompetencia, Evidencia[]>> = {};
@@ -309,7 +335,7 @@ export function aplicarAvaliacaoAoCorretor(params: {
       notas,
       anterior: null,
       inicial: null,
-      historico: [{ ciclo: cicloRotulo, nota: media(notas) }],
+      historico: [media(notas)],
       evidencias: evidenciasPorCompetencia,
     });
     return;
@@ -319,13 +345,13 @@ export function aplicarAvaliacaoAoCorretor(params: {
   existente.notas = notas;
   existente.evidencias = evidenciasPorCompetencia;
 
-  const jaTemCiclo = existente.historico.some((h) => h.ciclo === cicloRotulo);
-  if (jaTemCiclo) {
-    existente.historico = existente.historico.map((h) =>
-      h.ciclo === cicloRotulo ? { ...h, nota: media(notas) } : h
-    );
+  // O último ponto da curva é, por definição, o ciclo atual — e é ele
+  // que esta avaliação acabou de decidir. Reavaliar no mesmo mês corrige
+  // o ponto em vez de criar um mês novo do nada.
+  if (existente.historico.length === 0) {
+    existente.historico = [media(notas)];
   } else {
-    existente.historico = [...existente.historico, { ciclo: cicloRotulo, nota: media(notas) }];
+    existente.historico = [...existente.historico.slice(0, -1), media(notas)];
   }
 }
 
@@ -383,11 +409,20 @@ export function critica(nota: number): boolean {
   return nota < 5;
 }
 
-/** Média do time em cada competência, da mais fraca para a mais forte. */
-export function mediasPorCompetencia(corretores: Corretor[]) {
+/**
+ * Média do time em cada competência, da mais fraca para a mais forte.
+ *
+ * `pegar` diz de qual ciclo ler. O padrão é o ciclo atual, que é o que
+ * quase toda tela quer; o painel passa outro quando o usuário está
+ * olhando um ciclo fechado.
+ */
+export function mediasPorCompetencia(
+  corretores: Corretor[],
+  pegar: (c: Corretor) => Notas = (c) => c.notas
+) {
   const quantos = corretores.length || 1;
   return COMPETENCIAS.map((c) => ({
     ...c,
-    valor: corretores.reduce((soma, p) => soma + p.notas[c.chave], 0) / quantos,
+    valor: corretores.reduce((soma, p) => soma + pegar(p)[c.chave], 0) / quantos,
   })).sort((a, b) => a.valor - b.valor);
 }
