@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Building2, Headset } from "lucide-react";
 
 const CONTAS = [
@@ -25,9 +26,15 @@ const CONTAS = [
  * quem quiser conferir ainda vê o e-mail preenchido no formulário.
  */
 export function AcessoDemo() {
+  // Trava depois do primeiro clique: o envio leva um tempo visível e
+  // clicar de novo dispararia uma segunda verificação de senha à toa.
+  const [enviando, setEnviando] = useState(false);
+
   function preencher(email: string, senha: string) {
     const form = document.querySelector<HTMLFormElement>("form[data-login]");
     if (!form) return;
+
+    setEnviando(true);
 
     const campoEmail = form.elements.namedItem("email") as HTMLInputElement | null;
     const campoSenha = form.elements.namedItem("senha") as HTMLInputElement | null;
@@ -49,7 +56,8 @@ export function AcessoDemo() {
             key={email}
             type="button"
             onClick={() => preencher(email, senha)}
-            className="flex items-center gap-2.5 rounded-md border border-borda-campo bg-white px-3 py-2.5 text-left transition-colors hover:border-laranja"
+            disabled={enviando}
+            className="alvo-alto flex items-center gap-2.5 rounded-md border border-borda-campo bg-white px-3 py-2.5 text-left transition-colors hover:border-laranja disabled:pointer-events-none disabled:opacity-60"
           >
             <span className="grid size-7 shrink-0 place-items-center rounded-md bg-laranja-suave text-acao">
               <Icone size={14} strokeWidth={2.3} />

@@ -72,10 +72,13 @@ export function notaDoTime() {
 /** Média do time em cada competência, antes e depois, ordenada pelo maior ganho. */
 export function competenciasComparadas() {
   const pessoas = comparaveis();
+  // Sem ninguém comparável a divisão sai NaN e a tela imprime "NaN"
+  // no lugar da nota. Zero é a leitura correta: não há o que comparar.
+  const quantos = pessoas.length || 1;
 
   return COMPETENCIAS.map((c) => {
-    const antes = pessoas.reduce((s, p) => s + p.inicial[c.chave], 0) / pessoas.length;
-    const depois = pessoas.reduce((s, p) => s + p.notas[c.chave], 0) / pessoas.length;
+    const antes = pessoas.reduce((s, p) => s + p.inicial[c.chave], 0) / quantos;
+    const depois = pessoas.reduce((s, p) => s + p.notas[c.chave], 0) / quantos;
     return { ...c, antes, depois, ganho: depois - antes };
   }).sort((a, b) => b.ganho - a.ganho);
 }
@@ -83,13 +86,14 @@ export function competenciasComparadas() {
 /** Notas médias do time como um objeto de Notas, para desenhar a impressão. */
 export function notasMediasDoTime(momento: "antes" | "depois"): Notas {
   const pessoas = comparaveis();
+  const quantos = pessoas.length || 1;
   const notas = {} as Notas;
   for (const c of COMPETENCIAS) {
     const soma = pessoas.reduce(
       (s, p) => s + (momento === "antes" ? p.inicial[c.chave] : p.notas[c.chave]),
       0
     );
-    notas[c.chave] = soma / pessoas.length;
+    notas[c.chave] = soma / quantos;
   }
   return notas;
 }

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { CheckCircle2, ChevronRight } from "lucide-react";
-import { Pagina, Secao } from "@/components/pagina";
+import { Pagina, Secao, Vazio } from "@/components/pagina";
 import { HexAvatar } from "@/components/hex-avatar";
 import {
   CICLO_ATUAL,
@@ -114,7 +114,10 @@ export default async function PáginaAvaliacoes({
   return (
     <Pagina>
       {ok && (
-        <p className="m-0 flex items-center gap-2 rounded-lg border border-ok/30 bg-ok-suave px-4 py-3 text-[0.9rem] font-medium text-ok">
+        <p
+          role="status"
+          className="m-0 flex items-center gap-2 rounded-lg border border-ok/30 bg-ok-suave px-4 py-3 text-[0.9rem] font-medium text-ok"
+        >
           <CheckCircle2 size={17} />
           Avaliação concluída e registrada no ciclo.
         </p>
@@ -161,6 +164,11 @@ export default async function PáginaAvaliacoes({
 
         <div className="border-t border-linha bg-fundo px-5 py-6 lg:border-l lg:border-t-0">
           <div className="flex flex-wrap justify-center gap-2.5">
+            {corretores.length === 0 && (
+              <p className="m-0 max-w-[28ch] py-6 text-center text-[0.88rem] text-suave">
+                Nenhum corretor ativo no ciclo, então não há o que coletar ainda.
+              </p>
+            )}
             {corretores.map((pessoa, i) => (
               <HexColeta
                 key={pessoa.id}
@@ -205,6 +213,21 @@ export default async function PáginaAvaliacoes({
         titulo="Corretores do ciclo"
         apoio="Quem já começou aparece primeiro. Corretor desativado não entra no ciclo."
       >
+        {corretores.length === 0 ? (
+          <Vazio
+            titulo="Nenhum corretor no ciclo"
+            acao={
+              <Link
+                href="/equipe"
+                className="alvo-alto inline-flex items-center rounded-md bg-acao px-3.5 py-2 text-[0.9rem] font-semibold text-white no-underline transition-colors hover:bg-acao-forte"
+              >
+                Abrir a equipe
+              </Link>
+            }
+          >
+            A coleta começa quando existe pelo menos um corretor ativo na equipe.
+          </Vazio>
+        ) : (
         <div className="overflow-hidden rounded-xl border border-linha bg-white">
           <div className="hidden grid-cols-[2.5rem_minmax(9rem,1fr)_9rem_11rem_6rem] xl:grid-cols-[2.5rem_minmax(9rem,1fr)_9rem_11rem_7rem_6rem] items-center gap-4 border-b border-linha px-5 py-2.5 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-suave lg:grid">
             <span />
@@ -271,6 +294,7 @@ export default async function PáginaAvaliacoes({
             );
           })}
         </div>
+        )}
       </Secao>
     </Pagina>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { AlertCircle, Check, Copy, KeyRound, Plus, X } from "lucide-react";
 import { salvarPessoa } from "./acoes";
@@ -11,20 +11,41 @@ const campo =
 const rotulo = "text-[0.83rem] font-semibold text-tinta-suave";
 
 function BotaoCopiar({ texto }: { texto: string }) {
-  const [copiado, setCopiado] = useState(false);
+  const [estado, setEstado] = useState<"parado" | "copiado" | "falhou">("parado");
+
+  /**
+   * `navigator.clipboard` não existe fora de contexto seguro e pode ser
+   * negado por permissão. Como esta é a única vez que a senha aparece,
+   * a falha precisa virar instrução, não silêncio: cai para a seleção
+   * do texto, que sempre funciona com Ctrl+C.
+   */
+  async function copiar() {
+    try {
+      if (!navigator.clipboard) throw new Error("sem área de transferência");
+      await navigator.clipboard.writeText(texto);
+      setEstado("copiado");
+      setTimeout(() => setEstado("parado"), 1800);
+    } catch {
+      setEstado("falhou");
+      const campo = document.getElementById("senha-temporaria");
+      if (campo) {
+        const faixa = document.createRange();
+        faixa.selectNodeContents(campo);
+        const selecao = window.getSelection();
+        selecao?.removeAllRanges();
+        selecao?.addRange(faixa);
+      }
+    }
+  }
 
   return (
     <button
       type="button"
-      onClick={async () => {
-        await navigator.clipboard.writeText(texto);
-        setCopiado(true);
-        setTimeout(() => setCopiado(false), 1800);
-      }}
-      className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-linha-forte bg-white px-2.5 py-1.5 text-[0.82rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-acao"
+      onClick={copiar}
+      className="alvo-alto inline-flex shrink-0 items-center gap-1.5 rounded-md border border-linha-forte bg-white px-2.5 py-1.5 text-[0.82rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-acao"
     >
       <AnimatePresence mode="wait" initial={false}>
-        {copiado ? (
+        {estado === "copiado" ? (
           <motion.span
             key="ok"
             initial={{ opacity: 0, scale: 0.8 }}
@@ -33,6 +54,16 @@ function BotaoCopiar({ texto }: { texto: string }) {
             className="inline-flex items-center gap-1.5 text-ok"
           >
             <Check size={14} /> Copiado
+          </motion.span>
+        ) : estado === "falhou" ? (
+          <motion.span
+            key="falhou"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="inline-flex items-center gap-1.5 text-alerta"
+          >
+            <AlertCircle size={14} /> Use Ctrl+C
           </motion.span>
         ) : (
           <motion.span
@@ -60,11 +91,41 @@ export function FormularioPessoa({
   const [aberto, setAberto] = useState(false);
   const [estado, acao, enviando] = useActionState(salvarPessoa, null);
   const editando = Boolean(pessoa);
+  const tituloId = useId();
+  const gatilhoAnterior = useRef<HTMLElement | null>(null);
 
   // Fecha sozinho só quando não há senha para mostrar (edição, ou erro).
   useEffect(() => {
     if (estado?.ok && !estado.senhaTemporaria) setAberto(false);
   }, [estado]);
+
+  /**
+   * Enquanto a janela está aberta: Esc fecha, a página atrás não rola
+   * junto e o foco volta para o botão que abriu. Sem isso, quem navega
+   * por teclado sai da janela e continua tabulando na lista escondida
+   * atrás dela.
+   */
+  useEffect(() => {
+    if (!aberto) {
+      gatilhoAnterior.current?.focus();
+      gatilhoAnterior.current = null;
+      return;
+    }
+
+    gatilhoAnterior.current = document.activeElement as HTMLElement | null;
+
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setAberto(false);
+    };
+    const rolagem = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", esc);
+
+    return () => {
+      document.body.style.overflow = rolagem;
+      document.removeEventListener("keydown", esc);
+    };
+  }, [aberto]);
 
   return (
     <>
@@ -99,7 +160,10 @@ export function FormularioPessoa({
             />
 
             <motion.div
-              className="relative w-full max-w-md rounded-t-2xl border border-linha bg-white p-5 shadow-xl sm:rounded-xl"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={tituloId}
+              className="relative max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-t-2xl border border-linha bg-white p-5 shadow-xl sm:rounded-xl"
               initial={{ opacity: 0, y: 24, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -109,7 +173,7 @@ export function FormularioPessoa({
                 type="button"
                 onClick={() => setAberto(false)}
                 aria-label="Fechar"
-                className="absolute right-3 top-3 grid size-8 place-items-center rounded-lg text-suave transition-colors hover:bg-fundo-2"
+                className="alvo-toque absolute right-3 top-3 grid size-8 place-items-center rounded-lg text-suave transition-colors hover:bg-fundo-2"
               >
                 <X size={17} />
               </button>
@@ -122,7 +186,10 @@ export function FormularioPessoa({
                       <Check size={18} strokeWidth={2.6} />
                     </span>
                     <div>
-                      <h2 className="m-0 text-[1.05rem] font-bold tracking-tight text-tinta">
+                      <h2
+                        id={tituloId}
+                        className="m-0 text-[1.05rem] font-bold tracking-tight text-tinta"
+                      >
                         Pessoa adicionada
                       </h2>
                       <p className="m-0 text-[0.83rem] text-suave">
@@ -137,7 +204,10 @@ export function FormularioPessoa({
                       Senha temporária
                     </span>
                     <div className="flex items-center gap-2">
-                      <code className="flex-1 rounded-md border border-borda-campo bg-white px-3 py-2 text-[1.05rem] font-semibold tracking-wide text-tinta">
+                      <code
+                        id="senha-temporaria"
+                        className="min-w-0 flex-1 break-all rounded-md border border-borda-campo bg-white px-3 py-2 text-[1.05rem] font-semibold tracking-wide text-tinta"
+                      >
                         {estado.senhaTemporaria}
                       </code>
                       <BotaoCopiar texto={estado.senhaTemporaria} />
@@ -160,7 +230,10 @@ export function FormularioPessoa({
               ) : (
                 // ---------- formulário ----------
                 <>
-                  <h2 className="mb-0.5 text-[1.15rem] font-bold tracking-tight text-tinta">
+                  <h2
+                    id={tituloId}
+                    className="mb-0.5 text-[1.15rem] font-bold tracking-tight text-tinta"
+                  >
                     {editando ? "Editar pessoa" : "Adicionar pessoa"}
                   </h2>
                   <p className="mb-4 text-[0.87rem] text-suave">
@@ -170,7 +243,10 @@ export function FormularioPessoa({
                   </p>
 
                   {estado?.erro && (
-                    <p className="mb-3 flex items-start gap-2 rounded-lg border border-alerta/30 bg-alerta-suave px-3.5 py-2.5 text-[0.87rem] text-alerta">
+                    <p
+                      role="alert"
+                      className="mb-3 flex items-start gap-2 rounded-lg border border-alerta/30 bg-alerta-suave px-3.5 py-2.5 text-[0.87rem] text-alerta"
+                    >
                       <AlertCircle size={16} className="mt-0.5 shrink-0" />
                       {estado.erro}
                     </p>
@@ -189,6 +265,8 @@ export function FormularioPessoa({
                         className={campo}
                         defaultValue={pessoa?.nome}
                         placeholder="Nome completo"
+                        maxLength={80}
+                        autoComplete="name"
                         required
                         autoFocus
                       />
@@ -205,6 +283,8 @@ export function FormularioPessoa({
                         className={campo}
                         defaultValue={pessoa?.email}
                         placeholder="pessoa@imobiliaria.com"
+                        maxLength={120}
+                        autoComplete="off"
                         required
                       />
                     </div>
@@ -220,6 +300,7 @@ export function FormularioPessoa({
                           className={campo}
                           defaultValue={pessoa?.cargo}
                           placeholder="Corretor"
+                          maxLength={40}
                           required
                         />
                       </div>
@@ -251,6 +332,7 @@ export function FormularioPessoa({
                         type="date"
                         className={campo}
                         defaultValue={pessoa?.entrada ?? new Date().toISOString().slice(0, 10)}
+                        max={new Date().toISOString().slice(0, 10)}
                         required
                       />
                     </div>

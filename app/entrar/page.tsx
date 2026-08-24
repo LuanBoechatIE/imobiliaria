@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import s from "./entrar.module.css";
 import { entrar } from "./acoes";
 import { AcessoDemo } from "./acesso-demo";
+import { BotaoEntrar } from "./botao-entrar";
 import { Impressao } from "@/components/impressao";
 import { COMPETENCIAS } from "@/lib/dados";
 
@@ -113,7 +114,7 @@ export default async function PáginaEntrar({
           </div>
 
           {erro ? (
-            <p className={s.erro}>
+            <p className={s.erro} role="alert">
               <span aria-hidden="true">!</span>
               <span>E-mail ou senha incorretos. Confira e tente de novo.</span>
             </p>
@@ -133,6 +134,7 @@ export default async function PáginaEntrar({
                 type="email"
                 autoComplete="email"
                 placeholder="voce@imobiliaria.com"
+                maxLength={120}
                 required
                 autoFocus
               />
@@ -149,13 +151,12 @@ export default async function PáginaEntrar({
                 type="password"
                 autoComplete="current-password"
                 placeholder="••••••••"
+                maxLength={200}
                 required
               />
             </div>
 
-            <button className={s.botao} type="submit">
-              Entrar
-            </button>
+            <BotaoEntrar className={s.botao} />
           </form>
 
           <div className={s.rodape}>

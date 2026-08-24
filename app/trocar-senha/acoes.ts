@@ -29,6 +29,9 @@ export async function trocarSenha(
   if (nova.length < 8) {
     return { erro: "A nova senha precisa de pelo menos 8 caracteres." };
   }
+  if (nova.length > 200) {
+    return { erro: "A nova senha passou de 200 caracteres." };
+  }
   if (nova !== confirma) {
     return { erro: "A confirmação não bate com a nova senha." };
   }

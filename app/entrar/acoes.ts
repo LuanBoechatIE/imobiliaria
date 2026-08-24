@@ -6,8 +6,16 @@ import { COOKIE_SESSAO, assinarSessao } from "@/lib/sessao";
 import { conferirSenha } from "@/lib/senha";
 import { acharPorEmail } from "@/lib/usuarios";
 
+/**
+ * Tetos de entrada. `conferirSenha` roda scrypt, que é caro de
+ * propósito: sem limite, um campo colado com megabytes de texto vira
+ * carga de CPU no servidor a cada tentativa.
+ */
+const MAX_EMAIL = 120;
+const MAX_SENHA = 200;
+
 export async function entrar(formData: FormData) {
-  const email = String(formData.get("email") ?? "");
+  const email = String(formData.get("email") ?? "").trim();
   const senha = String(formData.get("senha") ?? "");
   const de = String(formData.get("de") ?? "");
 
@@ -18,6 +26,7 @@ export async function entrar(formData: FormData) {
   };
 
   if (!email || !senha) falhou();
+  if (email.length > MAX_EMAIL || senha.length > MAX_SENHA) falhou();
 
   const usuario = acharPorEmail(email);
 
@@ -43,7 +52,11 @@ export async function entrar(formData: FormData) {
   });
 
   if (usuario!.deveTrocarSenha) redirect("/trocar-senha");
-  redirect(de && de.startsWith("/") ? de : "/painel");
+
+  // `de` vem da URL. Só caminho interno passa: "//outro.site" também
+  // começa com barra e o navegador o trata como endereço externo.
+  const interno = de.startsWith("/") && !de.startsWith("//") && !de.startsWith("/\\");
+  redirect(interno ? de : "/painel");
 }
 
 export async function sair() {

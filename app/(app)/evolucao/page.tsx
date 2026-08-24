@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Cabecalho, Pagina } from "@/components/pagina";
+import { Cabecalho, Pagina, Vazio } from "@/components/pagina";
 import { Impressao, Vertice } from "@/components/impressao";
 import { IMOBILIARIA, critica, fmt } from "@/lib/dados";
 import {
@@ -59,6 +59,31 @@ export default async function PáginaEvolucao() {
   const subiram = competencias.filter((c) => c.ganho > 0).length;
   const vendas = indicadores.find((i) => i.chave === "vendas");
   const aindaFraca = [...competencias].sort((a, b) => a.depois - b.depois)[0];
+
+  // Sem ninguém que estivesse lá nos dois momentos, não existe antes e
+  // depois: todo número desta tela sairia de uma média de lista vazia.
+  if (quantos === 0) {
+    return (
+      <Pagina largura="media">
+        <Cabecalho etiqueta={IMOBILIARIA.nome} titulo="Antes e depois" />
+        <Vazio
+          titulo="Ainda não há o que comparar"
+          acao={
+            <Link
+              href="/avaliacoes"
+              className="alvo-alto inline-flex items-center rounded-md bg-acao px-3.5 py-2 text-[0.9rem] font-semibold text-white no-underline transition-colors hover:bg-acao-forte"
+            >
+              Ir para as avaliações
+            </Link>
+          }
+        >
+          A comparação usa quem já tinha silhueta no Raio-X de{" "}
+          {cicloInicial.toLowerCase()} e continua na equipe hoje. Enquanto ninguém
+          fecha as duas pontas, esta tela fica em branco de propósito.
+        </Vazio>
+      </Pagina>
+    );
+  }
 
   return (
     <Pagina>

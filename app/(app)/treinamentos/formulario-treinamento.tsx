@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { AlertCircle, GraduationCap, Plus, X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -25,10 +25,39 @@ export function FormularioTreinamento({
   const [aberto, setAberto] = useState(false);
   const [estado, acao, enviando] = useActionState(salvarTreinamento, null);
   const editando = Boolean(treinamento);
+  const tituloId = useId();
+  const gatilhoAnterior = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (estado?.ok) setAberto(false);
   }, [estado]);
+
+  /**
+   * Esc fecha, a lista atrás para de rolar junto e o foco volta para o
+   * botão que abriu. Esta janela é alta e rola por dentro: sem a trava,
+   * o gesto de rolagem vaza para a página e a pessoa perde o lugar.
+   */
+  useEffect(() => {
+    if (!aberto) {
+      gatilhoAnterior.current?.focus();
+      gatilhoAnterior.current = null;
+      return;
+    }
+
+    gatilhoAnterior.current = document.activeElement as HTMLElement | null;
+
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setAberto(false);
+    };
+    const rolagem = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", esc);
+
+    return () => {
+      document.body.style.overflow = rolagem;
+      document.removeEventListener("keydown", esc);
+    };
+  }, [aberto]);
 
   return (
     <>
@@ -63,7 +92,10 @@ export function FormularioTreinamento({
             />
 
             <motion.div
-              className="relative flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-t-2xl border border-linha bg-white shadow-xl sm:rounded-xl"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={tituloId}
+              className="relative flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-2xl border border-linha bg-white shadow-xl sm:rounded-xl"
               initial={{ opacity: 0, y: 24, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -74,7 +106,10 @@ export function FormularioTreinamento({
                   <GraduationCap size={16} strokeWidth={2.4} />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <h2 className="m-0 text-[1.05rem] font-bold tracking-tight text-tinta">
+                  <h2
+                    id={tituloId}
+                    className="m-0 truncate text-[1.05rem] font-bold tracking-tight text-tinta"
+                  >
                     {editando ? "Editar treinamento" : "Novo treinamento"}
                   </h2>
                 </div>
@@ -82,14 +117,17 @@ export function FormularioTreinamento({
                   type="button"
                   onClick={() => setAberto(false)}
                   aria-label="Fechar"
-                  className="grid size-8 shrink-0 place-items-center rounded-lg text-suave transition-colors hover:bg-fundo-2"
+                  className="alvo-toque grid size-8 shrink-0 place-items-center rounded-lg text-suave transition-colors hover:bg-fundo-2"
                 >
                   <X size={17} />
                 </button>
               </div>
 
               {estado?.erro && (
-                <p className="mx-5 mt-3 flex items-start gap-2 rounded-lg border border-alerta/30 bg-alerta-suave px-3.5 py-2.5 text-[0.87rem] text-alerta">
+                <p
+                  role="alert"
+                  className="mx-5 mt-3 flex items-start gap-2 rounded-lg border border-alerta/30 bg-alerta-suave px-3.5 py-2.5 text-[0.87rem] text-alerta"
+                >
                   <AlertCircle size={16} className="mt-0.5 shrink-0" />
                   {estado.erro}
                 </p>
@@ -108,6 +146,7 @@ export function FormularioTreinamento({
                     className={campo}
                     defaultValue={treinamento?.titulo}
                     placeholder="Ex.: Follow-up que não morre no terceiro contato"
+                    maxLength={120}
                     required
                     autoFocus
                   />
@@ -158,6 +197,7 @@ export function FormularioTreinamento({
                     rows={3}
                     className={`${campo} resize-y`}
                     defaultValue={treinamento?.descricao}
+                    maxLength={2000}
                     placeholder="O que foi trabalhado, e por que esse tema entrou agora."
                   />
                 </div>
@@ -172,6 +212,8 @@ export function FormularioTreinamento({
                     type="url"
                     className={campo}
                     defaultValue={treinamento?.gravacaoUrl ?? ""}
+                    maxLength={2048}
+                    inputMode="url"
                     placeholder="Drive, YouTube não listado, Loom..."
                   />
                   <span className="text-[0.78rem] text-suave">
@@ -195,8 +237,10 @@ export function FormularioTreinamento({
                           className="flex items-center gap-2.5 rounded-md px-1.5 py-1.5 text-[0.9rem] text-tinta-suave transition-colors hover:bg-white"
                         >
                           <Checkbox name="participantes" value={p.id} defaultChecked={marcado} />
-                          <span className="truncate">{p.nome}</span>
-                          <span className="ml-auto shrink-0 text-[0.76rem] text-suave">{p.cargo}</span>
+                          <span className="min-w-0 flex-1 truncate">{p.nome}</span>
+                          <span className="max-w-[9rem] shrink-0 truncate text-[0.76rem] text-suave">
+                            {p.cargo}
+                          </span>
                         </label>
                       );
                     })}

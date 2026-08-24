@@ -371,6 +371,10 @@ export function media(notas: Notas): number {
 }
 
 export function fmt(n: number): string {
+  // Último anteparo: qualquer média de lista vazia chega aqui como NaN,
+  // e "NaN" na tela é pior do que o mesmo ponto que já marca nota
+  // ausente no formulário de avaliação.
+  if (!Number.isFinite(n)) return "·";
   return n.toFixed(1).replace(".", ",");
 }
 
@@ -381,8 +385,9 @@ export function critica(nota: number): boolean {
 
 /** Média do time em cada competência, da mais fraca para a mais forte. */
 export function mediasPorCompetencia(corretores: Corretor[]) {
+  const quantos = corretores.length || 1;
   return COMPETENCIAS.map((c) => ({
     ...c,
-    valor: corretores.reduce((soma, p) => soma + p.notas[c.chave], 0) / corretores.length,
+    valor: corretores.reduce((soma, p) => soma + p.notas[c.chave], 0) / quantos,
   })).sort((a, b) => a.valor - b.valor);
 }

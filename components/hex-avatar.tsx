@@ -6,14 +6,21 @@ import { cn } from "@/lib/utils";
  * na frente continua sendo obviamente a mesma família visual.
  */
 
-function iniciais(nome: string): string {
-  return nome
+/**
+ * Iniciais do nome. Percorre por ponto de código, não por índice: nome
+ * que começa com emoji ou letra fora do plano básico quebra ao meio em
+ * `parte[0]` e sai como losango de caractere inválido.
+ */
+export function iniciais(nome: string): string {
+  const letras = nome
     .trim()
     .split(/\s+/)
-    .map((parte) => parte[0] ?? "")
-    .join("")
+    .filter(Boolean)
+    .map((parte) => Array.from(parte)[0] ?? "")
     .slice(0, 2)
-    .toUpperCase();
+    .join("");
+
+  return letras ? letras.toLocaleUpperCase("pt-BR") : "?";
 }
 
 export function HexAvatar({

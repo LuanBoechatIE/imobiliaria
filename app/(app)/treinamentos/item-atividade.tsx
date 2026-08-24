@@ -4,6 +4,7 @@ import { useId, useTransition } from "react";
 import { Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { excluirAtividade, marcarAtividade } from "./acoes";
+import { executar } from "@/lib/acao";
 import type { Atividade } from "@/lib/treinamentos";
 
 export function ItemAtividade({
@@ -20,14 +21,20 @@ export function ItemAtividade({
     const dados = new FormData();
     dados.set("treinamentoId", treinamentoId);
     dados.set("atividadeId", atividade.id);
-    iniciarTransicao(() => marcarAtividade(dados));
+    iniciarTransicao(async () => {
+      await executar(() => marcarAtividade(dados));
+    });
   }
 
   function remover() {
     const dados = new FormData();
     dados.set("treinamentoId", treinamentoId);
     dados.set("atividadeId", atividade.id);
-    iniciarTransicao(() => excluirAtividade(dados));
+    iniciarTransicao(async () => {
+      await executar(() => excluirAtividade(dados), {
+        titulo: "Atividade removida",
+      });
+    });
   }
 
   return (
@@ -38,11 +45,12 @@ export function ItemAtividade({
         id={id}
         checked={atividade.concluida}
         onCheckedChange={alternar}
+        disabled={emTransicao}
         className="shrink-0"
       />
       <label
         htmlFor={id}
-        className="flex-1 cursor-pointer text-[0.92rem] text-tinta-suave data-[concluida=true]:text-suave data-[concluida=true]:line-through"
+        className="min-w-0 flex-1 cursor-pointer break-words text-[0.92rem] text-tinta-suave data-[concluida=true]:text-suave data-[concluida=true]:line-through"
         data-concluida={atividade.concluida}
       >
         {atividade.titulo}
@@ -55,8 +63,9 @@ export function ItemAtividade({
       <button
         type="button"
         onClick={remover}
+        disabled={emTransicao}
         aria-label={`Remover atividade: ${atividade.titulo}`}
-        className="alvo-toque grid shrink-0 place-items-center rounded-md p-1 text-suave transition-colors hover:text-alerta focus-visible:text-alerta"
+        className="alvo-toque grid shrink-0 place-items-center rounded-md p-1 text-suave transition-colors hover:text-alerta focus-visible:text-alerta disabled:pointer-events-none disabled:opacity-40"
       >
         <Trash2 size={15} />
       </button>

@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { MoreHorizontal } from "lucide-react";
-import { toast } from "sonner";
 import { alternarStatus } from "./acoes";
+import { executar } from "@/lib/acao";
 import { FormularioPessoa } from "./formulario-pessoa";
 import type { Pessoa } from "@/lib/equipe";
 
@@ -35,15 +35,14 @@ export function AcoesPessoa({ pessoa }: { pessoa: Pessoa }) {
     dados.set("id", pessoa.id);
 
     iniciarTransicao(async () => {
-      await alternarStatus(dados);
-      toast.success(
-        inativo ? `${pessoa.nome} voltou para a equipe` : `${pessoa.nome} foi desativado`,
-        {
-          description: inativo
-            ? "Já pode entrar no sistema e volta a ser avaliado no ciclo."
-            : "Perdeu o acesso e saiu dos rankings. O histórico continua guardado.",
-        }
-      );
+      await executar(() => alternarStatus(dados), {
+        titulo: inativo
+          ? `${pessoa.nome} voltou para a equipe`
+          : `${pessoa.nome} foi desativado`,
+        descricao: inativo
+          ? "Já pode entrar no sistema e volta a ser avaliado no ciclo."
+          : "Perdeu o acesso e saiu dos rankings. O histórico continua guardado.",
+      });
     });
   }
 

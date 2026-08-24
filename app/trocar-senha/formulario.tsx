@@ -14,7 +14,7 @@ export function FormularioTrocarSenha() {
   return (
     <form action={acao} className="flex w-full flex-col gap-3.5">
       {estado?.erro && (
-        <p className="flex items-start gap-2 rounded-lg border border-alerta/30 bg-alerta-suave px-3.5 py-2.5 text-[0.87rem] text-alerta">
+        <p role="alert" className="flex items-start gap-2 rounded-lg border border-alerta/30 bg-alerta-suave px-3.5 py-2.5 text-[0.87rem] text-alerta">
           <AlertCircle size={16} className="mt-0.5 shrink-0" />
           {estado.erro}
         </p>
@@ -31,6 +31,7 @@ export function FormularioTrocarSenha() {
           autoComplete="current-password"
           className={campo}
           placeholder="A que você recebeu"
+          maxLength={200}
           required
           autoFocus
         />
@@ -48,6 +49,7 @@ export function FormularioTrocarSenha() {
           className={campo}
           placeholder="Mínimo 8 caracteres"
           minLength={8}
+          maxLength={200}
           required
         />
       </div>
@@ -63,6 +65,7 @@ export function FormularioTrocarSenha() {
           autoComplete="new-password"
           className={campo}
           minLength={8}
+          maxLength={200}
           required
         />
       </div>

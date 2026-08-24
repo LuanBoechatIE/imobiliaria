@@ -44,6 +44,9 @@ function passaNoFiltro(p: Pessoa, filtro: string): boolean {
   }
 }
 
+/** Nome mais longo da equipe cabe folgado; o resto é ruído colado na URL. */
+const MAX_BUSCA = 80;
+
 function semAcento(texto: string): string {
   return texto.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 }
@@ -53,7 +56,10 @@ export default async function PáginaEquipe({
 }: {
   searchParams: Promise<{ f?: string; q?: string }>;
 }) {
-  const { f = "todos", q = "" } = await searchParams;
+  const { f = "todos", q: qBruto = "" } = await searchParams;
+  // O termo vem da URL, então pode chegar de qualquer tamanho. Corta
+  // antes de percorrer a lista e antes de reaparecer na tela.
+  const q = qBruto.slice(0, MAX_BUSCA);
   const busca = semAcento(q.trim());
 
   const todas = listarPessoas();
@@ -90,6 +96,9 @@ export default async function PáginaEquipe({
     const s = qs.toString();
     return s ? `/equipe?${s}` : "/equipe";
   };
+
+  /** Mesmo filtro, sem o termo de busca. */
+  const urlSemBusca = f === "todos" ? "/equipe" : `/equipe?f=${encodeURIComponent(f)}`;
 
   return (
     <Pagina>
@@ -164,16 +173,31 @@ export default async function PáginaEquipe({
           />
           <input
             name="q"
+            type="search"
             defaultValue={q}
+            maxLength={MAX_BUSCA}
+            enterKeyHint="search"
             placeholder="Buscar por nome"
             aria-label="Buscar por nome"
-            className="w-full rounded-md border border-borda-campo bg-white py-2 pl-9 pr-3 text-[0.9rem] text-tinta transition focus:border-acao"
+            className="alvo-alto w-full rounded-md border border-borda-campo bg-white py-2 pl-9 pr-3 text-[0.9rem] text-tinta transition focus:border-acao"
           />
         </form>
       </div>
 
       {pessoas.length === 0 ? (
-        <Vazio titulo="Ninguém encontrado">
+        <Vazio
+          titulo="Ninguém encontrado"
+          acao={
+            busca ? (
+              <Link
+                href={urlSemBusca}
+                className="alvo-alto inline-flex items-center rounded-md border border-linha-forte bg-white px-3.5 py-2 text-[0.88rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-acao"
+              >
+                Limpar a busca
+              </Link>
+            ) : undefined
+          }
+        >
           {busca
             ? `Nenhum nome com "${q}". Tente outro termo ou limpe a busca.`
             : "Nenhuma pessoa nesse filtro. Escolha outro acima."}

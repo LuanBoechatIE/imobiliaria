@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { ExternalLink, Play, Trash2 } from "lucide-react";
+import { ExternalLink, Play } from "lucide-react";
 import { Cabecalho, Pagina, Voltar } from "@/components/pagina";
 import { Vertice } from "@/components/impressao";
 import { HexAvatar } from "@/components/hex-avatar";
@@ -10,7 +10,7 @@ import { ItemAtividade } from "../item-atividade";
 import { NovaAtividade } from "../nova-atividade";
 import { NovoMaterial } from "../novo-material";
 import { TrocaStatus } from "../troca-status";
-import { excluirMaterial } from "../acoes";
+import { RemoverMaterial } from "../remover-material";
 import { acharTreinamento, nomeCompetencia } from "@/lib/treinamentos";
 import { acharPessoa, dataCurta, listarPessoas } from "@/lib/equipe";
 import {
@@ -201,17 +201,11 @@ export default async function PáginaTreinamento({
                   </span>
                   <span className="truncate text-[0.78rem] text-suave">{m.url}</span>
                 </a>
-                <form action={excluirMaterial}>
-                  <input type="hidden" name="treinamentoId" value={treinamento.id} />
-                  <input type="hidden" name="materialId" value={m.id} />
-                  <button
-                    type="submit"
-                    aria-label={`Remover ${m.nome}`}
-                    className="shrink-0 rounded-md p-1.5 text-suave transition-colors hover:text-alerta"
-                  >
-                    <Trash2 size={15} />
-                  </button>
-                </form>
+                <RemoverMaterial
+                  treinamentoId={treinamento.id}
+                  materialId={m.id}
+                  nome={m.nome}
+                />
               </div>
             ))}
 

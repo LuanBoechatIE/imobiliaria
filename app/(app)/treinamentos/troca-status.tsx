@@ -1,8 +1,8 @@
 "use client";
 
 import { useTransition } from "react";
-import { toast } from "sonner";
 import { mudarStatus } from "./acoes";
+import { executar } from "@/lib/acao";
 import { ROTULO_STATUS_TREINAMENTO, type StatusTreinamento } from "@/lib/treinamentos";
 
 const OPCOES: StatusTreinamento[] = ["agendado", "realizado", "cancelado"];
@@ -22,8 +22,9 @@ export function TrocaStatus({ id, atual }: { id: string; atual: StatusTreinament
     dados.set("status", status);
 
     iniciarTransicao(async () => {
-      await mudarStatus(dados);
-      toast.success(`Marcado como ${ROTULO_STATUS_TREINAMENTO[status].toLowerCase()}`);
+      await executar(() => mudarStatus(dados), {
+        titulo: `Marcado como ${ROTULO_STATUS_TREINAMENTO[status].toLowerCase()}`,
+      });
     });
   }
 
