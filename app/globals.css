@@ -8,6 +8,25 @@
  * migração é feita tela a tela.
  */
 
+/*
+ * A ordem das camadas é declarada antes de tudo, e não é detalhe.
+ *
+ * Em CSS, regra fora de camada vence QUALQUER regra dentro de camada,
+ * por mais específica que a de dentro seja. Como as utilities do
+ * Tailwind vivem em `layer(utilities)`, um seletor de elemento solto
+ * aqui embaixo — `a { color: ... }` — passava por cima de `text-white`,
+ * `text-tinta` e de toda classe de cor aplicada a um link.
+ *
+ * O efeito era o texto sumir: link com `bg-acao text-white` desenhava a
+ * letra em --acao sobre fundo --acao, a mesma cor, e o rótulo do botão
+ * ficava invisível. O número ao lado sobrevivia só porque estava num
+ * <span> com classe própria, que o seletor `a` não alcança.
+ *
+ * Por isso o estilo de base mora em `layer(base)`, declarada antes de
+ * `utilities`: elemento propõe, classe dispõe.
+ */
+@layer theme, base, utilities;
+
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
 
@@ -101,49 +120,56 @@
   --sombra: 0 1px 2px rgba(26, 21, 18, 0.05), 0 8px 24px rgba(26, 21, 18, 0.05);
 }
 
-* {
-  box-sizing: border-box;
-}
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-}
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
 
-body {
-  background: var(--fundo);
-  color: var(--tinta);
-  font-family: var(--font-ui);
-  font-size: 16px;
-  line-height: 1.55;
-  -webkit-font-smoothing: antialiased;
-}
+  body {
+    background: var(--fundo);
+    color: var(--tinta);
+    font-family: var(--font-ui);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
 
-a {
-  color: var(--acao);
-}
+  /*
+   * Cor de link só como padrão: é o que vale no texto corrido, e cede
+   * para qualquer classe de cor que o componente declare. Um link que
+   * virou botão pinta a própria letra, e precisa conseguir.
+   */
+  a {
+    color: var(--acao);
+  }
 
-:focus-visible {
-  outline: 2px solid var(--acao);
-  outline-offset: 2px;
-  border-radius: 3px;
-}
+  :focus-visible {
+    outline: 2px solid var(--acao);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
 
-/*
- * As partes que o navegador desenha também são do produto. Sem isto a
- * seleção sai azul de sistema no meio de uma tela laranja, e o cursor
- * de texto some contra a borda do campo.
- */
-::selection {
-  background: #fbdcd0;
-  color: var(--tinta);
-}
+  /*
+   * As partes que o navegador desenha também são do produto. Sem isto a
+   * seleção sai azul de sistema no meio de uma tela laranja, e o cursor
+   * de texto some contra a borda do campo.
+   */
+  ::selection {
+    background: #fbdcd0;
+    color: var(--tinta);
+  }
 
-input,
-textarea,
-select {
-  caret-color: var(--acao);
+  input,
+  textarea,
+  select {
+    caret-color: var(--acao);
+  }
 }
 
 /* Números de nota, data e contagem alinham em coluna em qualquer lugar. */
