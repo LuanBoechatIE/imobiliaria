@@ -232,7 +232,7 @@ export function Formulario({
               name="acao"
               value="rascunho"
               disabled={enviando}
-              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-linha-forte bg-white px-3.5 py-2 text-[0.9rem] font-semibold text-tinta-suave transition-colors hover:bg-fundo-2 disabled:opacity-60"
+              className="alvo-alto inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-linha-forte bg-white px-3.5 py-2 text-[0.9rem] font-semibold text-tinta-suave transition-colors hover:bg-fundo-2 disabled:opacity-60"
             >
               <Save size={15} />
               Rascunho
@@ -242,7 +242,7 @@ export function Formulario({
               name="acao"
               value="concluir"
               disabled={enviando}
-              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-acao px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte disabled:opacity-60"
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-acao px-3.5 py-2 alvo-alto text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte disabled:opacity-60"
             >
               <Check size={16} strokeWidth={2.6} />
               Concluir

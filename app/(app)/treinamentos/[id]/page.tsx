@@ -144,7 +144,7 @@ export default async function PáginaTreinamento({
                     href={treinamento.gravacaoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-acao"
+                    className="alvo-alto inline-flex shrink-0 items-center gap-1.5 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-acao"
                   >
                     Abrir
                     <ExternalLink size={13} />
@@ -340,14 +340,14 @@ export default async function PáginaTreinamento({
                   <Link
                     key={p.id}
                     href={`/painel/corretor/${p.id}`}
-                    className="flex items-center gap-2.5 border-b border-linha px-5 py-2.5 no-underline transition-colors last:border-b-0 hover:bg-fundo"
+                    className="alvo-alto flex items-center gap-2.5 border-b border-linha px-5 py-2.5 no-underline transition-colors last:border-b-0 hover:bg-fundo"
                   >
                     {conteudo}
                   </Link>
                 ) : (
                   <span
                     key={p.id}
-                    className="flex items-center gap-2.5 border-b border-linha px-5 py-2.5 last:border-b-0"
+                    className="alvo-alto flex items-center gap-2.5 border-b border-linha px-5 py-2.5 last:border-b-0"
                   >
                     {conteudo}
                   </span>

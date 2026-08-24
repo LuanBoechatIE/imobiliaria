@@ -128,7 +128,7 @@ export default async function PáginaEquipe({
           </div>
           <Link
             href="/avaliacoes"
-            className="shrink-0 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-acao"
+            className="alvo-alto shrink-0 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-acao"
           >
             Avaliar agora
           </Link>
@@ -144,7 +144,7 @@ export default async function PáginaEquipe({
               <Link
                 key={filtro.chave}
                 href={url(filtro.chave)}
-                className={`rounded-full border px-3 py-1.5 text-[0.85rem] font-semibold no-underline transition-colors ${
+                className={`alvo-alto rounded-full border px-3 py-1.5 text-[0.85rem] font-semibold no-underline transition-colors ${
                   ativo
                     ? "border-laranja bg-acao text-white"
                     : "border-linha-forte bg-white text-tinta-suave hover:border-laranja hover:text-acao"
@@ -180,13 +180,15 @@ export default async function PáginaEquipe({
         </Vazio>
       ) : (
         <div className="overflow-hidden rounded-xl border border-linha bg-white">
-          <div className="hidden grid-cols-[minmax(11rem,1.4fr)_3rem_8rem_7rem_5rem_7rem_2.5rem] items-center gap-4 border-b border-linha px-5 py-2.5 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-suave lg:grid">
+          <div className="hidden grid-cols-[minmax(11rem,1.4fr)_3rem_8rem_7rem_5rem_2.5rem] xl:grid-cols-[minmax(11rem,1.4fr)_3rem_8rem_7rem_5rem_7rem_2.5rem] items-center gap-4 border-b border-linha px-5 py-2.5 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-suave lg:grid">
             <span>Pessoa</span>
             <span>Forma</span>
             <span>Papel</span>
             <span>Na equipe</span>
             <span className="text-right">Nota</span>
-            <span>Último acesso</span>
+            {/* Some entre 1024 e 1280, onde a tabela inteira não caberia
+                ao lado do menu. É o dado menos decisivo da linha. */}
+            <span className="hidden xl:block">Último acesso</span>
             <span />
           </div>
 
@@ -198,7 +200,7 @@ export default async function PáginaEquipe({
             return (
               <article
                 key={pessoa.id}
-                className={`grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-2.5 border-t border-linha px-4 py-3 transition-colors first:border-t-0 lg:grid-cols-[minmax(11rem,1.4fr)_3rem_8rem_7rem_5rem_7rem_2.5rem] lg:px-5 ${
+                className={`grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-2.5 border-t border-linha px-4 py-3 transition-colors first:border-t-0 lg:grid-cols-[minmax(11rem,1.4fr)_3rem_8rem_7rem_5rem_2.5rem] xl:grid-cols-[minmax(11rem,1.4fr)_3rem_8rem_7rem_5rem_7rem_2.5rem] lg:px-5 ${
                   inativo ? "opacity-60" : "hover:bg-fundo"
                 }`}
               >
@@ -237,7 +239,9 @@ export default async function PáginaEquipe({
                     {NOME_PAPEL[pessoa.papel]}
                   </span>
                   <span className="lg:hidden">desde {dataCurta(pessoa.entrada)}</span>
-                  <span className="lg:hidden">{desdeQuando(pessoa.ultimoAcesso)}</span>
+                  {/* Enquanto não existe coluna própria, o último acesso
+                      viaja junto do papel, em vez de sumir. */}
+                  <span className="xl:hidden">{desdeQuando(pessoa.ultimoAcesso)}</span>
                   {nota !== null && (
                     <span
                       className={`font-bold tabular-nums lg:hidden ${nota < 5 ? "text-alerta" : "text-tinta"}`}
@@ -259,7 +263,7 @@ export default async function PáginaEquipe({
                   {nota === null ? "·" : fmt(nota)}
                 </span>
 
-                <span className="hidden text-[0.83rem] text-suave lg:block">
+                <span className="hidden text-[0.83rem] text-suave xl:block">
                   {desdeQuando(pessoa.ultimoAcesso)}
                 </span>
 

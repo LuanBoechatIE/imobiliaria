@@ -48,6 +48,14 @@ export function Casca({
               onClick={() => setAberto(false)}
             />
             <motion.aside
+              // A gaveta encosta nas quatro bordas do aparelho, então o
+              // conteúdo dela recua do notch, do canto arredondado e do
+              // indicador de home em vez de passar por baixo deles.
+              style={{
+                paddingTop: "env(safe-area-inset-top)",
+                paddingBottom: "env(safe-area-inset-bottom)",
+                paddingLeft: "env(safe-area-inset-left)",
+              }}
               className="fixed inset-y-0 left-0 z-50 w-64 overflow-y-auto border-r border-linha bg-white lg:hidden"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
@@ -58,7 +66,7 @@ export function Casca({
                 type="button"
                 onClick={() => setAberto(false)}
                 aria-label="Fechar menu"
-                className="absolute right-3 top-4 grid size-8 place-items-center rounded-lg text-suave hover:bg-fundo-2"
+                className="alvo-toque absolute right-3 top-4 grid size-8 place-items-center rounded-lg text-suave hover:bg-fundo-2"
               >
                 <X size={18} />
               </button>
@@ -77,12 +85,17 @@ export function Casca({
 
       <div className="flex min-w-0 flex-1 flex-col">
         {/* barra só no celular: no desktop a navegação inteira mora na lateral */}
-        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-linha bg-white/90 px-4 py-2.5 backdrop-blur lg:hidden">
+        <header
+          // Fica presa no topo, então o conteúdo dela desce abaixo do notch
+          // quando o aparelho tem um, e nada muda quando não tem.
+          style={{ paddingTop: "max(0.625rem, env(safe-area-inset-top))" }}
+          className="sticky top-0 z-30 flex items-center gap-3 border-b border-linha bg-white/90 px-4 pb-2.5 backdrop-blur lg:hidden"
+        >
           <button
             type="button"
             onClick={() => setAberto(true)}
             aria-label="Abrir menu"
-            className="grid size-9 place-items-center rounded-lg border border-linha-forte text-tinta-suave"
+            className="alvo-toque grid size-9 place-items-center rounded-lg border border-linha-forte text-tinta-suave"
           >
             <Menu size={18} />
           </button>

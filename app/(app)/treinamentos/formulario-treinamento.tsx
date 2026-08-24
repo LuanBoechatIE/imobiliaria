@@ -36,7 +36,7 @@ export function FormularioTreinamento({
         <button
           type="button"
           onClick={() => setAberto(true)}
-          className="inline-flex items-center gap-1.5 rounded-md bg-acao px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte"
+          className="inline-flex items-center gap-1.5 rounded-md bg-acao px-3.5 py-2 alvo-alto text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte"
         >
           <Plus size={16} strokeWidth={2.6} />
           Novo treinamento
@@ -214,7 +214,7 @@ export function FormularioTreinamento({
                   <button
                     type="submit"
                     disabled={enviando}
-                    className="rounded-md bg-acao px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte disabled:opacity-60"
+                    className="rounded-md bg-acao px-3.5 py-2 alvo-alto text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte disabled:opacity-60"
                   >
                     {enviando ? "Salvando..." : editando ? "Salvar" : "Criar treinamento"}
                   </button>

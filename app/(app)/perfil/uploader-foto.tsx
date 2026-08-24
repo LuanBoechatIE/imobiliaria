@@ -90,7 +90,7 @@ export function UploaderFoto({
           <button
             type="button"
             onClick={() => arquivo.current?.click()}
-            className="inline-flex items-center gap-1.5 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-acao"
+            className="alvo-alto inline-flex items-center gap-1.5 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-acao"
           >
             <Camera size={15} />
             {foto ? "Trocar foto" : "Adicionar foto"}
@@ -99,7 +99,7 @@ export function UploaderFoto({
             <button
               type="button"
               onClick={remover}
-              className="inline-flex items-center gap-1.5 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-alerta transition-colors hover:bg-alerta-suave"
+              className="alvo-alto inline-flex items-center gap-1.5 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-alerta transition-colors hover:bg-alerta-suave"
             >
               <Trash2 size={15} />
               Remover

@@ -240,7 +240,7 @@ export default async function PáginaPainel() {
         acao={
           <Link
             href="/equipe"
-            className="rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-acao"
+            className="alvo-alto rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-acao"
           >
             Gerenciar equipe
           </Link>

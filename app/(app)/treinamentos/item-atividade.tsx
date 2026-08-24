@@ -47,13 +47,18 @@ export function ItemAtividade({
       >
         {atividade.titulo}
       </label>
+      {/*
+       * Aparecer só no hover escondia este botão por completo no celular,
+       * onde não existe hover. Agora ele fica discreto e sempre presente,
+       * e o hover apenas o traz para a frente em quem usa mouse.
+       */}
       <button
         type="button"
         onClick={remover}
-        aria-label="Remover atividade"
-        className="shrink-0 rounded-md p-1 text-suave opacity-0 transition-opacity hover:text-alerta group-hover:opacity-100"
+        aria-label={`Remover atividade: ${atividade.titulo}`}
+        className="alvo-toque grid shrink-0 place-items-center rounded-md p-1 text-suave transition-colors hover:text-alerta focus-visible:text-alerta"
       >
-        <Trash2 size={14} />
+        <Trash2 size={15} />
       </button>
     </div>
   );

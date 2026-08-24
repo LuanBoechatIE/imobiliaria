@@ -25,7 +25,7 @@ export function NovaAtividade({ treinamentoId }: { treinamentoId: string }) {
       />
       <button
         type="submit"
-        className="inline-flex shrink-0 items-center gap-1 rounded-md border border-linha-forte bg-white px-2.5 py-1.5 text-[0.83rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-acao"
+        className="alvo-alto inline-flex shrink-0 items-center gap-1 rounded-md border border-linha-forte bg-white px-2.5 py-1.5 text-[0.83rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-acao"
       >
         <Plus size={14} />
         Adicionar

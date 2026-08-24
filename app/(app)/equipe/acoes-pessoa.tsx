@@ -55,7 +55,7 @@ export function AcoesPessoa({ pessoa }: { pessoa: Pessoa }) {
         aria-label={`Ações de ${pessoa.nome}`}
         aria-expanded={aberto}
         disabled={enviando}
-        className="grid size-8 place-items-center rounded-lg border border-transparent text-suave transition-colors hover:border-linha-forte hover:bg-fundo-2 hover:text-tinta disabled:opacity-50"
+        className="alvo-toque grid size-8 place-items-center rounded-lg border border-transparent text-suave transition-colors hover:border-linha-forte hover:bg-fundo-2 hover:text-tinta disabled:opacity-50"
       >
         <MoreHorizontal size={18} />
       </button>
@@ -72,7 +72,7 @@ export function AcoesPessoa({ pessoa }: { pessoa: Pessoa }) {
             {pessoa.papel === "corretor" && !inativo && (
               <Link
                 href={`/painel/corretor/${pessoa.id}`}
-                className="block px-3 py-2 text-[0.88rem] text-tinta-suave no-underline transition-colors hover:bg-fundo-2"
+                className="alvo-alto block px-3 py-2 text-[0.88rem] text-tinta-suave no-underline transition-colors hover:bg-fundo-2"
               >
                 Ver avaliação
               </Link>
@@ -83,7 +83,7 @@ export function AcoesPessoa({ pessoa }: { pessoa: Pessoa }) {
             <button
               type="button"
               onClick={mudarStatus}
-              className={`w-full px-3 py-2 text-left text-[0.88rem] transition-colors hover:bg-fundo-2 ${
+              className={`alvo-alto flex w-full items-center px-3 py-2 text-left text-[0.88rem] transition-colors hover:bg-fundo-2 ${
                 inativo ? "text-ok" : "text-alerta"
               }`}
             >

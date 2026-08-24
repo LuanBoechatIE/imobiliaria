@@ -223,7 +223,7 @@ export default async function PáginaTreinamentos({
 
             <Link
               href={url("todos")}
-              className={`flex items-center gap-2.5 border-b border-linha px-4 py-2.5 no-underline transition-colors ${
+              className={`alvo-alto flex items-center gap-2.5 border-b border-linha px-4 py-2.5 no-underline transition-colors ${
                 trilhaPedida === "todos"
                   ? "bg-laranja-suave font-semibold text-acao"
                   : "text-tinta-suave hover:bg-fundo"
@@ -246,7 +246,7 @@ export default async function PáginaTreinamentos({
                 <Link
                   key={trilha.chave}
                   href={url(trilha.chave)}
-                  className={`flex items-center gap-2.5 border-b border-linha px-4 py-2.5 no-underline transition-colors last:border-b-0 ${
+                  className={`alvo-alto flex items-center gap-2.5 border-b border-linha px-4 py-2.5 no-underline transition-colors last:border-b-0 ${
                     ativa
                       ? "bg-laranja-suave text-acao"
                       : "text-tinta-suave hover:bg-fundo"
@@ -386,7 +386,7 @@ export default async function PáginaTreinamentos({
                   busca ? (
                     <Link
                       href={url(trilhaPedida, "")}
-                      className="rounded-md border border-linha-forte bg-white px-3.5 py-2 text-[0.88rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-acao"
+                      className="alvo-alto rounded-md border border-linha-forte bg-white px-3.5 py-2 text-[0.88rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-acao"
                     >
                       Limpar busca
                     </Link>

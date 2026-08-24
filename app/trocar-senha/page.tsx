@@ -8,7 +8,7 @@ export default function PáginaTrocarSenha() {
     <main className="flex min-h-screen items-center justify-center bg-fundo px-4 py-10">
       <div className="flex w-full max-w-sm flex-col gap-5 rounded-2xl border border-linha bg-white p-6 shadow-sm">
         <div className="flex items-center gap-2.5">
-          <span className="grid size-8 place-items-center rounded-lg bg-laranja text-[0.95rem] font-extrabold text-white">
+          <span className="alvo-toque grid size-8 place-items-center rounded-lg bg-laranja text-[0.95rem] font-extrabold text-white">
             B
           </span>
           <span className="text-[0.95rem] font-semibold text-tinta">Boechat</span>

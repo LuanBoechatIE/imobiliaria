@@ -177,6 +177,31 @@ table {
 }
 
 /*
+ * Alvo de toque.
+ *
+ * O tamanho do controle não sai do tamanho da tela, sai do que está
+ * apontando para ele: um notebook com tela sensível ao toque precisa do
+ * alvo grande, e um monitor de 24" com mouse não. Por isso a regra é
+ * `pointer: coarse` e não um breakpoint de largura.
+ *
+ * Quem usa isto é o gestor avaliando corretor pelo celular entre uma
+ * reunião e outra. Errar o 6 e marcar 5 joga a pessoa na zona crítica e
+ * dispara plano de treino errado, então o alvo aqui é correção de dado,
+ * não conforto.
+ */
+@media (pointer: coarse) {
+  .alvo-toque {
+    min-block-size: 44px;
+    min-inline-size: 44px;
+  }
+
+  /* Para controle que ocupa a largura toda e só precisa de altura. */
+  .alvo-alto {
+    min-block-size: 44px;
+  }
+}
+
+/*
  * O hexágono é a assinatura do produto: as seis competências viram um
  * formato reconhecível. Ele reaparece em quatro escalas — moldura de
  * foto, glifo de vértice, silhueta de lista e protagonista de tela —

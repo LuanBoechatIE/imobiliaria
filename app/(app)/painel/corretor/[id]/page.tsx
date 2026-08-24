@@ -175,7 +175,7 @@ export default async function PáginaCorretor({
         acao={
           <Link
             href={`/avaliacoes/${pessoa.id}`}
-            className="rounded-md bg-acao px-3.5 py-2 text-[0.88rem] font-semibold text-white no-underline transition-colors hover:bg-acao-forte"
+            className="rounded-md bg-acao px-3.5 py-2 alvo-alto text-[0.88rem] font-semibold text-white no-underline transition-colors hover:bg-acao-forte"
           >
             Avaliar no ciclo em coleta
           </Link>

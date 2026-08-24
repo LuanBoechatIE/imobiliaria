@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Archivo } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
@@ -20,6 +20,19 @@ export const metadata: Metadata = {
   title: { default: "Avaliação do time", template: "%s · Boechat" },
   description: "Painel de avaliação e desenvolvimento do time comercial.",
   robots: { index: false, follow: false },
+};
+
+/**
+ * `viewport-fit=cover` deixa a página desenhar até a borda do aparelho, e
+ * é o que faz `env(safe-area-inset-*)` responder. Sem isso a gaveta do
+ * menu passa por baixo do notch e o rodapé some atrás do indicador de
+ * home no iPhone.
+ */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

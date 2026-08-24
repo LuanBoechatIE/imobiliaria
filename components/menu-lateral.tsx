@@ -100,7 +100,7 @@ export function MenuLateral({
               href={href}
               onClick={aoNavegar}
               className={cn(
-                "relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-[0.9rem] no-underline transition-colors",
+                "alvo-alto relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-[0.9rem] no-underline transition-colors",
                 estaAtivo
                   ? "bg-laranja-suave font-semibold text-acao"
                   : "text-tinta-suave hover:bg-fundo-2 hover:text-tinta"
@@ -129,7 +129,7 @@ export function MenuLateral({
           href="/perfil"
           onClick={aoNavegar}
           className={cn(
-            "flex items-center gap-2.5 rounded-lg px-2 py-2 no-underline transition-colors",
+            "alvo-alto flex items-center gap-2.5 rounded-lg px-2 py-2 no-underline transition-colors",
             ativo("/perfil") ? "bg-laranja-suave" : "hover:bg-fundo-2"
           )}
         >
@@ -152,7 +152,7 @@ export function MenuLateral({
         <form action={sair}>
           <button
             type="submit"
-            className="mt-1 flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[0.87rem] font-medium text-suave transition-colors hover:bg-fundo-2 hover:text-alerta"
+            className="alvo-alto mt-1 flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[0.87rem] font-medium text-suave transition-colors hover:bg-fundo-2 hover:text-alerta"
           >
             <LogOut size={16} strokeWidth={2} className="shrink-0" />
             Sair
