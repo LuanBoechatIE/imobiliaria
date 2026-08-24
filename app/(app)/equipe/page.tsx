@@ -15,6 +15,8 @@ import {
   type Pessoa,
 } from "@/lib/equipe";
 import { IMOBILIARIA, acharCorretor, fmt } from "@/lib/dados";
+import { BOTAO } from "@/components/estilos";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Equipe" };
 
@@ -137,7 +139,7 @@ export default async function PáginaEquipe({
           </div>
           <Link
             href="/avaliacoes"
-            className="alvo-alto shrink-0 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-acao"
+            className={cn(BOTAO.contornoMiudo, "shrink-0")}
           >
             Avaliar agora
           </Link>
@@ -191,7 +193,7 @@ export default async function PáginaEquipe({
             busca ? (
               <Link
                 href={urlSemBusca}
-                className="alvo-alto inline-flex items-center rounded-md border border-linha-forte bg-white px-3.5 py-2 text-[0.88rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-acao"
+                className={BOTAO.contorno}
               >
                 Limpar a busca
               </Link>

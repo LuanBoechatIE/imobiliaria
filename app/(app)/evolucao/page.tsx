@@ -15,6 +15,7 @@ import {
   notaDoTime,
   notasMediasDoTime,
 } from "@/lib/evolucao";
+import { BOTAO } from "@/components/estilos";
 
 export const metadata: Metadata = { title: "Antes e depois" };
 
@@ -71,7 +72,7 @@ export default async function PáginaEvolucao() {
           acao={
             <Link
               href="/avaliacoes"
-              className="alvo-alto inline-flex items-center rounded-md bg-acao px-3.5 py-2 text-[0.9rem] font-semibold text-white no-underline transition-colors hover:bg-acao-forte"
+              className={BOTAO.solido}
             >
               Ir para as avaliações
             </Link>
@@ -87,17 +88,17 @@ export default async function PáginaEvolucao() {
 
   return (
     <Pagina>
-      <Cabecalho
-        etiqueta={`${IMOBILIARIA.nome} · Raio-X de ${cicloInicial.toLowerCase()} comparado ao ciclo de ${ciclo.toLowerCase()}`}
-        titulo="Antes e depois"
-      />
-
-      {/* A tela responde uma pergunta só, e ela cabe no primeiro olhar:
-          o que mudou desde que começamos. */}
+      {/*
+       * A tela responde uma pergunta só, e ela cabe no primeiro olhar:
+       * o que mudou desde que começamos. Por isso a frase do herói é o
+       * título da página, e não existe um segundo título acima dela —
+       * é a mesma estrutura de Painel e Avaliações.
+       */}
       <section className="grid overflow-hidden rounded-xl border border-linha bg-white lg:grid-cols-[1fr_24rem]">
         <div className="flex flex-col px-6 py-7 sm:px-8">
           <span className="text-[0.72rem] font-bold uppercase tracking-[0.12em] text-suave">
-            O que mudou desde o diagnóstico
+            {IMOBILIARIA.nome} · Raio-X de {cicloInicial.toLowerCase()} comparado ao ciclo
+            de {ciclo.toLowerCase()}
           </span>
 
           <h1 className="m-0 mt-3 max-w-[15ch] text-[2.3rem] font-bold leading-[1.05] tracking-[-0.035em] text-tinta sm:text-[2.7rem]">

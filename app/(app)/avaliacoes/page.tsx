@@ -15,6 +15,7 @@ import {
 } from "@/lib/avaliacoes";
 import { COMPETENCIAS } from "@/lib/dados";
 import { desdeQuando } from "@/lib/equipe";
+import { BOTAO } from "@/components/estilos";
 
 export const metadata: Metadata = { title: "Avaliações" };
 
@@ -219,7 +220,7 @@ export default async function PáginaAvaliacoes({
             acao={
               <Link
                 href="/equipe"
-                className="alvo-alto inline-flex items-center rounded-md bg-acao px-3.5 py-2 text-[0.9rem] font-semibold text-white no-underline transition-colors hover:bg-acao-forte"
+                className={BOTAO.solido}
               >
                 Abrir a equipe
               </Link>

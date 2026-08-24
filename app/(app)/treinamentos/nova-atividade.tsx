@@ -28,10 +28,11 @@ export function NovaAtividade({ treinamentoId }: { treinamentoId: string }) {
       <input type="hidden" name="treinamentoId" value={treinamentoId} />
       <input
         name="titulo"
+        aria-label="Nova atividade ou tarefa"
         placeholder="Nova atividade ou tarefa"
         maxLength={MAX_TITULO}
         disabled={enviando}
-        className="min-w-0 flex-1 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.88rem] text-tinta transition focus:border-acao disabled:opacity-60"
+        className="alvo-alto min-w-0 flex-1 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.88rem] text-tinta transition focus:border-acao disabled:opacity-60"
         required
       />
       <button

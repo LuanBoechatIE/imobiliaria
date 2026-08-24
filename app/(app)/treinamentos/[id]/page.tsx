@@ -20,6 +20,8 @@ import {
   fmt,
   mediasPorCompetencia,
 } from "@/lib/dados";
+import { BOTAO } from "@/components/estilos";
+import { cn } from "@/lib/utils";
 
 export async function generateMetadata({
   params,
@@ -144,7 +146,7 @@ export default async function PáginaTreinamento({
                     href={treinamento.gravacaoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="alvo-alto inline-flex shrink-0 items-center gap-1.5 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-acao"
+                    className={cn(BOTAO.contornoMiudo, "shrink-0")}
                   >
                     Abrir
                     <ExternalLink size={13} />

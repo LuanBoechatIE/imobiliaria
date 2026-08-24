@@ -11,6 +11,7 @@ import dynamic from "next/dynamic";
 import { Plus } from "lucide-react";
 import type { Pessoa } from "@/lib/equipe";
 import type { Treinamento } from "@/lib/treinamentos";
+import { BOTAO } from "@/components/estilos";
 
 const PainelTreinamento = dynamic(
   () => import("./painel-treinamento").then((m) => m.PainelTreinamento),
@@ -34,7 +35,7 @@ export function FormularioTreinamento({
         <button
           type="button"
           onClick={() => setAberto(true)}
-          className="alvo-alto inline-flex items-center gap-1.5 rounded-md bg-acao px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte"
+          className={BOTAO.solido}
         >
           <Plus size={16} strokeWidth={2.6} />
           Novo treinamento
@@ -43,7 +44,7 @@ export function FormularioTreinamento({
         <button
           type="button"
           onClick={() => setAberto(true)}
-          className="alvo-alto inline-flex items-center gap-1.5 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.85rem] font-semibold text-tinta-suave transition-colors hover:border-laranja hover:text-acao"
+          className={BOTAO.contornoMiudo}
         >
           Editar informações
         </button>

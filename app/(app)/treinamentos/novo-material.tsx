@@ -29,20 +29,22 @@ export function NovoMaterial({ treinamentoId }: { treinamentoId: string }) {
       <input type="hidden" name="treinamentoId" value={treinamentoId} />
       <input
         name="nome"
+        aria-label="Nome do material"
         placeholder="Nome do material"
         maxLength={MAX_NOME}
         disabled={enviando}
-        className="min-w-0 flex-1 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.88rem] text-tinta transition focus:border-acao disabled:opacity-60"
+        className="alvo-alto min-w-0 flex-1 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.88rem] text-tinta transition focus:border-acao disabled:opacity-60"
         required
       />
       <input
         name="url"
         type="url"
         inputMode="url"
+        aria-label="Link do material"
         placeholder="Link (Drive, Docs...)"
         maxLength={MAX_URL}
         disabled={enviando}
-        className="min-w-0 flex-1 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.88rem] text-tinta transition focus:border-acao disabled:opacity-60"
+        className="alvo-alto min-w-0 flex-1 rounded-md border border-borda-campo bg-white px-3 py-1.5 text-[0.88rem] text-tinta transition focus:border-acao disabled:opacity-60"
         required
       />
       <button

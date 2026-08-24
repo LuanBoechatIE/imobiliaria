@@ -10,6 +10,7 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import { Plus } from "lucide-react";
 import type { Pessoa } from "@/lib/equipe";
+import { BOTAO } from "@/components/estilos";
 
 const PainelPessoa = dynamic(
   () => import("./painel-pessoa").then((m) => m.PainelPessoa),
@@ -31,7 +32,7 @@ export function FormularioPessoa({
         <button
           type="button"
           onClick={() => setAberto(true)}
-          className="alvo-alto inline-flex items-center gap-1.5 rounded-md bg-acao px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte"
+          className={BOTAO.solido}
         >
           <Plus size={16} strokeWidth={2.6} />
           Adicionar pessoa

@@ -8,7 +8,6 @@ import { FormularioTreinamento } from "./formulario-treinamento";
 import {
   ROTULO_STATUS_TREINAMENTO,
   listarTreinamentos,
-  nomeCompetencia,
   type CompetenciaOuGeral,
   type StatusTreinamento,
   type Treinamento,
@@ -22,6 +21,7 @@ import {
   mediasPorCompetencia,
   type ChaveCompetencia,
 } from "@/lib/dados";
+import { BOTAO } from "@/components/estilos";
 
 export const metadata: Metadata = { title: "Treinamentos" };
 
@@ -375,7 +375,7 @@ export default async function PáginaTreinamentos({
                     : "Buscar por título ou assunto"
                 }
                 aria-label="Buscar treinamento"
-                className="w-full rounded-md border border-borda-campo bg-white py-2.5 pl-9 pr-3 text-[0.92rem] text-tinta transition focus:border-acao"
+                className="alvo-alto w-full rounded-md border border-borda-campo bg-white py-2.5 pl-9 pr-3 text-[0.92rem] text-tinta transition focus:border-acao"
               />
             </form>
 
@@ -386,7 +386,7 @@ export default async function PáginaTreinamentos({
                   busca ? (
                     <Link
                       href={url(trilhaPedida, "")}
-                      className="alvo-alto rounded-md border border-linha-forte bg-white px-3.5 py-2 text-[0.88rem] font-semibold text-tinta-suave no-underline transition-colors hover:border-laranja hover:text-acao"
+                      className={BOTAO.contorno}
                     >
                       Limpar busca
                     </Link>

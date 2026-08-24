@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 
+import { cn } from "@/lib/utils";
 /**
  * Foto em recorte hexagonal. É o hexágono na sua menor escala: aparece
  * ao lado de todo nome do sistema, então mesmo uma tela sem nenhuma nota

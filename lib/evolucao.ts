@@ -3,7 +3,6 @@ import {
   IMOBILIARIA,
   critica,
   media,
-  type ChaveCompetencia,
   type Corretor,
   type Notas,
 } from "./dados";

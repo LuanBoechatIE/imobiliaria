@@ -8,9 +8,10 @@
 
 import { useActionState, useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { AlertCircle, Check, Copy, KeyRound, Plus, X } from "lucide-react";
+import { AlertCircle, Check, Copy, KeyRound, X } from "lucide-react";
 import { salvarPessoa } from "./acoes";
 import type { Pessoa } from "@/lib/equipe";
+import { BOTAO } from "@/components/estilos";
 
 const campo =
   "w-full rounded-md border border-borda-campo bg-white px-3 py-2 text-[0.95rem] text-tinta transition focus:border-acao";
@@ -328,7 +329,7 @@ export function PainelPessoa({
                       <button
                         type="submit"
                         disabled={enviando}
-                        className="rounded-md bg-acao px-3.5 py-2 alvo-alto text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte disabled:opacity-60"
+                        className={BOTAO.solido}
                       >
                         {enviando ? "Salvando..." : editando ? "Salvar" : "Adicionar"}
                       </button>

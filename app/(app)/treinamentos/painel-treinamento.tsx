@@ -15,6 +15,7 @@ import { salvarTreinamento } from "./acoes";
 import { COMPETENCIAS } from "@/lib/dados";
 import type { Pessoa } from "@/lib/equipe";
 import type { Treinamento } from "@/lib/treinamentos";
+import { BOTAO } from "@/components/estilos";
 
 const campo =
   "w-full rounded-md border border-borda-campo bg-white px-3 py-2 text-[0.95rem] text-tinta transition focus:border-acao";
@@ -232,14 +233,14 @@ export function PainelTreinamento({
               <button
                 type="button"
                 onClick={aoFechar}
-                className="alvo-alto rounded-md border border-linha-forte bg-white px-3.5 py-2 text-[0.9rem] font-semibold text-tinta-suave transition-colors hover:bg-fundo-2"
+                className={BOTAO.contorno}
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={enviando}
-                className="alvo-alto rounded-md bg-acao px-3.5 py-2 text-[0.9rem] font-semibold text-white transition-colors hover:bg-acao-forte disabled:opacity-60"
+                className={BOTAO.solido}
               >
                 {enviando ? "Salvando..." : editando ? "Salvar" : "Criar treinamento"}
               </button>
