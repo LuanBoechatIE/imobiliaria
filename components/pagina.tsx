@@ -28,7 +28,14 @@ export function Pagina({
       // O respiro de baixo cresce até passar do indicador de home, para o
       // último item da lista não ficar embaixo dele no iPhone.
       style={{ paddingBottom: "max(1.75rem, calc(env(safe-area-inset-bottom) + 1rem))" }}
-      className={cn("mx-auto flex w-full flex-col gap-7 px-4 pt-7 lg:px-7 lg:pt-9", max, className)}
+      // `escalona` monta a tela em cascata: cabeçalho, filtros e conteúdo
+      // entram em sequência em vez de piscarem juntos. É CSS puro, então
+      // não devolve o JavaScript que foi cortado da rota.
+      className={cn(
+        "escalona mx-auto flex w-full flex-col gap-7 px-4 pt-7 lg:px-7 lg:pt-9",
+        max,
+        className
+      )}
     >
       {children}
     </main>

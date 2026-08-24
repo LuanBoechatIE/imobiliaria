@@ -170,6 +170,34 @@
   select {
     caret-color: var(--acao);
   }
+
+  /*
+   * Tailwind entra sem preflight aqui (ver o topo do arquivo), então o
+   * navegador continua desenhando controle do jeito dele: botão sem
+   * classe de fundo sai cinza, com borda de relevo e fonte do sistema.
+   * Aparecia no X de janela e em qualquer botão que só tem cor de
+   * texto. Isto zera só o que o navegador inventa, em `base`, então
+   * qualquer utilitário de borda ou fundo continua vencendo.
+   */
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    background: none;
+    border: 0;
+    padding: 0;
+    text-align: inherit;
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: default;
+  }
 }
 
 /* Números de nota, data e contagem alinham em coluna em qualquer lugar. */
@@ -333,6 +361,141 @@ table {
 .coluna-enche {
   clip-path: inset(0 0 0 0);
   animation: coluna-enche 0.8s cubic-bezier(0.2, 0.8, 0.25, 1) both;
+}
+
+/*
+ * ── Entrada de tela ─────────────────────────────────────────────────
+ *
+ * A fluidez que o sistema tinha voltou aqui como CSS, não como
+ * biblioteca. O corte de 2026-08-24 tirou `motion` de /equipe por causa
+ * de 42 kB de JavaScript para uma transição de 140ms, e junto foi a
+ * sensação de que a tela se monta em vez de aparecer pronta.
+ *
+ * Isto devolve a sensação com zero JavaScript: opacidade e deslocamento
+ * são as duas únicas propriedades que o navegador anima na placa de
+ * vídeo, sem recalcular layout. O atraso em cascata vem de `nth-child`,
+ * então nenhum componente precisa saber o próprio índice.
+ */
+@keyframes entra {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.entra {
+  animation: entra 0.42s cubic-bezier(0.2, 0.8, 0.25, 1) both;
+}
+
+/*
+ * Cascata: cada filho direto entra logo depois do anterior. Doze passos
+ * bastam — o que vem abaixo disso já está fora da primeira dobra, e
+ * continuar somando atraso faria a última linha demorar meio segundo
+ * para existir.
+ */
+.escalona > * {
+  animation: entra 0.42s cubic-bezier(0.2, 0.8, 0.25, 1) both;
+}
+.escalona > *:nth-child(1) { animation-delay: 0ms; }
+.escalona > *:nth-child(2) { animation-delay: 45ms; }
+.escalona > *:nth-child(3) { animation-delay: 90ms; }
+.escalona > *:nth-child(4) { animation-delay: 130ms; }
+.escalona > *:nth-child(5) { animation-delay: 165ms; }
+.escalona > *:nth-child(6) { animation-delay: 195ms; }
+.escalona > *:nth-child(7) { animation-delay: 220ms; }
+.escalona > *:nth-child(8) { animation-delay: 240ms; }
+.escalona > *:nth-child(9) { animation-delay: 255ms; }
+.escalona > *:nth-child(10) { animation-delay: 265ms; }
+.escalona > *:nth-child(n + 11) { animation-delay: 275ms; }
+
+/*
+ * Gaveta lateral. Mesma decisão do menu logo acima: entrada e saída de
+ * 240ms em uma propriedade que a placa de vídeo resolve sozinha não
+ * justifica carregar biblioteca de animação numa rota que a maioria
+ * abre só para consultar a lista.
+ *
+ * A saída existe porque gaveta que some de uma vez parece falha de
+ * clique. Quem fecha dispara a classe de saída e só depois desmonta.
+ */
+@keyframes gaveta-entra {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes gaveta-sai {
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes veu-entra {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes veu-sai {
+  to {
+    opacity: 0;
+  }
+}
+
+.gaveta {
+  animation: gaveta-entra 0.34s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+.gaveta-saindo .gaveta {
+  animation: gaveta-sai 0.22s cubic-bezier(0.4, 0, 1, 1) both;
+}
+.veu {
+  animation: veu-entra 0.2s ease-out both;
+}
+.gaveta-saindo .veu {
+  animation: veu-sai 0.2s ease-in both;
+}
+
+/*
+ * Linha de lista que abre alguma coisa: equipe, coleta do ciclo e
+ * ranking do painel. O deslocamento é de 2px de propósito — o
+ * suficiente para a linha responder ao ponteiro, pouco o bastante para
+ * não empurrar o olho de quem está comparando a coluna de notas de cima
+ * a baixo.
+ */
+.linha-viva {
+  cursor: pointer;
+  transition:
+    background-color 0.16s ease,
+    transform 0.16s cubic-bezier(0.2, 0.8, 0.25, 1);
+}
+.linha-viva:hover {
+  transform: translateX(2px);
+}
+.linha-viva:active {
+  transform: translateX(1px) scale(0.998);
+}
+
+/*
+ * Cartão que responde ao toque sem sombra pesada: a borda escurece e o
+ * corpo sobe um fio. Serve para qualquer bloco clicável fora de lista.
+ */
+.cartao-vivo {
+  transition:
+    border-color 0.18s ease,
+    transform 0.18s cubic-bezier(0.2, 0.8, 0.25, 1),
+    box-shadow 0.18s ease;
+}
+.cartao-vivo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px -10px rgb(26 21 18 / 0.28);
+}
+
+/* Botão que afunda ao ser pressionado. Confirma o clique antes da rede responder. */
+button:not(:disabled):active,
+a.alvo-alto:active {
+  transform: scale(0.985);
+}
+button,
+a.alvo-alto {
+  transition-property: color, background-color, border-color, transform, box-shadow;
+  transition-duration: 0.16s;
+  transition-timing-function: ease;
 }
 
 @media (prefers-reduced-motion: reduce) {

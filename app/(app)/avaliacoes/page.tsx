@@ -229,7 +229,7 @@ export default async function PáginaAvaliacoes({
             A coleta começa quando existe pelo menos um corretor ativo na equipe.
           </Vazio>
         ) : (
-        <div className="overflow-hidden rounded-xl border border-linha bg-white">
+        <div className="escalona overflow-hidden rounded-xl border border-linha bg-white">
           <div className="hidden grid-cols-[2.5rem_minmax(9rem,1fr)_9rem_11rem_6rem] xl:grid-cols-[2.5rem_minmax(9rem,1fr)_9rem_11rem_7rem_6rem] items-center gap-4 border-b border-linha px-5 py-2.5 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-suave lg:grid">
             <span />
             <span>Corretor</span>
@@ -248,7 +248,7 @@ export default async function PáginaAvaliacoes({
               <Link
                 key={pessoa.id}
                 href={`/avaliacoes/${pessoa.id}`}
-                className="group grid grid-cols-[2.5rem_1fr_auto] items-center gap-x-4 gap-y-2 border-t border-linha px-4 py-3 no-underline transition-colors first:border-t-0 hover:bg-fundo lg:grid-cols-[2.5rem_minmax(9rem,1fr)_9rem_11rem_6rem] xl:grid-cols-[2.5rem_minmax(9rem,1fr)_9rem_11rem_7rem_6rem] lg:px-5"
+                className="linha-viva group grid grid-cols-[2.5rem_1fr_auto] items-center gap-x-4 gap-y-2 border-t border-linha px-4 py-3 no-underline transition-colors first:border-t-0 hover:bg-fundo lg:grid-cols-[2.5rem_minmax(9rem,1fr)_9rem_11rem_6rem] xl:grid-cols-[2.5rem_minmax(9rem,1fr)_9rem_11rem_7rem_6rem] lg:px-5"
               >
                 <HexAvatar
                   nome={pessoa.nome}

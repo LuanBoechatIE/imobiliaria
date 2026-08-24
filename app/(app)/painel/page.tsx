@@ -322,7 +322,7 @@ export default async function PáginaPainel({
           </Link>
         }
       >
-        <div className="overflow-hidden rounded-xl border border-linha bg-white">
+        <div className="escalona overflow-hidden rounded-xl border border-linha bg-white">
           <div className="hidden grid-cols-[1.6rem_2.75rem_minmax(9rem,1fr)_12rem_4rem_4rem] items-center gap-4 border-b border-linha px-5 py-2.5 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-suave lg:grid">
             <span className="text-right">#</span>
             <span />
@@ -346,7 +346,7 @@ export default async function PáginaPainel({
                     ? `/painel/corretor/${pessoa.id}`
                     : `/painel/corretor/${pessoa.id}?ciclo=${chave}`
                 }
-                className="grid grid-cols-[1.6rem_2.75rem_1fr_auto] items-center gap-x-4 gap-y-1.5 border-t border-linha px-4 py-3 no-underline transition-colors first:border-t-0 hover:bg-fundo lg:grid-cols-[1.6rem_2.75rem_minmax(9rem,1fr)_12rem_4rem_4rem] lg:px-5"
+                className="linha-viva grid grid-cols-[1.6rem_2.75rem_1fr_auto] items-center gap-x-4 gap-y-1.5 border-t border-linha px-4 py-3 no-underline transition-colors first:border-t-0 hover:bg-fundo lg:grid-cols-[1.6rem_2.75rem_minmax(9rem,1fr)_12rem_4rem_4rem] lg:px-5"
               >
                 <span className="text-right text-[0.82rem] font-medium tabular-nums text-suave">
                   {i + 1}

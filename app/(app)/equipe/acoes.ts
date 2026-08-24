@@ -3,11 +3,33 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import {
+  acharPessoa,
   adicionarPessoa,
   alternarStatusPessoa,
   editarPessoa,
+  NOME_PAPEL,
   type DadosPessoa,
+  type Pessoa,
 } from "@/lib/equipe";
+import {
+  COMPETENCIAS,
+  acharCorretor,
+  evidenciaPadrao,
+  historicoDe,
+  media,
+  type ChaveCompetencia,
+  type Notas,
+  type PontoHistorico,
+  type TipoEvidencia,
+} from "@/lib/dados";
+import {
+  ROTULO_STATUS,
+  acharAvaliacao,
+  cicloAtual,
+  quantasPreenchidas,
+  statusDe,
+  type StatusAvaliacao,
+} from "@/lib/avaliacoes";
 import { COOKIE_SESSAO, lerSessao, type Sessao } from "@/lib/sessao";
 import { gerarHashSenha, gerarSenhaTemporaria } from "@/lib/senha";
 import { criarUsuario, emailEmUso, sincronizarUsuario } from "@/lib/usuarios";
@@ -126,4 +148,95 @@ export async function alternarStatus(formData: FormData): Promise<ResultadoAcao>
   revalidatePath("/equipe");
   revalidatePath("/painel");
   return { ok: true };
+}
+
+// ── Overview de pessoa ───────────────────────────────────────────────────────
+
+export type ItemOverview = {
+  chave: ChaveCompetencia;
+  nome: string;
+  nota: number;
+  antes: number | null;
+  tipo: TipoEvidencia;
+  evidencia: string;
+};
+
+export type Overview = {
+  pessoa: Pessoa;
+  papelRotulo: string;
+  /** Nota geral do ciclo, quando a pessoa é avaliada. */
+  nota: number | null;
+  notaAntes: number | null;
+  notas: Notas | null;
+  inicial: Notas | null;
+  competencias: ItemOverview[];
+  historico: PontoHistorico[];
+  avaliacao: {
+    status: StatusAvaliacao;
+    rotulo: string;
+    feitas: number;
+    total: number;
+    ciclo: string;
+    avaliadaPor: string | null;
+  } | null;
+};
+
+export type RespostaOverview = { ok: true; overview: Overview } | { ok: false; erro: string };
+
+/**
+ * Resumo de uma pessoa, buscado quando a linha da equipe é aberta.
+ *
+ * Vem por ação e não junto da lista de propósito: a evidência de cada
+ * competência é texto longo, e mandar a de todo mundo no HTML da lista
+ * pesaria a tela que mais se abre só para consultar quem está lá.
+ */
+export async function lerOverview(id: string): Promise<RespostaOverview> {
+  if (!(await sessaoPermitida())) return { ok: false, erro: SEM_PERMISSAO };
+
+  const pessoa = acharPessoa(id);
+  if (!pessoa) {
+    return { ok: false, erro: "Essa pessoa não está mais na equipe. Atualize a página." };
+  }
+
+  const corretor = pessoa.papel === "corretor" ? acharCorretor(pessoa.id) : undefined;
+
+  const competencias: ItemOverview[] = corretor
+    ? COMPETENCIAS.map((c) => {
+        const nota = corretor.notas[c.chave];
+        const registrada = corretor.evidencias?.[c.chave]?.[0];
+        const prova = registrada ?? evidenciaPadrao(c.chave, nota);
+        return {
+          chave: c.chave,
+          nome: c.nome,
+          nota,
+          antes: corretor.inicial?.[c.chave] ?? null,
+          tipo: prova.tipo,
+          evidencia: prova.texto,
+        };
+      })
+    : [];
+
+  return {
+    ok: true,
+    overview: {
+      pessoa,
+      papelRotulo: NOME_PAPEL[pessoa.papel],
+      nota: corretor ? media(corretor.notas) : null,
+      notaAntes: corretor?.inicial ? media(corretor.inicial) : null,
+      notas: corretor?.notas ?? null,
+      inicial: corretor?.inicial ?? null,
+      competencias,
+      historico: corretor ? historicoDe(corretor) : [],
+      avaliacao: corretor
+        ? {
+            status: statusDe(pessoa.id),
+            rotulo: ROTULO_STATUS[statusDe(pessoa.id)],
+            feitas: quantasPreenchidas(pessoa.id),
+            total: COMPETENCIAS.length,
+            ciclo: cicloAtual(),
+            avaliadaPor: acharAvaliacao(pessoa.id)?.avaliadaPor ?? null,
+          }
+        : null,
+    },
+  };
 }

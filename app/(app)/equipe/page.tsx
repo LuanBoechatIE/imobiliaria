@@ -5,6 +5,7 @@ import { Cabecalho, Pagina, Vazio } from "@/components/pagina";
 import { Impressao } from "@/components/impressao";
 import { HexAvatar } from "@/components/hex-avatar";
 import { AcoesPessoa } from "./acoes-pessoa";
+import { AbrirOverview } from "./abrir-overview";
 import { FormularioPessoa } from "./formulario-pessoa";
 import {
   NOME_PAPEL,
@@ -205,7 +206,7 @@ export default async function PáginaEquipe({
             : "Nenhuma pessoa nesse filtro. Escolha outro acima."}
         </Vazio>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-linha bg-white">
+        <div className="escalona overflow-hidden rounded-xl border border-linha bg-white">
           <div className="hidden grid-cols-[minmax(11rem,1.4fr)_3rem_8rem_7rem_5rem_2.5rem] xl:grid-cols-[minmax(11rem,1.4fr)_3rem_8rem_7rem_5rem_7rem_2.5rem] items-center gap-4 border-b border-linha px-5 py-2.5 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-suave lg:grid">
             <span>Pessoa</span>
             <span>Forma</span>
@@ -226,11 +227,13 @@ export default async function PáginaEquipe({
             return (
               <article
                 key={pessoa.id}
-                className={`grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-2.5 border-t border-linha px-4 py-3 transition-colors first:border-t-0 lg:grid-cols-[minmax(11rem,1.4fr)_3rem_8rem_7rem_5rem_2.5rem] xl:grid-cols-[minmax(11rem,1.4fr)_3rem_8rem_7rem_5rem_7rem_2.5rem] lg:px-5 ${
+                className={`linha-viva relative grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-2.5 border-t border-linha px-4 py-3 transition-colors first:border-t-0 lg:grid-cols-[minmax(11rem,1.4fr)_3rem_8rem_7rem_5rem_2.5rem] xl:grid-cols-[minmax(11rem,1.4fr)_3rem_8rem_7rem_5rem_7rem_2.5rem] lg:px-5 ${
                   inativo ? "opacity-60" : "hover:bg-fundo"
                 }`}
               >
-                <div className="flex min-w-0 items-center gap-3">
+                <AbrirOverview id={pessoa.id} nome={pessoa.nome} />
+
+                <div className="pointer-events-none relative z-[1] flex min-w-0 items-center gap-3">
                   <HexAvatar
                     nome={pessoa.nome}
                     tamanho={36}
@@ -252,15 +255,15 @@ export default async function PáginaEquipe({
                 </div>
 
                 {/* ações no mobile ficam à direita da primeira linha */}
-                <div className="row-start-1 justify-self-end lg:hidden">
+                <div className="relative z-[2] row-start-1 justify-self-end lg:hidden">
                   <AcoesPessoa pessoa={pessoa} />
                 </div>
 
-                <span className="hidden lg:block">
+                <span className="pointer-events-none relative z-[1] hidden lg:block">
                   {corretor && <Impressao notas={corretor.notas} tamanho={38} anima />}
                 </span>
 
-                <div className="col-span-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.83rem] text-suave lg:col-span-1 lg:block">
+                <div className="pointer-events-none relative z-[1] col-span-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.83rem] text-suave lg:col-span-1 lg:block">
                   <span className="rounded-md bg-fundo-2 px-2 py-0.5 text-[0.78rem] font-semibold text-tinta-suave">
                     {NOME_PAPEL[pessoa.papel]}
                   </span>
@@ -277,23 +280,23 @@ export default async function PáginaEquipe({
                   )}
                 </div>
 
-                <span className="hidden text-[0.85rem] tabular-nums text-tinta-suave lg:block">
+                <span className="pointer-events-none relative z-[1] hidden text-[0.85rem] tabular-nums text-tinta-suave lg:block">
                   {dataCurta(pessoa.entrada)}
                 </span>
 
                 <span
-                  className={`hidden text-right text-[1.05rem] font-bold tabular-nums tracking-[-0.01em] lg:block ${
+                  className={`pointer-events-none relative z-[1] hidden text-right text-[1.05rem] font-bold tabular-nums tracking-[-0.01em] lg:block ${
                     nota === null ? "text-suave" : nota < 5 ? "text-alerta" : "text-tinta"
                   }`}
                 >
                   {nota === null ? "·" : fmt(nota)}
                 </span>
 
-                <span className="hidden text-[0.83rem] text-suave xl:block">
+                <span className="pointer-events-none relative z-[1] hidden text-[0.83rem] text-suave xl:block">
                   {desdeQuando(pessoa.ultimoAcesso)}
                 </span>
 
-                <div className="hidden justify-self-end lg:block">
+                <div className="relative z-[2] hidden justify-self-end lg:block">
                   <AcoesPessoa pessoa={pessoa} />
                 </div>
               </article>
@@ -303,6 +306,9 @@ export default async function PáginaEquipe({
       )}
 
       <p className="border-t border-linha pt-4 text-[0.8rem] text-suave">
+        Clique em qualquer pessoa para abrir o resumo dela: silhueta das seis
+        competências, o que mudou desde o Raio-X e a prova de cada nota.
+        {" "}
         Quem é desativado perde o acesso ao sistema e sai dos rankings do ciclo, mas o
         histórico e as avaliações anteriores continuam guardados. Dá para reativar depois.
       </p>
