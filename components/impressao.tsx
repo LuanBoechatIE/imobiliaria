@@ -40,6 +40,7 @@ function anel(valor: number, raio: number): string {
 
 export function Impressao({
   notas,
+  rotuloDe,
   antes,
   tamanho = 44,
   rotulos = false,
@@ -50,6 +51,16 @@ export function Impressao({
   className,
 }: {
   notas: Notas;
+  /**
+   * Notas de verdade, quando `notas` está em movimento.
+   *
+   * Existe por causa da silhueta que viaja até a nota nova (ver
+   * `ImpressaoViva`): a geometria precisa dos valores quebrados de cada
+   * quadro, mas o texto do rótulo e a cor de alerta não podem rodar
+   * junto — número girando 8,3 · 7,6 · 6,9 vira ruído, e a cor piscaria
+   * ao cruzar o 5 no meio do caminho.
+   */
+  rotuloDe?: Notas;
   /** Quando existe, desenha o momento anterior por baixo, em fantasma. */
   antes?: Notas;
   /** Largura do desenho em pixels. */
@@ -70,7 +81,9 @@ export function Impressao({
   const vb = rotulos ? { x: -36, y: -8, l: 272, a: 216 } : { x: 0, y: 0, l: 200, a: 200 };
 
   const valores = COMPETENCIAS.map((c) => notas[c.chave]);
-  const temCritica = valores.some(critica);
+  // O que se lê vem do valor final; o que se desenha, do quadro atual.
+  const lidos = COMPETENCIAS.map((c) => (rotuloDe ?? notas)[c.chave]);
+  const temCritica = lidos.some(critica);
 
   // O traço é o que separa a silhueta do fundo, e ela aparece tanto sobre
   // branco quanto sobre --laranja-suave, então usa a cor de ação, que
@@ -156,7 +169,7 @@ export function Impressao({
                 cx={x.toFixed(2)}
                 cy={y.toFixed(2)}
                 r={destaque ? 3.6 : 2.6}
-                fill={critica(valores[i]) ? "var(--alerta)" : cor}
+                fill={critica(lidos[i]) ? "var(--alerta)" : cor}
               />
               {destaque && (
                 <circle
@@ -180,7 +193,7 @@ export function Impressao({
           // encostam para fora, senão o texto passa por cima do desenho.
           const alinhamento = i === 0 || i === 3 ? "middle" : i === 1 || i === 2 ? "start" : "end";
           const dy = i === 0 ? -3 : i === 3 ? 11 : 4;
-          const alerta = critica(valores[i]);
+          const alerta = critica(lidos[i]);
 
           return (
             <g key={c.chave}>
@@ -204,7 +217,7 @@ export function Impressao({
                 className="tabular-nums"
                 fill={alerta ? "var(--alerta)" : "var(--tinta)"}
               >
-                {fmt(valores[i])}
+                {fmt(lidos[i])}
               </text>
             </g>
           );

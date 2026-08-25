@@ -15,6 +15,7 @@
  */
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { ArrowUpRight, ClipboardCheck, X } from "lucide-react";
 import { Impressao, Vertice } from "@/components/impressao";
@@ -82,7 +83,18 @@ export function PainelOverview({
     };
   }, [fechar]);
 
-  return (
+  /*
+   * A gaveta é levada para o fim do <body>, e não fica onde foi
+   * chamada.
+   *
+   * Ela nasce dentro da linha da lista, e a linha ganha
+   * `transform` no hover. Qualquer transform em um ancestral vira o
+   * bloco de referência de quem é `position: fixed` — ou seja, a tela
+   * cheia da gaveta passava a ser o retângulo da linha, e ela abria
+   * espremida dentro dela enquanto o ponteiro estivesse ali. Com o
+   * portal, a gaveta deixa de ter ancestral que a prenda.
+   */
+  return createPortal(
     <div className={`fixed inset-0 z-50 flex justify-end ${saindo ? "gaveta-saindo" : ""}`}>
       <div
         className="veu absolute inset-0 bg-tinta/35"
@@ -271,6 +283,7 @@ export function PainelOverview({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

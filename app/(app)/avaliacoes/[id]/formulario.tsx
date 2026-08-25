@@ -4,7 +4,8 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { AlertCircle, Check, Save } from "lucide-react";
 import { EscalaNota } from "@/components/ui/rating-scale-group";
-import { Impressao, Vertice } from "@/components/impressao";
+import { Vertice } from "@/components/impressao";
+import { ImpressaoViva } from "@/components/impressao-viva";
 import { gravarAvaliacao } from "../acoes";
 import { COMPETENCIAS, fmt, type ChaveCompetencia, type Notas } from "@/lib/dados";
 import type { Avaliacao } from "@/lib/avaliacoes";
@@ -284,7 +285,7 @@ export function Formulario({
             Silhueta em construção
           </span>
 
-          <Impressao notas={parcial} tamanho={250} rotulos malha className="max-w-full" />
+          <ImpressaoViva notas={parcial} tamanho={250} rotulos malha className="max-w-full" />
 
           <div className="flex items-baseline gap-2">
             <span className="text-[2.1rem] font-bold leading-none tabular-nums tracking-[-0.035em] text-tinta">

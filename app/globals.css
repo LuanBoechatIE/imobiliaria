@@ -462,13 +462,25 @@ table {
   cursor: pointer;
   transition:
     background-color 0.16s ease,
-    transform 0.16s cubic-bezier(0.2, 0.8, 0.25, 1);
+    box-shadow 0.16s ease;
 }
+
+/*
+ * ⚠️ O realce é sombra interna, e NUNCA transform.
+ *
+ * Transform em um elemento vira o bloco de referência de qualquer
+ * descendente `position: fixed`. Como a gaveta de overview nasce dentro
+ * da linha, com `translateX` no hover ela abria espremida dentro da
+ * própria linha em vez de ocupar a tela — e o ponteiro está sempre
+ * sobre a linha na hora do clique, então acontecia toda vez. A gaveta
+ * hoje sai por portal, mas a barra também não custa layout nenhum, e
+ * numa tabela ela desliza melhor que a linha inteira andando de lado.
+ */
 .linha-viva:hover {
-  transform: translateX(2px);
+  box-shadow: inset 3px 0 0 var(--acao);
 }
 .linha-viva:active {
-  transform: translateX(1px) scale(0.998);
+  box-shadow: inset 4px 0 0 var(--acao);
 }
 
 /*
